@@ -1,7 +1,7 @@
-import { Search } from './pages/search';
+import { CreatePost } from './pages/create-post';
 
 const App: React.FC = () => {
-  return <Search />;
+  return <CreatePost />;
 };
 
 export default App;
