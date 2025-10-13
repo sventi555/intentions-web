@@ -1,0 +1,31 @@
+# Dependencies
+**/node_modules/
+
+# Build files
+**/dist/
+
+# Environment
+**/.env
+**/.env.*
+!**/.env.production
+
+# Turbo
+**/.turbo/
+
+# Code style
+**/eslint.config.js
+**/.lintstagedrc.json
+**/.prettierignore
+.husky/
+.prettierrc.json
+
+# Info
+**/README.md
+
+# Git
+.git/
+.gitignore
+
+# Docker
+dockerfiles/
+.dockerignore

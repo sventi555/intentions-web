@@ -1,0 +1,23 @@
+server {
+    listen ${PORT} default_server;
+
+    gzip on;
+    gzip_min_length 1000;
+    gzip_types text/plain text/xml application/javascript text/css;
+
+    root /usr/share/nginx/html;
+
+    # serve given url or index.html if not found
+    location / {
+        add_header Cache-Control "no-store";
+        try_files $uri $uri/ $uri/index.html /index.html;
+    }
+
+    # static assets
+
+    # for all routes with a dot that don't end in .html, serve the uri or 404 if not found
+    location ~ \.(?!html) {
+        add_header Cache-Control "public, max-age=2678400";
+        try_files $uri =404;
+    }
+}
