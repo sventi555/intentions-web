@@ -1,7 +1,7 @@
-import { Feed } from './pages/feed';
+import { Search } from './pages/search';
 
 const App: React.FC = () => {
-  return <Feed />;
+  return <Search />;
 };
 
 export default App;
