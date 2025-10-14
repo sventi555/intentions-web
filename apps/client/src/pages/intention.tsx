@@ -1,13 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import { Post } from '../features/posts/components/post';
+import { useParams } from 'wouter';
+import { Post } from '../components/post';
 
-interface IntentionProps {
-  intentionId: string;
-}
+export const Intention: React.FC = () => {
+  const { intentionId } = useParams();
 
-export const Intention: React.FC<IntentionProps> = (props) => {
+  if (intentionId == null) {
+    throw new Error('Intention page rendered without id');
+  }
+
   const { data: intention } = useQuery({
-    queryKey: ['intention', props.intentionId],
+    queryKey: ['intention', intentionId],
     queryFn: () => ({
       author: { id: 'test', username: 'booga' },
       name: 'touch grass',
@@ -16,7 +19,7 @@ export const Intention: React.FC<IntentionProps> = (props) => {
 
   const { data: intentionPosts } = useQuery({
     enabled: intention != null,
-    queryKey: ['posts', { intentionId: props.intentionId }],
+    queryKey: ['posts', { intentionId: intentionId }],
     queryFn: () => [1, 2, 3],
   });
 

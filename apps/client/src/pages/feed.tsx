@@ -1,4 +1,4 @@
-import { Post } from '../features/posts/components/post';
+import { Post } from '../components/post';
 
 export const Feed: React.FC = () => {
   return (

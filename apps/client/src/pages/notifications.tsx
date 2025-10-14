@@ -1,5 +1,6 @@
 import { PropsWithChildren } from 'react';
-import { useDownloadUrl } from '../features/media/hooks/download-url';
+import { Link } from 'wouter';
+import { useDownloadUrl } from '../hooks/download-url';
 
 export const Notifications: React.FC = () => {
   return (
@@ -36,7 +37,9 @@ const FollowNotificationWrapper: React.FC<
 
   return (
     <div className="flex items-center gap-1 p-1">
-      <img src={dpUrl} className="w-10 rounded-full" />
+      <Link href={`/profile/${props.user.id}`}>
+        <img src={dpUrl} className="w-10 rounded-full" />
+      </Link>
       {props.children}
     </div>
   );
@@ -54,7 +57,9 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
     <FollowNotificationWrapper user={props.sender}>
       <div className="flex grow items-center justify-between">
         <div>
-          {props.sender.username}{' '}
+          <Link href={`/profile/${props.sender.id}`}>
+            {props.sender.username}
+          </Link>{' '}
           {props.isPending ? 'requested to follow you' : 'followed you'}
         </div>
         {props.isPending ? (
@@ -77,7 +82,12 @@ const FollowApprovedNotification: React.FC<FollowApprovalNotificationProps> = (
 ) => {
   return (
     <FollowNotificationWrapper user={props.recipient}>
-      <div>{props.recipient.username} approved your follow request</div>
+      <div>
+        <Link href={`/profile/${props.recipient.id}`}>
+          {props.recipient.username}
+        </Link>{' '}
+        approved your follow request
+      </div>
     </FollowNotificationWrapper>
   );
 };

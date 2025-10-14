@@ -2,16 +2,19 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { Fragment } from 'react/jsx-runtime';
-import { useDownloadUrl } from '../features/media/hooks/download-url';
-import { Post } from '../features/posts/components/post';
+import { useParams } from 'wouter';
+import { Post } from '../components/post';
+import { useDownloadUrl } from '../hooks/download-url';
 
-interface ProfileProps {
-  userId: string;
-}
+export const Profile: React.FC = () => {
+  const { userId } = useParams();
 
-export const Profile: React.FC<ProfileProps> = (props) => {
+  if (userId == null) {
+    throw new Error('Profile rendered without userId');
+  }
+
   const { data: user } = useQuery({
-    queryKey: ['user', props.userId],
+    queryKey: ['user', userId],
     queryFn: () => ({ username: 'booga', dpUri: 'test' }),
   });
 
