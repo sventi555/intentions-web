@@ -1,7 +1,7 @@
-import { CreatePost } from './pages/create-post';
+import { Notifications } from './pages/notifications';
 
 const App: React.FC = () => {
-  return <CreatePost />;
+  return <Notifications />;
 };
 
 export default App;
