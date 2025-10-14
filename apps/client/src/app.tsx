@@ -1,7 +1,7 @@
-import { Profile } from './pages/profile';
+import { Intention } from './pages/intention';
 
 const App: React.FC = () => {
-  return <Profile />;
+  return <Intention />;
 };
 
 export default App;

@@ -17,7 +17,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
 
   const { downloadUrl: dpUrl } = useDownloadUrl(user?.dpUri);
 
-  if (!user) {
+  if (user == null) {
     return null;
   }
 
