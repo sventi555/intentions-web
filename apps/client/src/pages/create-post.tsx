@@ -10,11 +10,11 @@ export const CreatePost: React.FC = () => {
         </select>
       </div>
 
-      <div className="flex h-32 flex-col items-center justify-center rounded-sm border-2">
+      <div className="flex h-32 flex-col items-center justify-center rounded-sm border">
         <div>Select an image</div>
       </div>
 
-      <textarea placeholder="description" className="rounded-sm border-2 p-1" />
+      <textarea placeholder="description" className="rounded-sm border p-1" />
 
       <button className="rounded-sm bg-blue-200 p-1">Create</button>
     </div>

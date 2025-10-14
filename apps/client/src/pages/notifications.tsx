@@ -52,7 +52,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
 ) => {
   return (
     <FollowNotificationWrapper user={props.sender}>
-      <div className="flex grow justify-between">
+      <div className="flex grow items-center justify-between">
         <div>
           {props.sender.username}{' '}
           {props.isPending ? 'requested to follow you' : 'followed you'}

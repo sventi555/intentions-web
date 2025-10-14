@@ -21,7 +21,7 @@ export const Post: React.FC<PostProps> = (props) => {
   const { downloadUrl: imageUrl } = useDownloadUrl(props.imageUri);
 
   return (
-    <div className="rounded-sm border-2">
+    <div>
       <div className="flex flex-col gap-1 p-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
@@ -30,7 +30,7 @@ export const Post: React.FC<PostProps> = (props) => {
           </div>
           <div>{dayjs().to(dayjs(props.createdAt))}</div>
         </div>
-        <div className="self-start rounded-full border-2 px-1">
+        <div className="self-start rounded-full border px-1">
           {props.intention.name}
         </div>
       </div>
