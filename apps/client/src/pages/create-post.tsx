@@ -16,7 +16,7 @@ export const CreatePost: React.FC = () => {
 
       <textarea placeholder="description" className="rounded-sm border-2 p-1" />
 
-      <button className="rounded-sm bg-blue-300 p-1">Create</button>
+      <button className="rounded-sm bg-blue-200 p-1">Create</button>
     </div>
   );
 };
