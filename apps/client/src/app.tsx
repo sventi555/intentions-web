@@ -1,7 +1,7 @@
-import { Notifications } from './pages/notifications';
+import { Profile } from './pages/profile';
 
 const App: React.FC = () => {
-  return <Notifications />;
+  return <Profile />;
 };
 
 export default App;
