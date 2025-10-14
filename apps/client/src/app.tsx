@@ -1,7 +1,7 @@
-import { Intention } from './pages/intention';
+import { SignUp } from './pages/sign-up';
 
 const App: React.FC = () => {
-  return <Intention />;
+  return <SignUp />;
 };
 
 export default App;
