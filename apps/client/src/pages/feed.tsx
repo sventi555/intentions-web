@@ -9,11 +9,11 @@ export const Feed: React.FC = () => {
           author={{
             id: 'user-id',
             username: 'user-1',
-            dpStoragePath: 'dp-path',
+            dpUri: 'dp-path',
           }}
           createdAt={1760387159012}
           intention={{ id: 'intention-id', name: 'taste' }}
-          imageStoragePath="image-path"
+          imageUri="image-path"
           description="post description"
         />
       ))}
