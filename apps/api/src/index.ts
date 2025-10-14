@@ -2,13 +2,19 @@ import 'dotenv/config';
 
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import greetings from './routes/greetings';
+import follows from './routes/follows';
+import intentions from './routes/intentions';
+import posts from './routes/posts';
+import users from './routes/users';
 
 const app = new Hono();
 
-app.use('/api/*', cors());
+app.use('/*', cors());
 
-app.route('/api/greetings', greetings);
+app.route('/follows', follows);
+app.route('/intentions', intentions);
+app.route('/posts', posts);
+app.route('/users', users);
 
 const port = process.env.PORT;
 

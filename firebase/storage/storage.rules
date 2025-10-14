@@ -1,0 +1,37 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    match /posts/{ownerId}/{imageId} {
+      function isOwner() {
+        return request.auth.uid == ownerId;
+      }
+
+      function followsOwner() {
+        return (
+          firestore.exists(/databases/(default)/documents/follows/$(ownerId)/from/$(request.auth.uid)) &&
+          firestore.get(/databases/(default)/documents/follows/$(ownerId)/from/$(request.auth.uid)).data.status == 'accepted'
+        );
+      }
+
+      function ownerIsPublic() {
+        return (
+          firestore.exists(/databases/(default)/documents/users/$(ownerId)) &&
+          firestore.get(/databases/(default)/documents/users/$(ownerId)).data.private == false
+        );
+      }
+
+      allow read: if (
+        ownerIsPublic() || (request.auth != null && (isOwner() || followsOwner()))
+      );
+    }
+
+    match /dps/{ownerId}/{imageId} {
+      allow read: if true;
+    }
+  }
+}

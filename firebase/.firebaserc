@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "demo-intentions",
+    "prod": "intentions-dbc94"
+  }
+}
