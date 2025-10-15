@@ -1,0 +1,3 @@
+- remove user privacy property
+- make update user route just update dp
+- remove user denorm and use a document reference (if possible)

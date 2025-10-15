@@ -1,32 +1,43 @@
 import { useMutation } from '@tanstack/react-query';
 import { signInWithEmailAndPassword } from 'firebase/auth/web-extension';
-import { CreateUserBody } from 'lib';
+import { CreateUserBody, UpdateUserBody } from 'lib';
 import { auth } from '../firebase';
 
 export const useCreateUser = () => {
   const { mutateAsync: createUser } = useMutation<
     unknown,
     Error,
-    { email: string; username: string; password: string }
+    { body: CreateUserBody }
   >({
-    mutationFn: async ({ email, username, password }) => {
-      const body: CreateUserBody = {
-        email,
-        username,
-        password,
-        isPrivate: true,
-      };
-
+    mutationFn: async ({ body }) => {
       await fetch(`${import.meta.env.VITE_API_HOST}/users`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
       });
     },
-    onSuccess: (_, { email, password }) => {
-      signInWithEmailAndPassword(auth, email, password);
+    onSuccess: (_, { body }) => {
+      signInWithEmailAndPassword(auth, body.email, body.password);
     },
   });
 
   return createUser;
+};
+
+export const useUpdateUser = () => {
+  const { mutateAsync: updateUser } = useMutation<
+    unknown,
+    Error,
+    { body: UpdateUserBody }
+  >({
+    mutationFn: async ({ body }) => {
+      await fetch(`${import.meta.env.VITE_API_HOST}/users`, {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    },
+  });
+
+  return updateUser;
 };
