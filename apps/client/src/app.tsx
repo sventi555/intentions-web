@@ -1,4 +1,5 @@
 import { Route } from 'wouter';
+import { AuthProtected } from './components/auth-protected';
 import { TabBar } from './components/tab-bar';
 import { CreateIntention } from './pages/create-intention';
 import { CreatePost } from './pages/create-post';
@@ -7,31 +8,53 @@ import { Intention } from './pages/intention';
 import { Notifications } from './pages/notifications';
 import { Profile } from './pages/profile';
 import { Search } from './pages/search';
+import { SignIn } from './pages/sign-in';
+import { SignUp } from './pages/sign-up';
 
 const App: React.FC = () => {
   return (
     <>
       <div className="pb-[40px]">
         <Route path="/">
-          <Feed />
+          <AuthProtected>
+            <Feed />
+          </AuthProtected>
         </Route>
         <Route path="/search">
-          <Search />
+          <AuthProtected>
+            <Search />
+          </AuthProtected>
         </Route>
         <Route path="/create">
-          <CreatePost />
+          <AuthProtected>
+            <CreatePost />
+          </AuthProtected>
         </Route>
         <Route path="/create/intention">
-          <CreateIntention />
+          <AuthProtected>
+            <CreateIntention />
+          </AuthProtected>
         </Route>
         <Route path="/notifications">
-          <Notifications />
+          <AuthProtected>
+            <Notifications />
+          </AuthProtected>
         </Route>
         <Route path="/profile/:userId">
-          <Profile />
+          <AuthProtected>
+            <Profile />
+          </AuthProtected>
         </Route>
         <Route path="/intention/:intentionId">
-          <Intention />
+          <AuthProtected>
+            <Intention />
+          </AuthProtected>
+        </Route>
+        <Route path="/sign-in">
+          <SignIn />
+        </Route>
+        <Route path="/sign-up">
+          <SignUp />
         </Route>
       </div>
 

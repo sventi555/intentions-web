@@ -16,6 +16,8 @@
     "@tanstack/react-query": "5.61.3",
     "clsx": "2.1.1",
     "dayjs": "1.11.18",
+    "firebase": "11.5.0",
+    "lib": "workspace:*",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "wouter": "3.7.1"

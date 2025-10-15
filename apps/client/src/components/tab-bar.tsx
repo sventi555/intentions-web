@@ -1,8 +1,9 @@
 import { PropsWithChildren } from 'react';
 import { Link } from 'wouter';
+import { useAuthState } from '../state/auth';
 
 export const TabBar: React.FC = () => {
-  const authUserId = 'temp';
+  const { authUser } = useAuthState();
 
   return (
     <nav className="fixed bottom-0 flex w-full bg-neutral-100">
@@ -10,7 +11,11 @@ export const TabBar: React.FC = () => {
       <TabButton href="/search">Search</TabButton>
       <TabButton href="/create">Create</TabButton>
       <TabButton href="/notifications">Notifs</TabButton>
-      <TabButton href={`/profile/${authUserId}`}>Profile</TabButton>
+      <TabButton
+        href={authUser != null ? `/profile/${authUser?.uid}` : '/sign-in'}
+      >
+        Profile
+      </TabButton>
     </nav>
   );
 };

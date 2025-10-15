@@ -78,6 +78,12 @@ importers:
       dayjs:
         specifier: 1.11.18
         version: 1.11.18
+      firebase:
+        specifier: 11.5.0
+        version: 11.5.0
+      lib:
+        specifier: workspace:*
+        version: link:../../packages/lib
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -118,9 +124,6 @@ importers:
       globals:
         specifier: 15.11.0
         version: 15.11.0
-      lib:
-        specifier: workspace:*
-        version: link:../../packages/lib
       postcss:
         specifier: 8.4.49
         version: 8.4.49

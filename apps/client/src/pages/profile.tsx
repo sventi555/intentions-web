@@ -1,13 +1,17 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { signOut } from 'firebase/auth';
 import { Fragment } from 'react/jsx-runtime';
 import { useParams } from 'wouter';
 import { Post } from '../components/post';
+import { auth } from '../firebase';
 import { useDownloadUrl } from '../hooks/download-url';
+import { useAuthState } from '../state/auth';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
+  const { authUser } = useAuthState();
 
   if (userId == null) {
     throw new Error('Profile rendered without userId');
@@ -24,14 +28,24 @@ export const Profile: React.FC = () => {
     return null;
   }
 
+  const isAuthUser = userId === authUser?.uid;
+
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 p-2">
+    <div>
+      <div className="flex items-center gap-2 p-4">
         <img src={dpUrl} className="w-16 rounded-full" />
         <div className="flex grow flex-col gap-1">
           <div>{user.username}</div>
           <button className="rounded-sm bg-neutral-200">follow</button>
         </div>
+        {isAuthUser ? (
+          <button
+            onClick={() => signOut(auth)}
+            className="absolute top-1 right-2"
+          >
+            Sign out
+          </button>
+        ) : null}
       </div>
       <TabGroup>
         <TabList className="flex border-b">
