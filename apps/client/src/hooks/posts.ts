@@ -1,6 +1,29 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getDocs, orderBy, query } from 'firebase/firestore';
 import { CreatePostBody, UpdatePostBody } from 'lib';
+import { collections } from '../data/db';
 import { useAuthState } from '../state/auth';
+
+export const useFeedPosts = (userId: string) => {
+  const {
+    data: posts,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['feed', userId],
+    queryFn: async () => {
+      const postDocs = (
+        await getDocs(
+          query(collections.feed(userId), orderBy('createdAt', 'desc')),
+        )
+      ).docs;
+
+      return postDocs.map((doc) => ({ id: doc.id, data: doc.data() }));
+    },
+  });
+
+  return { posts, isLoading, isError };
+};
 
 export const useCreatePost = () => {
   const authUser = useAuthState().authUser;

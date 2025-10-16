@@ -1,10 +1,17 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { getDocs, query, where } from 'firebase/firestore';
+import { getDocs, orderBy, query, where } from 'firebase/firestore';
 import { CreateIntentionBody } from 'lib';
-import { collections } from '../data/db';
+import { collections, CollectionSort } from '../data/db';
 import { useAuthState } from '../state/auth';
 
-export const useIntentions = (userId: string) => {
+type IntentionsSort = CollectionSort<
+  'createdAt' | 'updatedAt' | 'postCount' | 'name'
+>;
+
+export const useIntentions = (
+  userId: string,
+  sort: IntentionsSort = { by: 'updatedAt', dir: 'desc' },
+) => {
   const {
     data: intentions,
     isLoading,
@@ -14,7 +21,11 @@ export const useIntentions = (userId: string) => {
     queryFn: async () => {
       const intentionDocs = (
         await getDocs(
-          query(collections.intentions(), where('userId', '==', userId)),
+          query(
+            collections.intentions(),
+            where('userId', '==', userId),
+            orderBy(sort.by, sort.dir),
+          ),
         )
       ).docs;
 

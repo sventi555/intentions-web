@@ -2,6 +2,11 @@ import { collection, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Follow, Intention, Notification, Post, User } from 'lib';
 import { db } from '../firebase';
 
+export type CollectionSort<T extends string> = {
+  by: T;
+  dir: 'asc' | 'desc';
+};
+
 const firestoreConverter = <T>() => ({
   toFirestore: (data: T) => data,
   fromFirestore: (snap: QueryDocumentSnapshot<T>) => snap.data(),

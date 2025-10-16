@@ -1,15 +1,24 @@
-import { Link, Redirect } from 'wouter';
+import { useState } from 'react';
+import { Link, Redirect, useLocation } from 'wouter';
 import { useIntentions } from '../hooks/intentions';
+import { useCreatePost } from '../hooks/posts';
 import { useAuthState } from '../state/auth';
 
 export const CreatePost: React.FC = () => {
   const authUser = useAuthState().authUser;
+
   if (authUser == null) {
     throw new Error('Must be logged in to view create post page');
   }
 
   const { intentions } = useIntentions(authUser.uid);
-  console.log(intentions);
+  const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
+    null,
+  );
+  const [description, setDescription] = useState('');
+
+  const createPost = useCreatePost();
+  const [, setLocation] = useLocation();
 
   if (intentions == null) {
     return null;
@@ -23,21 +32,48 @@ export const CreatePost: React.FC = () => {
     <div className="flex flex-col gap-1 p-1">
       <div className="flex flex-col">
         <label>Choose an intention:</label>
-        <select>
-          {intentions.map((intention) => (
-            <option>{intention.data.name}</option>
-          ))}
-        </select>
-        <Link href="/create/intention">Add intention</Link>
+        <div className="flex gap-1">
+          <select
+            onChange={(e) => setSelectedIntentionId(e.target.value)}
+            value={selectedIntentionId ?? undefined}
+            className="grow rounded-sm border"
+          >
+            {intentions.map((intention) => (
+              <option value={intention.id} key={intention.id}>
+                {intention.name}
+              </option>
+            ))}
+          </select>
+          <Link href="/create/intention" className="rounded-lg border px-2">
+            +
+          </Link>
+        </div>
       </div>
 
       <div className="flex h-32 flex-col items-center justify-center rounded-sm border">
         <div>Select an image</div>
       </div>
 
-      <textarea placeholder="description" className="rounded-sm border p-1" />
+      <textarea
+        placeholder="description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        className="h-24 rounded-sm border p-1"
+      />
 
-      <button className="rounded-sm bg-blue-200 p-1">Create</button>
+      <button
+        onClick={() =>
+          createPost({
+            body: {
+              intentionId: selectedIntentionId ?? intentions[0].id,
+              description,
+            },
+          }).then(() => setLocation('/'))
+        }
+        className="rounded-sm bg-blue-200 p-1"
+      >
+        Create
+      </button>
     </div>
   );
 };

@@ -20,6 +20,6 @@ export const db = getFirestore(app);
 
 if (import.meta.env.VITE_USE_FIREBASE_EMULATORS) {
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
-  connectStorageEmulator(storage, 'http://127.0.0.1', 9199);
-  connectFirestoreEmulator(db, 'http://127.0.0.1', 8080);
+  connectStorageEmulator(storage, '127.0.0.1', 9199);
+  connectFirestoreEmulator(db, '127.0.0.1', 8080);
 }

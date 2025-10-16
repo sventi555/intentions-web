@@ -18,6 +18,7 @@ interface PostProps {
 }
 
 export const Post: React.FC<PostProps> = (props) => {
+  console.log(props.author.dpUri);
   const { downloadUrl: dpUrl } = useDownloadUrl(props.author.dpUri);
   const { downloadUrl: imageUrl } = useDownloadUrl(props.imageUri);
 
