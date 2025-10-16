@@ -1,13 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
 import { Link, Redirect } from 'wouter';
+import { useIntentions } from '../hooks/intentions';
+import { useAuthState } from '../state/auth';
 
 export const CreatePost: React.FC = () => {
-  const authUserId = 'temp';
-  const { data: intentions } = useQuery({
-    enabled: authUserId != null,
-    queryKey: ['intentions', { authorId: authUserId }],
-    queryFn: () => [1, 2, 3],
-  });
+  const authUser = useAuthState().authUser;
+  if (authUser == null) {
+    throw new Error('Must be logged in to view create post page');
+  }
+
+  const { intentions } = useIntentions(authUser.uid);
+  console.log(intentions);
 
   if (intentions == null) {
     return null;
@@ -22,8 +24,8 @@ export const CreatePost: React.FC = () => {
       <div className="flex flex-col">
         <label>Choose an intention:</label>
         <select>
-          {intentions.map((i) => (
-            <option>intention {i}</option>
+          {intentions.map((intention) => (
+            <option>{intention.data.name}</option>
           ))}
         </select>
         <Link href="/create/intention">Add intention</Link>
