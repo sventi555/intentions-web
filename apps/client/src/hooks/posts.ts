@@ -4,6 +4,27 @@ import { CreatePostBody, UpdatePostBody } from 'lib';
 import { collections } from '../data/db';
 import { useAuthState } from '../state/auth';
 
+export const useUserPosts = (userId: string) => {
+  const {
+    data: posts,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['posts', userId],
+    queryFn: async () => {
+      const postDocs = (
+        await getDocs(
+          query(collections.feed(userId), orderBy('createdAt', 'desc')),
+        )
+      ).docs;
+
+      return postDocs.map((doc) => ({ id: doc.id, data: doc.data() }));
+    },
+  });
+
+  return { posts, isLoading, isError };
+};
+
 export const useFeedPosts = (userId: string) => {
   const {
     data: posts,

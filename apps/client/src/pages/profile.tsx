@@ -2,11 +2,14 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { signOut } from 'firebase/auth';
+import { useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { useParams } from 'wouter';
 import { Post } from '../components/post';
 import { auth } from '../firebase';
 import { useDownloadUrl } from '../hooks/download-url';
+import { IntentionsSort, useIntentions } from '../hooks/intentions';
+import { useUserPosts } from '../hooks/posts';
 import { useAuthState } from '../state/auth';
 
 export const Profile: React.FC = () => {
@@ -80,45 +83,108 @@ export const Profile: React.FC = () => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <div className="flex flex-col gap-1">
-              {[1, 2, 3].map((i) => (
-                <Post
-                  key={i}
-                  author={{
-                    id: 'user-id',
-                    username: 'user-1',
-                    dpUri: 'dp-path',
-                  }}
-                  createdAt={1760387159012}
-                  intention={{ id: 'intention-id', name: 'taste' }}
-                  imageUri="image-path"
-                  description="post description"
-                />
-              ))}
-            </div>
+            <ProfilePosts />
           </TabPanel>
           <TabPanel>
-            <div className="p-1">
-              <div className="flex items-center gap-1">
-                <select>
-                  <option>Recently active</option>
-                  <option>Name</option>
-                  <option>Total posts</option>
-                </select>
-                <div>&#x2191;</div>
-              </div>
-              <div>
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="p-1">
-                    <div>intention {i}</div>
-                    <div>stat</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ProfileIntentions />
           </TabPanel>
         </TabPanels>
       </TabGroup>
     </div>
   );
+};
+
+const ProfilePosts: React.FC = () => {
+  const authUser = useAuthState().authUser;
+
+  if (authUser == null) {
+    throw new Error('Must be signed in to view profile');
+  }
+
+  const { posts } = useUserPosts(authUser.uid);
+
+  if (posts == null) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      {posts.map(({ id, data }) => {
+        return (
+          <Post
+            key={id}
+            author={{
+              id: data.userId,
+              username: data.user.username,
+              dpUri: data.user.image,
+            }}
+            createdAt={data.createdAt}
+            intention={{ id: data.intentionId, name: data.intention.name }}
+            imageUri={data.image}
+            description={data.description}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+const ProfileIntentions: React.FC = () => {
+  const authUser = useAuthState().authUser;
+
+  if (authUser == null) {
+    throw new Error('Must be signed in to view profile');
+  }
+
+  const [sortBy, setSortBy] = useState<IntentionsSort['by']>('updatedAt');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const { intentions } = useIntentions(authUser.uid, {
+    by: sortBy,
+    dir: fixSortDir(sortBy, sortDir),
+  });
+
+  if (intentions == null) {
+    return null;
+  }
+
+  return (
+    <div className="p-1">
+      <div className="flex items-center gap-1">
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as IntentionsSort['by'])}
+          className="rounded-sm border"
+        >
+          <option value="updatedAt">Recently active</option>
+          <option value="name">Name</option>
+          <option value="postCount">Total posts</option>
+          <option value="createdAt">Created at</option>
+        </select>
+        <button onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}>
+          {sortDir === 'asc' ? '↑' : '↓'}
+        </button>
+      </div>
+      <div>
+        {intentions.map(({ id, data }) => {
+          return (
+            <div key={id} className="p-1">
+              <div>{data.name}</div>
+              <div>stat</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const fixSortDir = (
+  by: IntentionsSort['by'],
+  dir: 'asc' | 'desc',
+): IntentionsSort['dir'] => {
+  if (by === 'name' || by === 'postCount') {
+    return dir;
+  }
+
+  return dir === 'asc' ? 'desc' : 'asc';
 };

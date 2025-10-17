@@ -15,10 +15,10 @@ export const Feed: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-1">
-      {posts.map((post) => {
-        const data = post.data;
+      {posts.map(({ id, data }) => {
         return (
           <Post
+            key={id}
             createdAt={data.createdAt}
             intention={{ id: data.intentionId, name: data.intention.name }}
             author={{

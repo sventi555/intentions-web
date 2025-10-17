@@ -4,7 +4,7 @@ import { CreateIntentionBody } from 'lib';
 import { collections, CollectionSort } from '../data/db';
 import { useAuthState } from '../state/auth';
 
-type IntentionsSort = CollectionSort<
+export type IntentionsSort = CollectionSort<
   'createdAt' | 'updatedAt' | 'postCount' | 'name'
 >;
 
@@ -17,7 +17,7 @@ export const useIntentions = (
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['intentions', userId],
+    queryKey: ['intentions', userId, { sort }],
     queryFn: async () => {
       const intentionDocs = (
         await getDocs(

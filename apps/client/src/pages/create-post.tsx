@@ -38,9 +38,9 @@ export const CreatePost: React.FC = () => {
             value={selectedIntentionId ?? undefined}
             className="grow rounded-sm border"
           >
-            {intentions.map((intention) => (
-              <option value={intention.id} key={intention.id}>
-                {intention.name}
+            {intentions.map(({ id, data }) => (
+              <option value={id} key={id}>
+                {data.name}
               </option>
             ))}
           </select>
