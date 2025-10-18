@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import { getDownloadURL, ref } from 'firebase/storage';
+import { storage } from '../firebase';
 
 export const useDownloadUrl = (storagePath?: string) => {
   const {
@@ -9,7 +11,9 @@ export const useDownloadUrl = (storagePath?: string) => {
     enabled: storagePath != null,
     queryKey: ['download-url', storagePath],
     queryFn: async () => {
-      return 'https://placehold.co/480x480/png';
+      const url = await getDownloadURL(ref(storage, storagePath));
+
+      return url;
     },
   });
 

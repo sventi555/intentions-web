@@ -1,6 +1,43 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getDoc } from 'firebase/firestore';
 import { RemoveFollowBody, RespondToFollowBody } from 'lib';
+import { docs } from '../data/db';
 import { useAuthState } from '../state/auth';
+
+export const useFollow = (toUserId?: string) => {
+  const authUser = useAuthState().authUser;
+
+  const {
+    data: follow,
+    isLoading,
+    isError,
+  } = useQuery({
+    enabled: toUserId != null,
+    queryKey: ['follow', { toUserId }],
+    queryFn: async () => {
+      if (toUserId == null) {
+        // should not be reached
+        return;
+      }
+
+      if (authUser == null) {
+        throw new Error('must be signed in to read follow');
+      }
+
+      const follow = await getDoc(docs.follow(authUser?.uid, toUserId));
+
+      const data = follow.data();
+
+      if (data == null) {
+        return null;
+      }
+
+      return { id: follow.id, data };
+    },
+  });
+
+  return { follow, isLoading, isError };
+};
 
 export const useFollowUser = () => {
   const authUser = useAuthState().authUser;

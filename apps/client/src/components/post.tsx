@@ -27,7 +27,7 @@ export const Post: React.FC<PostProps> = (props) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <Link href={`/profile/${props.author.id}`}>
-              <img src={dpUrl} className="w-10 rounded-full" />
+              <img src={dpUrl} className="w-10 rounded-full border" />
             </Link>
             <Link href={`/profile/${props.author.id}`}>
               {props.author.username}

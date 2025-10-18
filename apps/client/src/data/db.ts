@@ -1,4 +1,4 @@
-import { collection, QueryDocumentSnapshot } from 'firebase/firestore';
+import { collection, doc, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Follow, Intention, Notification, Post, User } from 'lib';
 import { db } from '../firebase';
 
@@ -30,5 +30,14 @@ export const collections = {
   notifications: (userId: string) =>
     collection(db, `users/${userId}/notifications`).withConverter(
       firestoreConverter<Notification>(),
+    ),
+};
+
+export const docs = {
+  user: (userId: string) =>
+    doc(db, 'users', userId).withConverter(firestoreConverter<User>()),
+  follow: (fromUserId: string, toUserId: string) =>
+    doc(db, 'follows', `${toUserId}/from/${fromUserId}`).withConverter(
+      firestoreConverter<Follow>(),
     ),
 };

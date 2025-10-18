@@ -1,21 +1,51 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { PropsWithChildren } from 'react';
 import { Link } from 'wouter';
 import { useDownloadUrl } from '../hooks/download-url';
+import { useRespondToFollow } from '../hooks/follows';
+import { useNotifications } from '../hooks/notifications';
+import { useAuthState } from '../state/auth';
 
 export const Notifications: React.FC = () => {
+  const authUser = useAuthState().authUser;
+  if (authUser == null) {
+    throw new Error('must be signed in to view notifications');
+  }
+
+  const { notifications } = useNotifications(authUser.uid);
+
+  if (notifications == null) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col">
-      <FollowRequestNotification
-        sender={{ id: 'test-id', username: 'booga', dpUri: 'test-dp' }}
-        isPending={true}
-      />
-      <FollowRequestNotification
-        sender={{ id: 'test-id', username: 'booga', dpUri: 'test-dp' }}
-        isPending={false}
-      />
-      <FollowApprovedNotification
-        recipient={{ id: 'test-id', username: 'booga', dpUri: 'test-dp' }}
-      />
+      {notifications.map((notification) => {
+        const { data } = notification.data;
+        const isRecipient = data.toUserId === authUser.uid;
+        const otherUser = isRecipient
+          ? {
+              id: data.fromUserId,
+              username: data.fromUser.username,
+              dpUri: data.fromUser.image,
+            }
+          : {
+              id: data.toUserId,
+              username: data.toUser.username,
+              dpUri: data.toUser.image,
+            };
+
+        if (isRecipient) {
+          return (
+            <FollowRequestNotification
+              sender={otherUser}
+              isPending={data.status === 'pending'}
+            />
+          );
+        }
+
+        return <FollowApprovedNotification recipient={otherUser} />;
+      })}
     </div>
   );
 };
@@ -53,6 +83,14 @@ interface FollowRequestNotificationProps {
 const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
   props,
 ) => {
+  const authUser = useAuthState().authUser;
+  if (authUser == null) {
+    throw new Error('must be signed in to view notification');
+  }
+
+  const respondToFollow = useRespondToFollow();
+  const queryClient = useQueryClient();
+
   return (
     <FollowNotificationWrapper user={props.sender}>
       <div className="flex grow items-center justify-between">
@@ -64,8 +102,36 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
         </div>
         {props.isPending ? (
           <div className="flex gap-1">
-            <button className="rounded-sm bg-red-200 px-2">N</button>
-            <button className="rounded-sm bg-green-200 px-2">Y</button>
+            <button
+              onClick={() =>
+                respondToFollow({
+                  userId: props.sender.id,
+                  body: { action: 'decline' },
+                }).then(() =>
+                  queryClient.invalidateQueries({
+                    queryKey: ['notifications', authUser.uid],
+                  }),
+                )
+              }
+              className="rounded-sm bg-red-200 px-2"
+            >
+              N
+            </button>
+            <button
+              onClick={() =>
+                respondToFollow({
+                  userId: props.sender.id,
+                  body: { action: 'accept' },
+                }).then(() =>
+                  queryClient.invalidateQueries({
+                    queryKey: ['notifications', authUser.uid],
+                  }),
+                )
+              }
+              className="rounded-sm bg-green-200 px-2"
+            >
+              Y
+            </button>
           </div>
         ) : null}
       </div>

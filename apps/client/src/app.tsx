@@ -14,7 +14,7 @@ import { SignUp } from './pages/sign-up';
 const App: React.FC = () => {
   return (
     <>
-      <div className="pb-[40px]">
+      <div className="box-border flex min-h-screen flex-col pb-[40px]">
         <Route path="/">
           <AuthProtected>
             <Feed />

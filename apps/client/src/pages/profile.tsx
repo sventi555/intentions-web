@@ -1,15 +1,17 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { signOut } from 'firebase/auth';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { useParams } from 'wouter';
 import { Post } from '../components/post';
 import { auth } from '../firebase';
 import { useDownloadUrl } from '../hooks/download-url';
+import { useFollow, useFollowUser } from '../hooks/follows';
 import { IntentionsSort, useIntentions } from '../hooks/intentions';
 import { useUserPosts } from '../hooks/posts';
+import { useUpdateUser, useUser } from '../hooks/users';
 import { useAuthState } from '../state/auth';
 
 export const Profile: React.FC = () => {
@@ -20,12 +22,15 @@ export const Profile: React.FC = () => {
     throw new Error('Profile rendered without userId');
   }
 
-  const { data: user } = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => ({ username: 'booga', dpUri: 'test' }),
-  });
+  const { user } = useUser(userId);
+  const { downloadUrl: dpUrl } = useDownloadUrl(user?.data.image);
+  const { follow } = useFollow(userId);
 
-  const { downloadUrl: dpUrl } = useDownloadUrl(user?.dpUri);
+  const filePickerRef = useRef<HTMLInputElement | null>(null);
+  const updateUser = useUpdateUser();
+  const queryClient = useQueryClient();
+
+  const followUser = useFollowUser();
 
   if (user == null) {
     return null;
@@ -36,10 +41,54 @@ export const Profile: React.FC = () => {
   return (
     <div>
       <div className="flex items-center gap-2 p-4">
-        <img src={dpUrl} className="w-16 rounded-full" />
+        <button
+          disabled={!isAuthUser}
+          onClick={() => filePickerRef.current?.click()}
+        >
+          <img src={dpUrl} className="size-16 rounded-full border" />
+          <input
+            type="file"
+            accept="image/png, image/jpeg"
+            hidden={true}
+            onChange={(e) => {
+              const reader = new FileReader();
+              const file = e.target.files?.[0];
+              if (file == null) {
+                return;
+              }
+
+              reader.readAsDataURL(file);
+              reader.onload = (ev) =>
+                updateUser({
+                  body: { image: ev.target?.result as string },
+                }).then(() =>
+                  queryClient.invalidateQueries({ queryKey: ['user', userId] }),
+                );
+            }}
+            ref={filePickerRef}
+          />
+        </button>
         <div className="flex grow flex-col gap-1">
-          <div>{user.username}</div>
-          <button className="rounded-sm bg-neutral-200">follow</button>
+          <div>{user.data.username}</div>
+          {follow == null ? (
+            <button
+              onClick={() =>
+                followUser({ userId }).then(() =>
+                  queryClient.invalidateQueries({
+                    queryKey: ['follow', { toUserId: userId }],
+                  }),
+                )
+              }
+              className="rounded-sm bg-blue-200"
+            >
+              follow
+            </button>
+          ) : null}
+          {follow != null && follow.data.status === 'pending' ? (
+            <button disabled={true} className="rounded-sm bg-neutral-200">
+              pending
+            </button>
+          ) : null}
         </div>
         {isAuthUser ? (
           <button
