@@ -21,6 +21,7 @@ import {
 } from '../hooks/posts';
 import { useInvalidateUser, useUpdateUser, useUser } from '../hooks/users';
 import { useAuthState } from '../state/auth';
+import { dayjs } from '../utils/time';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -196,8 +197,17 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
           {sortDir === 'asc' ? '↑' : '↓'}
         </button>
       </div>
-      <div>
+      <div className="flex flex-col">
         {intentions.map(({ id, data }) => {
+          let stat: string | null = null;
+          if (sortBy === 'postCount') {
+            stat = `${data.postCount} posts`;
+          } else if (sortBy === 'updatedAt') {
+            stat = `Updated ${dayjs(data.updatedAt).fromNow()}`;
+          } else if (sortBy === 'createdAt') {
+            stat = `Created ${dayjs(data.createdAt).format('MMM D, YYYY')}`;
+          }
+
           return (
             <Link
               key={id}
@@ -205,7 +215,9 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
               className="p-1"
             >
               <div>{data.name}</div>
-              <div>stat</div>
+              {stat ? (
+                <div className="text-sm text-neutral-600">{stat}</div>
+              ) : null}
             </Link>
           );
         })}
