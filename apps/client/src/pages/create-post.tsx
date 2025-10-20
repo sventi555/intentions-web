@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link, Redirect, useLocation } from 'wouter';
+import { ImagePicker } from '../components/image-picker';
 import { useIntentions } from '../hooks/intentions';
 import {
   useCreatePost,
@@ -63,21 +64,8 @@ export const CreatePost: React.FC = () => {
         className="flex h-32 flex-col items-center justify-center rounded-sm border"
       >
         <div>Select an image</div>
-        <input
-          type="file"
-          accept="image/png, image/jpeg"
-          hidden={true}
-          onChange={(e) => {
-            const reader = new FileReader();
-            const file = e.target.files?.[0];
-            if (file == null) {
-              return;
-            }
-
-            reader.readAsDataURL(file);
-            reader.onload = (ev) =>
-              setImageDataUrl(ev.target?.result as string);
-          }}
+        <ImagePicker
+          onPick={(dataUrl) => setImageDataUrl(dataUrl)}
           ref={filePickerRef}
         />
       </button>

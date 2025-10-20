@@ -5,6 +5,6 @@
 - "YOU FOLLOW YOURSELF when you're born into this world"
 - make notification interface simpler. only one type (remove "kind" field)
 
-- extract image picking into a hook
+- image preview on create page
 - profile intentions stat
 - use icons on tab bar

@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Link, useParams } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
+import { ImagePicker } from '../components/image-picker';
 import { Post } from '../components/post';
 import { auth } from '../firebase';
 import {
@@ -13,7 +14,11 @@ import {
   useInvalidateFollow,
 } from '../hooks/follows';
 import { IntentionsSort, useIntentions } from '../hooks/intentions';
-import { useUserPosts } from '../hooks/posts';
+import {
+  useInvalidateFeedPosts,
+  useInvalidateUserPosts,
+  useUserPosts,
+} from '../hooks/posts';
 import { useInvalidateUser, useUpdateUser, useUser } from '../hooks/users';
 import { useAuthState } from '../state/auth';
 
@@ -34,6 +39,8 @@ export const Profile: React.FC = () => {
   const followUser = useFollowUser();
   const invalidateFollow = useInvalidateFollow();
   const invalidateUser = useInvalidateUser();
+  const invalidateUserPosts = useInvalidateUserPosts();
+  const invalidateFeedPosts = useInvalidateFeedPosts();
 
   if (user == null) {
     return null;
@@ -49,23 +56,18 @@ export const Profile: React.FC = () => {
           onClick={() => filePickerRef.current?.click()}
         >
           <DisplayPic imageUri={user?.image} size={64} />
-          <input
-            type="file"
-            accept="image/png, image/jpeg"
-            hidden={true}
-            onChange={(e) => {
-              const reader = new FileReader();
-              const file = e.target.files?.[0];
-              if (file == null) {
-                return;
-              }
-
-              reader.readAsDataURL(file);
-              reader.onload = (ev) =>
-                updateUser({
-                  body: { image: ev.target?.result as string },
-                }).then(() => invalidateUser(userId));
-            }}
+          <ImagePicker
+            onPick={(dataUrl) =>
+              updateUser({
+                body: { image: dataUrl },
+              }).then(() =>
+                Promise.all([
+                  invalidateUser(userId),
+                  invalidateUserPosts(userId),
+                  invalidateFeedPosts(userId),
+                ]),
+              )
+            }
             ref={filePickerRef}
           />
         </button>
