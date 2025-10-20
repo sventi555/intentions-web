@@ -24,21 +24,7 @@ export const Intention: React.FC = () => {
         <div className="font-bold">{intention.data.name}</div>
       </div>
       {posts.map((post) => (
-        <Post
-          key={post.id}
-          author={{
-            id: post.data.userId,
-            username: post.data.user.username,
-            dpUri: post.data.user.image,
-          }}
-          createdAt={post.data.createdAt}
-          intention={{
-            id: post.data.intentionId,
-            name: post.data.intention.name,
-          }}
-          imageUri={post.data.image}
-          description={post.data.description}
-        />
+        <Post key={post.id} data={post.data} />
       ))}
     </div>
   );

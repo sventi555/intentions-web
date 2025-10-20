@@ -155,20 +155,7 @@ const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
   return (
     <div className="flex flex-col gap-1">
       {posts.map(({ id, data }) => {
-        return (
-          <Post
-            key={id}
-            author={{
-              id: data.userId,
-              username: data.user.username,
-              dpUri: data.user.image,
-            }}
-            createdAt={data.createdAt}
-            intention={{ id: data.intentionId, name: data.intention.name }}
-            imageUri={data.image}
-            description={data.description}
-          />
-        );
+        return <Post key={id} data={data} />;
       })}
     </div>
   );

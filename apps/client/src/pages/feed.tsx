@@ -16,20 +16,7 @@ export const Feed: React.FC = () => {
   return (
     <div className="flex flex-col gap-1">
       {posts.map(({ id, data }) => {
-        return (
-          <Post
-            key={id}
-            createdAt={data.createdAt}
-            intention={{ id: data.intentionId, name: data.intention.name }}
-            author={{
-              id: data.userId,
-              username: data.user.username,
-              dpUri: data.user.image,
-            }}
-            description={data.description}
-            imageUri={data.image}
-          />
-        );
+        return <Post key={id} data={data} />;
       })}
     </div>
   );

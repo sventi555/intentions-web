@@ -1,51 +1,39 @@
+import { Post as _Post } from 'lib';
 import { Link } from 'wouter';
 import { useDownloadUrl } from '../hooks/download-url';
 import { dayjs } from '../utils/time';
 import { DisplayPic } from './display-pic';
 
 interface PostProps {
-  author: {
-    id: string;
-    username: string;
-    dpUri?: string;
-  };
-  createdAt: number;
-  intention: {
-    id: string;
-    name: string;
-  };
-  imageUri?: string;
-  description?: string;
+  data: _Post;
 }
 
-export const Post: React.FC<PostProps> = (props) => {
-  const { downloadUrl: imageUrl } = useDownloadUrl(props.imageUri);
+export const Post: React.FC<PostProps> = ({ data }) => {
+  const { downloadUrl: imageUrl } = useDownloadUrl(data.image);
 
   return (
     <div>
       <div className="flex flex-col gap-1 p-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <Link href={`/profile/${props.author.id}`}>
-              <DisplayPic imageUri={props.author.dpUri} size={40} />
+            <Link href={`/profile/${data.userId}`}>
+              <DisplayPic imageUri={data.user.image} size={40} />
             </Link>
-            <Link href={`/profile/${props.author.id}`}>
-              {props.author.username}
-            </Link>
+            <Link href={`/profile/${data.userId}`}>{data.user.username}</Link>
           </div>
-          <div>{dayjs().to(dayjs(props.createdAt))}</div>
+          <div>{dayjs().to(dayjs(data.createdAt))}</div>
         </div>
         <Link
-          href={`/intention/${props.intention.id}`}
+          href={`/intention/${data.intentionId}`}
           className="self-start rounded-full border px-1"
         >
-          {props.intention.name}
+          {data.intention.name}
         </Link>
       </div>
 
       <img src={imageUrl} />
 
-      <div className="p-1">{props.description}</div>
+      <div className="p-1">{data.description}</div>
     </div>
   );
 };

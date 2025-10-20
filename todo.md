@@ -9,4 +9,3 @@
 - extract image picking into a hook
 - profile intentions stat
 - use icons on tab bar
-- refactor post component to simply take a Post object
