@@ -59,16 +59,29 @@ export const CreatePost: React.FC = () => {
         </div>
       </div>
 
-      <button
-        onClick={() => filePickerRef.current?.click()}
-        className="flex h-32 flex-col items-center justify-center rounded-sm border"
-      >
-        <div>Select an image</div>
-        <ImagePicker
-          onPick={(dataUrl) => setImageDataUrl(dataUrl)}
-          ref={filePickerRef}
-        />
-      </button>
+      <ImagePicker
+        onPick={(dataUrl) => setImageDataUrl(dataUrl)}
+        ref={filePickerRef}
+      />
+
+      {imageDataUrl == null ? (
+        <button
+          onClick={() => filePickerRef.current?.click()}
+          className="flex h-32 flex-col items-center justify-center rounded-sm border"
+        >
+          <div>Select an image</div>
+        </button>
+      ) : (
+        <div className="relative">
+          <img src={imageDataUrl} />
+          <button
+            onClick={() => filePickerRef.current?.click()}
+            className="absolute right-2 bottom-2 left-2 rounded-sm bg-black/50 p-1 text-white"
+          >
+            Change image
+          </button>
+        </div>
+      )}
 
       <textarea
         placeholder="description"
