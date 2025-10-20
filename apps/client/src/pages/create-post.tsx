@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, Redirect, useLocation } from 'wouter';
 import { useIntentions } from '../hooks/intentions';
 import { useCreatePost } from '../hooks/posts';
@@ -16,6 +16,8 @@ export const CreatePost: React.FC = () => {
     null,
   );
   const [description, setDescription] = useState('');
+  const filePickerRef = useRef<HTMLInputElement | null>(null);
+  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
 
   const createPost = useCreatePost();
   const [, setLocation] = useLocation();
@@ -50,9 +52,29 @@ export const CreatePost: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex h-32 flex-col items-center justify-center rounded-sm border">
+      <button
+        onClick={() => filePickerRef.current?.click()}
+        className="flex h-32 flex-col items-center justify-center rounded-sm border"
+      >
         <div>Select an image</div>
-      </div>
+        <input
+          type="file"
+          accept="image/png, image/jpeg"
+          hidden={true}
+          onChange={(e) => {
+            const reader = new FileReader();
+            const file = e.target.files?.[0];
+            if (file == null) {
+              return;
+            }
+
+            reader.readAsDataURL(file);
+            reader.onload = (ev) =>
+              setImageDataUrl(ev.target?.result as string);
+          }}
+          ref={filePickerRef}
+        />
+      </button>
 
       <textarea
         placeholder="description"
@@ -67,6 +89,7 @@ export const CreatePost: React.FC = () => {
             body: {
               intentionId: selectedIntentionId ?? intentions[0].id,
               description,
+              ...(imageDataUrl != null ? { image: imageDataUrl } : {}),
             },
           }).then(() => setLocation('/'))
         }

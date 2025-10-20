@@ -1,12 +1,20 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useCreateIntention } from '../hooks/intentions';
+import { useAuthState } from '../state/auth';
 
 export const CreateIntention: React.FC = () => {
   const [intention, setIntention] = useState('');
   const [, setLocation] = useLocation();
 
+  const authUser = useAuthState().authUser;
   const createIntention = useCreateIntention();
+  const queryClient = useQueryClient();
+
+  if (authUser == null) {
+    throw new Error('must be signed in to create intention');
+  }
 
   return (
     <div className="flex flex-col gap-1 p-1">
@@ -17,9 +25,13 @@ export const CreateIntention: React.FC = () => {
       />
       <button
         onClick={() =>
-          createIntention({ body: { name: intention } }).then(() =>
-            setLocation('/create'),
-          )
+          createIntention({ body: { name: intention } })
+            .then(() =>
+              queryClient.invalidateQueries({
+                queryKey: ['intentions', authUser.uid],
+              }),
+            )
+            .then(() => setLocation('/create'))
         }
         className="rounded-sm bg-blue-200 p-1"
       >

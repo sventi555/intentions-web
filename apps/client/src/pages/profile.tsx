@@ -5,9 +5,9 @@ import { signOut } from 'firebase/auth';
 import { useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { useParams } from 'wouter';
+import { DisplayPic } from '../components/display-pic';
 import { Post } from '../components/post';
 import { auth } from '../firebase';
-import { useDownloadUrl } from '../hooks/download-url';
 import { useFollow, useFollowUser } from '../hooks/follows';
 import { IntentionsSort, useIntentions } from '../hooks/intentions';
 import { useUserPosts } from '../hooks/posts';
@@ -23,7 +23,6 @@ export const Profile: React.FC = () => {
   }
 
   const { user } = useUser(userId);
-  const { downloadUrl: dpUrl } = useDownloadUrl(user?.data.image);
   const { follow } = useFollow(userId);
 
   const filePickerRef = useRef<HTMLInputElement | null>(null);
@@ -45,7 +44,7 @@ export const Profile: React.FC = () => {
           disabled={!isAuthUser}
           onClick={() => filePickerRef.current?.click()}
         >
-          <img src={dpUrl} className="size-16 rounded-full border" />
+          <DisplayPic imageUri={user?.data.image} size={64} />
           <input
             type="file"
             accept="image/png, image/jpeg"
@@ -70,7 +69,8 @@ export const Profile: React.FC = () => {
         </button>
         <div className="flex grow flex-col gap-1">
           <div>{user.data.username}</div>
-          {follow == null ? (
+          {/* shouldn't need the second clause once users follow self */}
+          {follow == null && !isAuthUser ? (
             <button
               onClick={() =>
                 followUser({ userId }).then(() =>

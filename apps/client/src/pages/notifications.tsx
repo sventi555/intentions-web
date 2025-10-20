@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { PropsWithChildren } from 'react';
 import { Link } from 'wouter';
-import { useDownloadUrl } from '../hooks/download-url';
+import { DisplayPic } from '../components/display-pic';
 import { useRespondToFollow } from '../hooks/follows';
 import { useNotifications } from '../hooks/notifications';
 import { useAuthState } from '../state/auth';
@@ -63,12 +63,10 @@ interface FollowNotificationWrapperProps {
 const FollowNotificationWrapper: React.FC<
   PropsWithChildren<FollowNotificationWrapperProps>
 > = (props) => {
-  const { downloadUrl: dpUrl } = useDownloadUrl(props.user.dpUri);
-
   return (
     <div className="flex items-center gap-1 p-1">
       <Link href={`/profile/${props.user.id}`}>
-        <img src={dpUrl} className="w-10 rounded-full" />
+        <DisplayPic imageUri={props.user.dpUri} size={40} />
       </Link>
       {props.children}
     </div>

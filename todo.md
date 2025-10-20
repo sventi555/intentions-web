@@ -1,12 +1,13 @@
 - remove user privacy property
 - make update user route just update dp
 - remove user denorm and use a document reference (if possible)
+- allow removing pending follow (should remove corresponding notification)
+- "YOU FOLLOW YOURSELF when you're born into this world"
+- make notification interface simpler. only one type (remove "kind" field)
 
 - maybe remove id from response when querying for single object
 - extract invalidation into hooks
-
-- allow removing pending follow
-
-- "YOU FOLLOW YOURSELF when you're born into this world"
-
-- make notification interface simpler. only one type (remove "kind" field)
+- extract image picking into a hook
+- placeholder dp
+- intentions page
+- profile intentions stat + link to intentions page

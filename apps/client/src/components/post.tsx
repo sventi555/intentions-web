@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { useDownloadUrl } from '../hooks/download-url';
 import { dayjs } from '../utils/time';
+import { DisplayPic } from './display-pic';
 
 interface PostProps {
   author: {
@@ -18,7 +19,6 @@ interface PostProps {
 }
 
 export const Post: React.FC<PostProps> = (props) => {
-  const { downloadUrl: dpUrl } = useDownloadUrl(props.author.dpUri);
   const { downloadUrl: imageUrl } = useDownloadUrl(props.imageUri);
 
   return (
@@ -27,7 +27,7 @@ export const Post: React.FC<PostProps> = (props) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <Link href={`/profile/${props.author.id}`}>
-              <img src={dpUrl} className="w-10 rounded-full border" />
+              <DisplayPic imageUri={props.author.dpUri} size={40} />
             </Link>
             <Link href={`/profile/${props.author.id}`}>
               {props.author.username}

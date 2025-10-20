@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { useDownloadUrl } from '../hooks/download-url';
+import { DisplayPic } from '../components/display-pic';
 import { useFollow, useFollowUser } from '../hooks/follows';
 import { useSearchUser } from '../hooks/users';
 
@@ -11,7 +11,6 @@ export const Search: React.FC = () => {
   const [searchedUsername, setSearchedUsername] = useState('');
 
   const { user: searchedUser } = useSearchUser(searchedUsername);
-  const { downloadUrl: dpUrl } = useDownloadUrl(searchedUser?.data.image);
 
   const { follow: searchedUserFollow } = useFollow(searchedUser?.id);
   const searchedUserAccepted =
@@ -50,8 +49,9 @@ export const Search: React.FC = () => {
               searchedUserAccepted ? 'border' : null,
             )}
           >
-            <img className="size-32 rounded-full border" src={dpUrl} />
+            <DisplayPic imageUri={searchedUser.data.image} size={128} />
             <div>{searchedUser.data.username}</div>
+            {/* once users follow self, this will disappear for self search, which is good */}
             {searchedUserFollow == null ? (
               <button
                 onClick={() =>
