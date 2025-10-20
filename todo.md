@@ -5,8 +5,9 @@
 - "YOU FOLLOW YOURSELF when you're born into this world"
 - make notification interface simpler. only one type (remove "kind" field)
 
-- make sure image fills/centers correctly
-    - posts
-    - create page
-    - display pic
 - visible distinction between list items (posts and intentions)
+- empty page state
+    - feed
+    - notifications
+    - profile posts/intentions
+- private profile state posts/intentions

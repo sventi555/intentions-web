@@ -13,7 +13,7 @@ import { SignUp } from './pages/sign-up';
 
 const App: React.FC = () => {
   return (
-    <>
+    <div className="mx-auto max-w-[640px]">
       <div className="box-border flex min-h-screen flex-col pb-[40px]">
         <Route path="/">
           <AuthProtected>
@@ -57,9 +57,8 @@ const App: React.FC = () => {
           <SignUp />
         </Route>
       </div>
-
       <TabBar />
-    </>
+    </div>
   );
 };
 

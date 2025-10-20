@@ -73,7 +73,7 @@ export const CreatePost: React.FC = () => {
         </button>
       ) : (
         <div className="relative">
-          <img src={imageDataUrl} />
+          <img src={imageDataUrl} className="w-full" />
           <button
             onClick={() => filePickerRef.current?.click()}
             className="absolute right-2 bottom-2 left-2 rounded-sm bg-black/50 p-1 text-white"
