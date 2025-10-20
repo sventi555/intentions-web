@@ -1,7 +1,9 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { useCreateIntention } from '../hooks/intentions';
+import {
+  useCreateIntention,
+  useInvalidateIntentions,
+} from '../hooks/intentions';
 import { useAuthState } from '../state/auth';
 
 export const CreateIntention: React.FC = () => {
@@ -10,7 +12,7 @@ export const CreateIntention: React.FC = () => {
 
   const authUser = useAuthState().authUser;
   const createIntention = useCreateIntention();
-  const queryClient = useQueryClient();
+  const invalidateIntentions = useInvalidateIntentions();
 
   if (authUser == null) {
     throw new Error('must be signed in to create intention');
@@ -26,11 +28,7 @@ export const CreateIntention: React.FC = () => {
       <button
         onClick={() =>
           createIntention({ body: { name: intention } })
-            .then(() =>
-              queryClient.invalidateQueries({
-                queryKey: ['intentions', authUser.uid],
-              }),
-            )
+            .then(() => invalidateIntentions(authUser.uid))
             .then(() => setLocation('/create'))
         }
         className="rounded-sm bg-blue-200 p-1"

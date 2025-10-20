@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDocs, orderBy, query } from 'firebase/firestore';
 import { CreatePostBody, UpdatePostBody } from 'lib';
 import { collections } from '../data/db';
@@ -25,6 +25,13 @@ export const useUserPosts = (userId: string) => {
   return { posts, isLoading, isError };
 };
 
+export const useInvalidateUserPosts = () => {
+  const queryClient = useQueryClient();
+
+  return (userId: string) =>
+    queryClient.invalidateQueries({ queryKey: ['posts', userId] });
+};
+
 export const useFeedPosts = (userId: string) => {
   const {
     data: posts,
@@ -44,6 +51,18 @@ export const useFeedPosts = (userId: string) => {
   });
 
   return { posts, isLoading, isError };
+};
+
+export const useInvalidateFeedPosts = () => {
+  const queryClient = useQueryClient();
+  const authUser = useAuthState().authUser;
+
+  if (authUser == null) {
+    throw new Error('');
+  }
+
+  return (userId: string) =>
+    queryClient.invalidateQueries({ queryKey: ['feed', userId] });
 };
 
 export const useCreatePost = () => {

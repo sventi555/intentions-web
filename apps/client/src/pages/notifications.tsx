@@ -1,9 +1,11 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { PropsWithChildren } from 'react';
 import { Link } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
 import { useRespondToFollow } from '../hooks/follows';
-import { useNotifications } from '../hooks/notifications';
+import {
+  useInvalidateNotifications,
+  useNotifications,
+} from '../hooks/notifications';
 import { useAuthState } from '../state/auth';
 
 export const Notifications: React.FC = () => {
@@ -87,7 +89,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
   }
 
   const respondToFollow = useRespondToFollow();
-  const queryClient = useQueryClient();
+  const invalidateNotifications = useInvalidateNotifications();
 
   return (
     <FollowNotificationWrapper user={props.sender}>
@@ -105,11 +107,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
                 respondToFollow({
                   userId: props.sender.id,
                   body: { action: 'decline' },
-                }).then(() =>
-                  queryClient.invalidateQueries({
-                    queryKey: ['notifications', authUser.uid],
-                  }),
-                )
+                }).then(() => invalidateNotifications(authUser.uid))
               }
               className="rounded-sm bg-red-200 px-2"
             >
@@ -120,11 +118,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
                 respondToFollow({
                   userId: props.sender.id,
                   body: { action: 'accept' },
-                }).then(() =>
-                  queryClient.invalidateQueries({
-                    queryKey: ['notifications', authUser.uid],
-                  }),
-                )
+                }).then(() => invalidateNotifications(authUser.uid))
               }
               className="rounded-sm bg-green-200 px-2"
             >

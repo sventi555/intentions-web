@@ -1,9 +1,12 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { Link } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
-import { useFollow, useFollowUser } from '../hooks/follows';
+import {
+  useFollow,
+  useFollowUser,
+  useInvalidateFollow,
+} from '../hooks/follows';
 import { useSearchUser } from '../hooks/users';
 
 export const Search: React.FC = () => {
@@ -16,8 +19,7 @@ export const Search: React.FC = () => {
   const searchedUserAccepted =
     searchedUserFollow != null && searchedUserFollow.data.status === 'accepted';
   const followUser = useFollowUser();
-
-  const queryClient = useQueryClient();
+  const invalidateFollow = useInvalidateFollow();
 
   return (
     <div className="flex grow flex-col gap-1 p-1">
@@ -56,9 +58,7 @@ export const Search: React.FC = () => {
               <button
                 onClick={() =>
                   followUser({ userId: searchedUser.id }).then(() =>
-                    queryClient.invalidateQueries({
-                      queryKey: ['follow', { toUserId: searchedUser.id }],
-                    }),
+                    invalidateFollow(searchedUser.id),
                   )
                 }
                 className="min-w-24 rounded-sm bg-blue-200 p-1"

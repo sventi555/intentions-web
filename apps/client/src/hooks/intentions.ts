@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDocs, orderBy, query, where } from 'firebase/firestore';
 import { CreateIntentionBody } from 'lib';
 import { collections, CollectionSort } from '../data/db';
@@ -34,6 +34,15 @@ export const useIntentions = (
   });
 
   return { intentions, isLoading, isError };
+};
+
+export const useInvalidateIntentions = () => {
+  const queryClient = useQueryClient();
+
+  return (userId: string) =>
+    queryClient.invalidateQueries({
+      queryKey: ['intentions', userId],
+    });
 };
 
 export const useCreateIntention = () => {

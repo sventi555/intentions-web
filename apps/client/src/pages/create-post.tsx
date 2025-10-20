@@ -1,7 +1,11 @@
 import { useRef, useState } from 'react';
 import { Link, Redirect, useLocation } from 'wouter';
 import { useIntentions } from '../hooks/intentions';
-import { useCreatePost } from '../hooks/posts';
+import {
+  useCreatePost,
+  useInvalidateFeedPosts,
+  useInvalidateUserPosts,
+} from '../hooks/posts';
 import { useAuthState } from '../state/auth';
 
 export const CreatePost: React.FC = () => {
@@ -21,6 +25,8 @@ export const CreatePost: React.FC = () => {
 
   const createPost = useCreatePost();
   const [, setLocation] = useLocation();
+  const invalidateFeedPosts = useInvalidateFeedPosts();
+  const invalidateUserPosts = useInvalidateUserPosts();
 
   if (intentions == null) {
     return null;
@@ -91,7 +97,14 @@ export const CreatePost: React.FC = () => {
               description,
               ...(imageDataUrl != null ? { image: imageDataUrl } : {}),
             },
-          }).then(() => setLocation('/'))
+          })
+            .then(() =>
+              Promise.all([
+                invalidateUserPosts(authUser.uid),
+                invalidateFeedPosts(authUser.uid),
+              ]),
+            )
+            .then(() => setLocation('/'))
         }
         className="rounded-sm bg-blue-200 p-1"
       >

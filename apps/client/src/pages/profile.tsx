@@ -1,5 +1,4 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
-import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { signOut } from 'firebase/auth';
 import { useRef, useState } from 'react';
@@ -8,10 +7,14 @@ import { useParams } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
 import { Post } from '../components/post';
 import { auth } from '../firebase';
-import { useFollow, useFollowUser } from '../hooks/follows';
+import {
+  useFollow,
+  useFollowUser,
+  useInvalidateFollow,
+} from '../hooks/follows';
 import { IntentionsSort, useIntentions } from '../hooks/intentions';
 import { useUserPosts } from '../hooks/posts';
-import { useUpdateUser, useUser } from '../hooks/users';
+import { useInvalidateUser, useUpdateUser, useUser } from '../hooks/users';
 import { useAuthState } from '../state/auth';
 
 export const Profile: React.FC = () => {
@@ -27,9 +30,10 @@ export const Profile: React.FC = () => {
 
   const filePickerRef = useRef<HTMLInputElement | null>(null);
   const updateUser = useUpdateUser();
-  const queryClient = useQueryClient();
 
   const followUser = useFollowUser();
+  const invalidateFollow = useInvalidateFollow();
+  const invalidateUser = useInvalidateUser();
 
   if (user == null) {
     return null;
@@ -60,9 +64,7 @@ export const Profile: React.FC = () => {
               reader.onload = (ev) =>
                 updateUser({
                   body: { image: ev.target?.result as string },
-                }).then(() =>
-                  queryClient.invalidateQueries({ queryKey: ['user', userId] }),
-                );
+                }).then(() => invalidateUser(userId));
             }}
             ref={filePickerRef}
           />
@@ -73,11 +75,7 @@ export const Profile: React.FC = () => {
           {follow == null && !isAuthUser ? (
             <button
               onClick={() =>
-                followUser({ userId }).then(() =>
-                  queryClient.invalidateQueries({
-                    queryKey: ['follow', { toUserId: userId }],
-                  }),
-                )
+                followUser({ userId }).then(() => invalidateFollow(userId))
               }
               className="rounded-sm bg-blue-200"
             >

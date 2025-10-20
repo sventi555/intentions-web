@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc } from 'firebase/firestore';
 import { RemoveFollowBody, RespondToFollowBody } from 'lib';
 import { docs } from '../data/db';
@@ -37,6 +37,15 @@ export const useFollow = (toUserId?: string) => {
   });
 
   return { follow, isLoading, isError };
+};
+
+export const useInvalidateFollow = () => {
+  const queryClient = useQueryClient();
+
+  return (toUserId: string) =>
+    queryClient.invalidateQueries({
+      queryKey: ['follow', { toUserId }],
+    });
 };
 
 export const useFollowUser = () => {

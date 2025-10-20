@@ -6,8 +6,8 @@
 - make notification interface simpler. only one type (remove "kind" field)
 
 - maybe remove id from response when querying for single object
-- extract invalidation into hooks
 - extract image picking into a hook
 - placeholder dp
 - intentions page
 - profile intentions stat + link to intentions page
+- use icons on tab bar

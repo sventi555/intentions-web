@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { signInWithEmailAndPassword } from 'firebase/auth/web-extension';
 import { getDoc, getDocs, query, where } from 'firebase/firestore';
 import { CreateUserBody, UpdateUserBody } from 'lib';
@@ -26,6 +26,13 @@ export const useUser = (userId: string) => {
   });
 
   return { user, isLoading, isError };
+};
+
+export const useInvalidateUser = () => {
+  const queryClient = useQueryClient();
+
+  return (userId: string) =>
+    queryClient.invalidateQueries({ queryKey: ['user', userId] });
 };
 
 export const useSearchUser = (username?: string) => {

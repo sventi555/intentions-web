@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDocs, orderBy, query } from 'firebase/firestore';
 import { collections } from '../data/db';
 
@@ -24,4 +24,11 @@ export const useNotifications = (userId: string) => {
   });
 
   return { notifications, isLoading, isError };
+};
+
+export const useInvalidateNotifications = () => {
+  const queryClient = useQueryClient();
+
+  return (userId: string) =>
+    queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
 };
