@@ -48,7 +48,7 @@ export const Profile: React.FC = () => {
           disabled={!isAuthUser}
           onClick={() => filePickerRef.current?.click()}
         >
-          <DisplayPic imageUri={user?.data.image} size={64} />
+          <DisplayPic imageUri={user?.image} size={64} />
           <input
             type="file"
             accept="image/png, image/jpeg"
@@ -70,7 +70,7 @@ export const Profile: React.FC = () => {
           />
         </button>
         <div className="flex grow flex-col gap-1">
-          <div>{user.data.username}</div>
+          <div>{user.username}</div>
           {/* shouldn't need the second clause once users follow self */}
           {follow == null && !isAuthUser ? (
             <button
@@ -82,7 +82,7 @@ export const Profile: React.FC = () => {
               follow
             </button>
           ) : null}
-          {follow != null && follow.data.status === 'pending' ? (
+          {follow != null && follow.status === 'pending' ? (
             <button disabled={true} className="rounded-sm bg-neutral-200">
               pending
             </button>

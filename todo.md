@@ -5,7 +5,6 @@
 - "YOU FOLLOW YOURSELF when you're born into this world"
 - make notification interface simpler. only one type (remove "kind" field)
 
-- maybe remove id from response when querying for single object
 - extract image picking into a hook
 - profile intentions stat
 - use icons on tab bar

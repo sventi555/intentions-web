@@ -20,8 +20,8 @@ export const Intention: React.FC = () => {
   return (
     <div>
       <div className="sticky top-0 border-b bg-white p-1">
-        <div>{intention.data.user.username}&apos;s intention:</div>
-        <div className="font-bold">{intention.data.name}</div>
+        <div>{intention.user.username}&apos;s intention:</div>
+        <div className="font-bold">{intention.name}</div>
       </div>
       {posts.map((post) => (
         <Post key={post.id} data={post.data} />

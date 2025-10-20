@@ -24,7 +24,7 @@ export const useFollow = (toUserId?: string) => {
         throw new Error('must be signed in to read follow');
       }
 
-      const follow = await getDoc(docs.follow(authUser?.uid, toUserId));
+      const follow = await getDoc(docs.follow(authUser.uid, toUserId));
 
       const data = follow.data();
 
@@ -32,7 +32,7 @@ export const useFollow = (toUserId?: string) => {
         return null;
       }
 
-      return { id: follow.id, data };
+      return data;
     },
   });
 

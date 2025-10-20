@@ -17,7 +17,7 @@ export const Search: React.FC = () => {
 
   const { follow: searchedUserFollow } = useFollow(searchedUser?.id);
   const searchedUserAccepted =
-    searchedUserFollow != null && searchedUserFollow.data.status === 'accepted';
+    searchedUserFollow != null && searchedUserFollow.status === 'accepted';
   const followUser = useFollowUser();
   const invalidateFollow = useInvalidateFollow();
 
@@ -67,7 +67,7 @@ export const Search: React.FC = () => {
               </button>
             ) : null}
             {searchedUserFollow != null &&
-            searchedUserFollow.data.status === 'pending' ? (
+            searchedUserFollow.status === 'pending' ? (
               <button
                 disabled={true}
                 className="min-w-24 rounded-sm bg-neutral-200 p-1"

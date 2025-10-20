@@ -19,7 +19,7 @@ export const useIntention = (intentionId: string) => {
         throw new Error('intention does not exist');
       }
 
-      return { id: intentionDoc.id, data };
+      return data;
     },
   });
 

@@ -21,7 +21,7 @@ export const useUser = (userId: string) => {
         throw new Error('user does not exist');
       }
 
-      return { id: user.id, data };
+      return data;
     },
   });
 
