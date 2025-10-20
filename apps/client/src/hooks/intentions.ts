@@ -1,8 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getDocs, orderBy, query, where } from 'firebase/firestore';
+import { getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { CreateIntentionBody } from 'lib';
-import { collections, CollectionSort } from '../data/db';
+import { collections, CollectionSort, docs } from '../data/db';
 import { useAuthState } from '../state/auth';
+
+export const useIntention = (intentionId: string) => {
+  const {
+    data: intention,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['intention', intentionId],
+    queryFn: async () => {
+      const intentionDoc = await getDoc(docs.intention(intentionId));
+
+      const data = intentionDoc.data();
+      if (data == null) {
+        throw new Error('intention does not exist');
+      }
+
+      return { id: intentionDoc.id, data };
+    },
+  });
+
+  return { intention, isLoading, isError };
+};
 
 export type IntentionsSort = CollectionSort<
   'createdAt' | 'updatedAt' | 'postCount' | 'name'

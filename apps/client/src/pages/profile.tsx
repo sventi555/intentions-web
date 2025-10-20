@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { signOut } from 'firebase/auth';
 import { useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
-import { useParams } from 'wouter';
+import { Link, useParams } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
 import { Post } from '../components/post';
 import { auth } from '../firebase';
@@ -130,10 +130,10 @@ export const Profile: React.FC = () => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <ProfilePosts />
+            <ProfilePosts userId={userId} />
           </TabPanel>
           <TabPanel>
-            <ProfileIntentions />
+            <ProfileIntentions userId={userId} />
           </TabPanel>
         </TabPanels>
       </TabGroup>
@@ -141,14 +141,12 @@ export const Profile: React.FC = () => {
   );
 };
 
-const ProfilePosts: React.FC = () => {
-  const authUser = useAuthState().authUser;
+interface ProfilePostsProps {
+  userId: string;
+}
 
-  if (authUser == null) {
-    throw new Error('Must be signed in to view profile');
-  }
-
-  const { posts } = useUserPosts(authUser.uid);
+const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
+  const { posts } = useUserPosts(props.userId);
 
   if (posts == null) {
     return null;
@@ -176,16 +174,14 @@ const ProfilePosts: React.FC = () => {
   );
 };
 
-const ProfileIntentions: React.FC = () => {
-  const authUser = useAuthState().authUser;
+interface ProfileIntentionsProps {
+  userId: string;
+}
 
-  if (authUser == null) {
-    throw new Error('Must be signed in to view profile');
-  }
-
+const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
   const [sortBy, setSortBy] = useState<IntentionsSort['by']>('updatedAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-  const { intentions } = useIntentions(authUser.uid, {
+  const { intentions } = useIntentions(props.userId, {
     by: sortBy,
     dir: fixSortDir(sortBy, sortDir),
   });
@@ -214,10 +210,14 @@ const ProfileIntentions: React.FC = () => {
       <div>
         {intentions.map(({ id, data }) => {
           return (
-            <div key={id} className="p-1">
+            <Link
+              key={id}
+              href={`/profile/${props.userId}/intention/${id}`}
+              className="p-1"
+            >
               <div>{data.name}</div>
               <div>stat</div>
-            </div>
+            </Link>
           );
         })}
       </div>

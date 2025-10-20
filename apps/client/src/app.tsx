@@ -45,7 +45,7 @@ const App: React.FC = () => {
             <Profile />
           </AuthProtected>
         </Route>
-        <Route path="/intention/:intentionId">
+        <Route path="/profile/:userId/intention/:intentionId">
           <AuthProtected>
             <Intention />
           </AuthProtected>

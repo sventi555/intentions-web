@@ -7,7 +7,6 @@
 
 - maybe remove id from response when querying for single object
 - extract image picking into a hook
-- placeholder dp
-- intentions page
-- profile intentions stat + link to intentions page
+- profile intentions stat
 - use icons on tab bar
+- refactor post component to simply take a Post object

@@ -40,4 +40,8 @@ export const docs = {
     doc(db, 'follows', `${toUserId}/from/${fromUserId}`).withConverter(
       firestoreConverter<Follow>(),
     ),
+  intention: (intentionId: string) =>
+    doc(db, 'intentions', intentionId).withConverter(
+      firestoreConverter<Intention>(),
+    ),
 };

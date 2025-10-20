@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getDocs, orderBy, query } from 'firebase/firestore';
+import { getDocs, orderBy, query, where } from 'firebase/firestore';
 import { CreatePostBody, UpdatePostBody } from 'lib';
 import { collections } from '../data/db';
 import { useAuthState } from '../state/auth';
@@ -63,6 +63,32 @@ export const useInvalidateFeedPosts = () => {
 
   return (userId: string) =>
     queryClient.invalidateQueries({ queryKey: ['feed', userId] });
+};
+
+export const useIntentionPosts = (userId: string, intentionId: string) => {
+  const {
+    data: posts,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['posts', userId, { intentionId }],
+    queryFn: async () => {
+      const postDocs = (
+        await getDocs(
+          query(
+            collections.posts(),
+            where('userId', '==', userId),
+            where('intentionId', '==', intentionId),
+            orderBy('createdAt', 'desc'),
+          ),
+        )
+      ).docs;
+
+      return postDocs.map((doc) => ({ id: doc.id, data: doc.data() }));
+    },
+  });
+
+  return { posts, isLoading, isError };
 };
 
 export const useCreatePost = () => {

@@ -1,50 +1,43 @@
-import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'wouter';
 import { Post } from '../components/post';
+import { useIntention } from '../hooks/intentions';
+import { useIntentionPosts } from '../hooks/posts';
 
 export const Intention: React.FC = () => {
-  const { intentionId } = useParams();
+  const { userId, intentionId } = useParams();
 
-  if (intentionId == null) {
-    throw new Error('Intention page rendered without id');
+  if (userId == null || intentionId == null) {
+    throw new Error('Intention page rendered without correct params');
   }
 
-  const { data: intention } = useQuery({
-    queryKey: ['intention', intentionId],
-    queryFn: () => ({
-      author: { id: 'test', username: 'booga' },
-      name: 'touch grass',
-    }),
-  });
+  const { intention } = useIntention(intentionId);
+  const { posts } = useIntentionPosts(userId, intentionId);
 
-  const { data: intentionPosts } = useQuery({
-    enabled: intention != null,
-    queryKey: ['posts', { intentionId: intentionId }],
-    queryFn: () => [1, 2, 3],
-  });
-
-  if (intention == null || intentionPosts == null) {
+  if (intention == null || posts == null) {
     return null;
   }
 
   return (
     <div>
       <div className="sticky top-0 border-b bg-white p-1">
-        <div>{intention.author.username}&apos;s intention:</div>
-        <div className="font-bold">{intention.name}</div>
+        <div>{intention.data.user.username}&apos;s intention:</div>
+        <div className="font-bold">{intention.data.name}</div>
       </div>
-      {intentionPosts.map((i) => (
+      {posts.map((post) => (
         <Post
-          key={i}
+          key={post.id}
           author={{
-            id: 'user-id',
-            username: 'user-1',
-            dpUri: 'dp-path',
+            id: post.data.userId,
+            username: post.data.user.username,
+            dpUri: post.data.user.image,
           }}
-          createdAt={1760387159012}
-          intention={{ id: 'intention-id', name: 'taste' }}
-          imageUri="image-path"
-          description="post description"
+          createdAt={post.data.createdAt}
+          intention={{
+            id: post.data.intentionId,
+            name: post.data.intention.name,
+          }}
+          imageUri={post.data.image}
+          description={post.data.description}
         />
       ))}
     </div>
