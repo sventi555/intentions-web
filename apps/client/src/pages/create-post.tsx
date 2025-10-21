@@ -50,7 +50,7 @@ export const CreatePost: React.FC = () => {
           <select
             onChange={(e) => setSelectedIntentionId(e.target.value)}
             value={computedIntentionId}
-            className="grow rounded-sm border"
+            className="grow cursor-pointer rounded-sm border"
           >
             {intentions.map(({ id, data }) => (
               <option value={id} key={id}>
