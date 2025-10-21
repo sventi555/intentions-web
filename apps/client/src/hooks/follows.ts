@@ -43,7 +43,7 @@ export const useInvalidateFollow = () => {
   const queryClient = useQueryClient();
 
   return (toUserId: string) =>
-    queryClient.invalidateQueries({
+    queryClient.refetchQueries({
       queryKey: ['follow', { toUserId }],
     });
 };

@@ -32,7 +32,7 @@ export const useInvalidateUser = () => {
   const queryClient = useQueryClient();
 
   return (userId: string) =>
-    queryClient.invalidateQueries({ queryKey: ['user', userId] });
+    queryClient.refetchQueries({ queryKey: ['user', userId] });
 };
 
 export const useSearchUser = (username?: string) => {

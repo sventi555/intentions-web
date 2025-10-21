@@ -39,9 +39,7 @@ export const SignUp: React.FC = () => {
           className="rounded-sm border p-1"
         />
         <button
-          onClick={() =>
-            createUser({ body: { email, username, password, isPrivate: true } })
-          }
+          onClick={() => createUser({ body: { email, username, password } })}
           className="rounded-sm bg-blue-200"
         >
           Sign up

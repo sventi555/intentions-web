@@ -62,7 +62,7 @@ export const useInvalidateIntentions = () => {
   const queryClient = useQueryClient();
 
   return (userId: string) =>
-    queryClient.invalidateQueries({
+    queryClient.refetchQueries({
       queryKey: ['intentions', userId],
     });
 };

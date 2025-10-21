@@ -30,5 +30,5 @@ export const useInvalidateNotifications = () => {
   const queryClient = useQueryClient();
 
   return (userId: string) =>
-    queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
+    queryClient.refetchQueries({ queryKey: ['notifications', userId] });
 };

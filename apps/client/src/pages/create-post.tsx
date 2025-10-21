@@ -5,6 +5,7 @@ import { useIntentions } from '../hooks/intentions';
 import {
   useCreatePost,
   useInvalidateFeedPosts,
+  useInvalidateIntentionPosts,
   useInvalidateUserPosts,
 } from '../hooks/posts';
 import { useAuthState } from '../state/auth';
@@ -28,6 +29,7 @@ export const CreatePost: React.FC = () => {
   const [, setLocation] = useLocation();
   const invalidateFeedPosts = useInvalidateFeedPosts();
   const invalidateUserPosts = useInvalidateUserPosts();
+  const invalidateIntentionPosts = useInvalidateIntentionPosts();
 
   if (intentions == null) {
     return null;
@@ -37,6 +39,8 @@ export const CreatePost: React.FC = () => {
     return <Redirect to="/create/intention" />;
   }
 
+  const computedIntentionId = selectedIntentionId || intentions[0].id;
+
   return (
     <div className="flex flex-col gap-1 p-1">
       <div className="flex flex-col">
@@ -44,7 +48,7 @@ export const CreatePost: React.FC = () => {
         <div className="flex gap-1">
           <select
             onChange={(e) => setSelectedIntentionId(e.target.value)}
-            value={selectedIntentionId ?? intentions[0].id}
+            value={computedIntentionId}
             className="grow rounded-sm border"
           >
             {intentions.map(({ id, data }) => (
@@ -94,7 +98,7 @@ export const CreatePost: React.FC = () => {
         onClick={() =>
           createPost({
             body: {
-              intentionId: selectedIntentionId ?? intentions[0].id,
+              intentionId: computedIntentionId,
               description,
               ...(imageDataUrl != null ? { image: imageDataUrl } : {}),
             },
@@ -103,6 +107,7 @@ export const CreatePost: React.FC = () => {
               Promise.all([
                 invalidateUserPosts(authUser.uid),
                 invalidateFeedPosts(authUser.uid),
+                invalidateIntentionPosts(authUser.uid, computedIntentionId),
               ]),
             )
             .then(() => setLocation('/'))

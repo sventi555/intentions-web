@@ -1,6 +1,7 @@
-- remove user privacy property
-- make update user route just update dp
-- remove user denorm and use a document reference (if possible)
-- allow removing pending follow (should remove corresponding notification)
-- "YOU FOLLOW YOURSELF when you're born into this world"
 - make notification interface simpler. only one type (remove "kind" field)
+- make update user route just update dp
+- "YOU FOLLOW YOURSELF when you're born into this world"
+- allow removing pending follow (should remove corresponding notification)
+
+- remove user denorm and use a document reference (if possible)
+    - consider removing post denorm as well

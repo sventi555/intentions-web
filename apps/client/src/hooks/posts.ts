@@ -14,7 +14,11 @@ export const useUserPosts = (userId: string) => {
     queryFn: async () => {
       const postDocs = (
         await getDocs(
-          query(collections.feed(userId), orderBy('createdAt', 'desc')),
+          query(
+            collections.posts(),
+            where('userId', '==', userId),
+            orderBy('createdAt', 'desc'),
+          ),
         )
       ).docs;
 
@@ -29,7 +33,7 @@ export const useInvalidateUserPosts = () => {
   const queryClient = useQueryClient();
 
   return (userId: string) =>
-    queryClient.invalidateQueries({ queryKey: ['posts', userId] });
+    queryClient.refetchQueries({ queryKey: ['posts', userId] });
 };
 
 export const useFeedPosts = (userId: string) => {
@@ -62,7 +66,7 @@ export const useInvalidateFeedPosts = () => {
   }
 
   return (userId: string) =>
-    queryClient.invalidateQueries({ queryKey: ['feed', userId] });
+    queryClient.refetchQueries({ queryKey: ['feed', userId] });
 };
 
 export const useIntentionPosts = (userId: string, intentionId: string) => {
@@ -89,6 +93,20 @@ export const useIntentionPosts = (userId: string, intentionId: string) => {
   });
 
   return { posts, isLoading, isError };
+};
+
+export const useInvalidateIntentionPosts = () => {
+  const queryClient = useQueryClient();
+  const authUser = useAuthState().authUser;
+
+  if (authUser == null) {
+    throw new Error('');
+  }
+
+  return (userId: string, intentionId: string) =>
+    queryClient.refetchQueries({
+      queryKey: ['posts', userId, { intentionId }],
+    });
 };
 
 export const useCreatePost = () => {

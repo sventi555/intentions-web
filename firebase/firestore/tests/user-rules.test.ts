@@ -13,10 +13,7 @@ setLogLevel('silent');
 
 const USER_ID = 'USER_ID';
 
-const testUser = {
-  username: 'booga',
-  private: true,
-};
+const testUser = { username: 'booga' };
 
 const userDocPath = (userId: string) => `users/${userId}`;
 const usernameDocPath = (username: string) => `usernames/${username}`;
