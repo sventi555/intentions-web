@@ -135,10 +135,22 @@ export const Profile: React.FC = () => {
 
         <TabPanels className="flex grow flex-col">
           <TabPanel className="flex grow flex-col">
-            <ProfilePosts userId={userId} />
+            {(follow != null && follow.status === 'accepted') || isAuthUser ? (
+              <ProfilePosts userId={userId} />
+            ) : (
+              <div className="flex grow flex-col items-center justify-center">
+                Follow user to view their posts
+              </div>
+            )}
           </TabPanel>
           <TabPanel className="flex grow flex-col">
-            <ProfileIntentions userId={userId} />
+            {(follow != null && follow.status === 'accepted') || isAuthUser ? (
+              <ProfileIntentions userId={userId} />
+            ) : (
+              <div className="flex grow flex-col items-center justify-center">
+                Follow user to view their intentions
+              </div>
+            )}
           </TabPanel>
         </TabPanels>
       </TabGroup>
