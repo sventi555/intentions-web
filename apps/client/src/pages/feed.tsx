@@ -1,4 +1,4 @@
-import { Post } from '../components/post';
+import { PostsList } from '../components/posts-list';
 import { useFeedPosts } from '../hooks/posts';
 import { useAuthState } from '../state/auth';
 
@@ -13,11 +13,5 @@ export const Feed: React.FC = () => {
     return null;
   }
 
-  return (
-    <div className="flex flex-col gap-1">
-      {posts.map(({ id, data }) => {
-        return <Post key={id} data={data} />;
-      })}
-    </div>
-  );
+  return <PostsList posts={posts} />;
 };

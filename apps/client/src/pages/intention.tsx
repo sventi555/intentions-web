@@ -1,5 +1,5 @@
 import { useParams } from 'wouter';
-import { Post } from '../components/post';
+import { PostsList } from '../components/posts-list';
 import { useIntention } from '../hooks/intentions';
 import { useIntentionPosts } from '../hooks/posts';
 
@@ -23,9 +23,7 @@ export const Intention: React.FC = () => {
         <div>{intention.user.username}&apos;s intention:</div>
         <div className="font-bold">{intention.name}</div>
       </div>
-      {posts.map((post) => (
-        <Post key={post.id} data={post.data} />
-      ))}
+      <PostsList posts={posts} />
     </div>
   );
 };

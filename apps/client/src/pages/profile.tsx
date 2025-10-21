@@ -6,7 +6,7 @@ import { Fragment } from 'react/jsx-runtime';
 import { Link, useParams } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
 import { ImagePicker } from '../components/image-picker';
-import { Post } from '../components/post';
+import { PostsList } from '../components/posts-list';
 import { auth } from '../firebase';
 import {
   useFollow,
@@ -155,13 +155,7 @@ const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
     return null;
   }
 
-  return (
-    <div className="flex flex-col gap-1">
-      {posts.map(({ id, data }) => {
-        return <Post key={id} data={data} />;
-      })}
-    </div>
-  );
+  return <PostsList posts={posts} />;
 };
 
 interface ProfileIntentionsProps {
@@ -198,7 +192,7 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
         </button>
       </div>
       <div className="flex flex-col">
-        {intentions.map(({ id, data }) => {
+        {intentions.map(({ id, data }, index) => {
           let stat: string | null = null;
           if (sortBy === 'postCount') {
             stat = `${data.postCount} posts`;
@@ -209,16 +203,20 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
           }
 
           return (
-            <Link
-              key={id}
-              href={`/profile/${props.userId}/intention/${id}`}
-              className="p-1"
-            >
-              <div>{data.name}</div>
-              {stat ? (
-                <div className="text-sm text-neutral-600">{stat}</div>
+            <Fragment key={id}>
+              <Link
+                href={`/profile/${props.userId}/intention/${id}`}
+                className="p-1"
+              >
+                <div>{data.name}</div>
+                {stat ? (
+                  <div className="text-sm text-neutral-600">{stat}</div>
+                ) : null}
+              </Link>
+              {index !== intentions.length - 1 ? (
+                <div className="h-px w-full bg-neutral-200" />
               ) : null}
-            </Link>
+            </Fragment>
           );
         })}
       </div>

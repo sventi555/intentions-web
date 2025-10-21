@@ -17,6 +17,7 @@ export const CreatePost: React.FC = () => {
   }
 
   const { intentions } = useIntentions(authUser.uid);
+  console.log(intentions);
   const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
     null,
   );
@@ -44,7 +45,7 @@ export const CreatePost: React.FC = () => {
         <div className="flex gap-1">
           <select
             onChange={(e) => setSelectedIntentionId(e.target.value)}
-            value={selectedIntentionId ?? undefined}
+            value={selectedIntentionId ?? intentions[0].id}
             className="grow rounded-sm border"
           >
             {intentions.map(({ id, data }) => (

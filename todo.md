@@ -5,7 +5,6 @@
 - "YOU FOLLOW YOURSELF when you're born into this world"
 - make notification interface simpler. only one type (remove "kind" field)
 
-- visible distinction between list items (posts and intentions)
 - empty page state
     - feed
     - notifications
