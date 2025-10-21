@@ -17,7 +17,6 @@ export const CreatePost: React.FC = () => {
   }
 
   const { intentions } = useIntentions(authUser.uid);
-  console.log(intentions);
   const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
     null,
   );
