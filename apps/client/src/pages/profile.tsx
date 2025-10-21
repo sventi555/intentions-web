@@ -12,6 +12,7 @@ import {
   useFollow,
   useFollowUser,
   useInvalidateFollow,
+  useRemoveFollow,
 } from '../hooks/follows';
 import { IntentionsSort, useIntentions } from '../hooks/intentions';
 import {
@@ -38,6 +39,7 @@ export const Profile: React.FC = () => {
   const updateUser = useUpdateUser();
 
   const followUser = useFollowUser();
+  const removeFollow = useRemoveFollow();
   const invalidateFollow = useInvalidateFollow();
   const invalidateUser = useInvalidateUser();
   const invalidateUserPosts = useInvalidateUserPosts();
@@ -81,12 +83,20 @@ export const Profile: React.FC = () => {
               }
               className="rounded-sm bg-blue-200"
             >
-              follow
+              Follow
             </button>
           ) : null}
           {follow != null && follow.status === 'pending' ? (
-            <button disabled={true} className="rounded-sm bg-neutral-200">
-              pending
+            <button
+              onClick={() =>
+                removeFollow({
+                  userId: userId,
+                  body: { direction: 'to' },
+                }).then(() => invalidateFollow(userId))
+              }
+              className="rounded-sm bg-neutral-200"
+            >
+              Pending
             </button>
           ) : null}
         </div>

@@ -6,6 +6,7 @@ import {
   useFollow,
   useFollowUser,
   useInvalidateFollow,
+  useRemoveFollow,
 } from '../hooks/follows';
 import { useSearchUser } from '../hooks/users';
 
@@ -19,6 +20,7 @@ export const Search: React.FC = () => {
   const searchedUserAccepted =
     searchedUserFollow != null && searchedUserFollow.status === 'accepted';
   const followUser = useFollowUser();
+  const removeFollow = useRemoveFollow();
   const invalidateFollow = useInvalidateFollow();
 
   return (
@@ -69,7 +71,12 @@ export const Search: React.FC = () => {
             {searchedUserFollow != null &&
             searchedUserFollow.status === 'pending' ? (
               <button
-                disabled={true}
+                onClick={() =>
+                  removeFollow({
+                    userId: searchedUser.id,
+                    body: { direction: 'to' },
+                  }).then(() => invalidateFollow(searchedUser.id))
+                }
                 className="min-w-24 rounded-sm bg-neutral-200 p-1"
               >
                 Pending
