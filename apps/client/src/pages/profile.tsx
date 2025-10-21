@@ -1,10 +1,21 @@
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from '@headlessui/react';
 import clsx from 'clsx';
 import { signOut } from 'firebase/auth';
 import { useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Link, useParams } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
+import { EllipsesVert } from '../components/icons';
 import { ImagePicker } from '../components/image-picker';
 import { PostsList } from '../components/posts-list';
 import { auth } from '../firebase';
@@ -14,7 +25,11 @@ import {
   useInvalidateFollow,
   useRemoveFollow,
 } from '../hooks/follows';
-import { IntentionsSort, useIntentions } from '../hooks/intentions';
+import {
+  IntentionsSort,
+  useIntentions,
+  useInvalidateIntentions,
+} from '../hooks/intentions';
 import {
   useInvalidateFeedPosts,
   useInvalidateUserPosts,
@@ -44,6 +59,7 @@ export const Profile: React.FC = () => {
   const invalidateUser = useInvalidateUser();
   const invalidateUserPosts = useInvalidateUserPosts();
   const invalidateFeedPosts = useInvalidateFeedPosts();
+  const invalidateIntentions = useInvalidateIntentions();
 
   if (user == null) {
     return null;
@@ -53,7 +69,7 @@ export const Profile: React.FC = () => {
 
   return (
     <div className="flex grow flex-col">
-      <div className="flex items-center gap-2 p-4">
+      <div className="flex items-center gap-2 p-4 pr-8">
         <button
           disabled={!isAuthUser}
           onClick={() => filePickerRef.current?.click()}
@@ -76,17 +92,19 @@ export const Profile: React.FC = () => {
         </button>
         <div className="flex grow flex-col gap-1">
           <div>{user.username}</div>
+
           {follow == null ? (
             <button
               onClick={() =>
                 followUser({ userId }).then(() => invalidateFollow(userId))
               }
-              className="rounded-sm bg-blue-200"
+              className="rounded-sm bg-blue-200 p-1"
             >
               Follow
             </button>
           ) : null}
-          {follow != null && follow.status === 'pending' ? (
+
+          {follow?.status === 'pending' ? (
             <button
               onClick={() =>
                 removeFollow({
@@ -94,12 +112,13 @@ export const Profile: React.FC = () => {
                   body: { direction: 'to' },
                 }).then(() => invalidateFollow(userId))
               }
-              className="rounded-sm bg-neutral-200"
+              className="rounded-sm bg-neutral-200 p-1"
             >
               Pending
             </button>
           ) : null}
         </div>
+
         {isAuthUser ? (
           <button
             onClick={() => signOut(auth)}
@@ -107,6 +126,35 @@ export const Profile: React.FC = () => {
           >
             Sign out
           </button>
+        ) : null}
+
+        {!isAuthUser && follow?.status === 'accepted' ? (
+          <Menu>
+            <MenuButton className="absolute top-2 right-2">
+              <EllipsesVert />
+            </MenuButton>
+            <MenuItems
+              anchor="bottom end"
+              className="rounded bg-neutral-100 p-1"
+            >
+              <MenuItem>
+                <button
+                  onClick={() =>
+                    removeFollow({ userId, body: { direction: 'to' } }).then(
+                      () =>
+                        Promise.all([
+                          invalidateFollow(userId),
+                          invalidateUserPosts(userId),
+                          invalidateIntentions(userId),
+                        ]),
+                    )
+                  }
+                >
+                  Unfollow
+                </button>
+              </MenuItem>
+            </MenuItems>
+          </Menu>
         ) : null}
       </div>
 
@@ -144,7 +192,7 @@ export const Profile: React.FC = () => {
 
         <TabPanels className="flex grow flex-col">
           <TabPanel className="flex grow flex-col">
-            {(follow != null && follow.status === 'accepted') || isAuthUser ? (
+            {follow?.status === 'accepted' || isAuthUser ? (
               <ProfilePosts userId={userId} />
             ) : (
               <div className="flex grow flex-col items-center justify-center">
@@ -153,7 +201,7 @@ export const Profile: React.FC = () => {
             )}
           </TabPanel>
           <TabPanel className="flex grow flex-col">
-            {(follow != null && follow.status === 'accepted') || isAuthUser ? (
+            {follow?.status === 'accepted' || isAuthUser ? (
               <ProfileIntentions userId={userId} />
             ) : (
               <div className="flex grow flex-col items-center justify-center">
