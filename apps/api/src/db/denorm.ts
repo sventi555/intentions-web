@@ -6,6 +6,7 @@ import { collections } from '.';
 export const postDocCopies = async (postId: string, ownerId: string) => {
   const originalPostDoc = collections.posts().doc(postId);
 
+  // Includes self! Hooray
   const followers = await collections
     .follows(ownerId)
     .where('status', '==', 'accepted')
@@ -14,9 +15,7 @@ export const postDocCopies = async (postId: string, ownerId: string) => {
     collections.feed(follower.id).doc(postId),
   );
 
-  const ownFeedPostDoc = collections.feed(ownerId).doc(postId);
-
-  return [originalPostDoc, ...followerPostDocs, ownFeedPostDoc];
+  return [originalPostDoc, ...followerPostDocs];
 };
 
 /**
@@ -43,9 +42,5 @@ export const userPostDocCopies = async (userId: string) => {
     ),
   ).then((docs) => docs.flat().map((doc) => doc.ref));
 
-  const ownFeedPostDocs = (
-    await collections.feed(userId).where('userId', '==', userId).get()
-  ).docs.map((doc) => doc.ref);
-
-  return [...userPostDocs, ...followerPostDocs, ...ownFeedPostDocs];
+  return [...userPostDocs, ...followerPostDocs];
 };

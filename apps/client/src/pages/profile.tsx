@@ -74,8 +74,7 @@ export const Profile: React.FC = () => {
         </button>
         <div className="flex grow flex-col gap-1">
           <div>{user.username}</div>
-          {/* shouldn't need the second clause once users follow self */}
-          {follow == null && !isAuthUser ? (
+          {follow == null ? (
             <button
               onClick={() =>
                 followUser({ userId }).then(() => invalidateFollow(userId))

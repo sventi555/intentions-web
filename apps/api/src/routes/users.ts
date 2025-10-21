@@ -38,7 +38,16 @@ app.post('/', zValidator('json', createUserBody), async (c) => {
     }
   }
 
-  await collections.users().doc(user.uid).create({ email, username });
+  const writeBatch = bulkWriter();
+
+  const userDoc = collections.users().doc(user.uid);
+  writeBatch.create(userDoc, { email, username });
+
+  // follow self to simplify permission checks and feed mechanics
+  const followDoc = collections.follows(user.uid).doc(user.uid);
+  writeBatch.create(followDoc, { status: 'accepted' });
+
+  await writeBatch.flush();
 
   return c.body(null, 201);
 });

@@ -17,11 +17,6 @@ app.post('/:userId', authenticate, async (c) => {
   const requesterId = c.var.uid;
   const followedUserId = c.req.param('userId');
 
-  // prevent from following self
-  if (followedUserId === requesterId) {
-    throw new HTTPException(400, { message: 'cannot follow yourself' });
-  }
-
   // check for pre-existing follow
   const followDoc = collections.follows(followedUserId).doc(requesterId);
   const followDocResource = await followDoc.get();
@@ -169,6 +164,12 @@ app.delete(
     const requesterId = c.var.uid;
     const userId = c.req.param('userId');
     const { direction } = c.req.valid('json');
+
+    if (userId === requesterId) {
+      throw new HTTPException(400, {
+        message: 'cannot unfollow yourself',
+      });
+    }
 
     const fromUserId = direction === 'from' ? userId : requesterId;
     const toUserId = direction === 'from' ? requesterId : userId;

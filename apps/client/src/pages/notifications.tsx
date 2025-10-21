@@ -24,7 +24,7 @@ export const Notifications: React.FC = () => {
     return (
       <div className="flex grow flex-col items-center justify-center gap-2">
         <div>No notifications yet!</div>
-        <div className="text-sm text-neutral-600">
+        <div className="text-center text-sm text-neutral-600">
           You'll be notified about follow requests and approvals
         </div>
       </div>
