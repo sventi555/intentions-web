@@ -47,7 +47,7 @@ app.post('/', zValidator('json', createUserBody), async (c) => {
   const followDoc = collections.follows(user.uid).doc(user.uid);
   writeBatch.create(followDoc, { status: 'accepted' });
 
-  await writeBatch.flush();
+  await writeBatch.close();
 
   return c.body(null, 201);
 });

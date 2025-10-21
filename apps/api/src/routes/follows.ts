@@ -104,14 +104,10 @@ app.post(
 
     const writeBatch = bulkWriter();
 
-    const requesterNotifications = await collections
-      .notifications(requesterId)
-      .where('fromUserId', '==', fromUserId)
-      .orderBy('createdAt', 'desc')
-      .get();
-    const requesterNotification = requesterNotifications.empty
-      ? null
-      : requesterNotifications.docs[0];
+    const requesterNotification = await getLatestNotification({
+      fromUserId,
+      toUserId: requesterId,
+    });
 
     if (action === 'accept') {
       writeBatch.update(followDoc, { status: 'accepted' });
@@ -175,6 +171,11 @@ app.delete(
     const toUserId = direction === 'from' ? requesterId : userId;
 
     const followDoc = collections.follows(toUserId).doc(fromUserId);
+    const followData = (await followDoc.get()).data();
+
+    if (followData == null) {
+      return c.body(null, 204);
+    }
 
     const writeBatch = bulkWriter();
 
@@ -189,10 +190,38 @@ app.delete(
       writeBatch.delete(post.ref);
     });
 
+    // if the follow is pending, remove the toUserId notification
+    if (followData.status === 'pending') {
+      const recipientNotification = await getLatestNotification({
+        fromUserId,
+        toUserId,
+      });
+      if (recipientNotification != null) {
+        writeBatch.delete(recipientNotification.ref);
+      }
+    }
+
     await writeBatch.close();
 
     return c.body(null, 204);
   },
 );
+
+const getLatestNotification = async ({
+  fromUserId,
+  toUserId,
+}: {
+  fromUserId: string;
+  toUserId: string;
+}) => {
+  const notifications = await collections
+    .notifications(toUserId)
+    .where('fromUserId', '==', fromUserId)
+    .orderBy('createdAt', 'desc')
+    .get();
+  const notification = notifications.empty ? null : notifications.docs[0];
+
+  return notification;
+};
 
 export default app;
