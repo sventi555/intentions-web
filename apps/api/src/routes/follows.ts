@@ -5,8 +5,8 @@ import {
   removeFollowBody,
   respondToFollowBody,
   type Follow,
+  type FollowNotification,
   type FollowUserResponse,
-  type Notification,
 } from 'lib';
 import { bulkWriter, collections } from '../db';
 import { authenticate } from '../middleware/auth';
@@ -54,21 +54,18 @@ app.post('/:userId', authenticate, async (c) => {
   writeBatch.create(followDoc, followData);
 
   // send notification so recipient can respond to follow request
-  const followNotification: Notification = {
-    kind: 'follow',
-    data: {
-      fromUserId: requesterId,
-      fromUser: {
-        username,
-        ...(image ? { image } : {}),
-      },
-      toUserId: followedUserId,
-      toUser: {
-        username: recipientData.username,
-        ...(recipientData.image ? { image: recipientData.image } : {}),
-      },
-      status: followStatus,
+  const followNotification: FollowNotification = {
+    fromUserId: requesterId,
+    fromUser: {
+      username,
+      ...(image ? { image } : {}),
     },
+    toUserId: followedUserId,
+    toUser: {
+      username: recipientData.username,
+      ...(recipientData.image ? { image: recipientData.image } : {}),
+    },
+    status: followStatus,
     createdAt: Date.now(),
   };
   writeBatch.create(
@@ -114,8 +111,7 @@ app.post(
 
     const requesterNotifications = await collections
       .notifications(requesterId)
-      .where('kind', '==', 'follow')
-      .where('data.fromUserId', '==', fromUserId)
+      .where('fromUserId', '==', fromUserId)
       .orderBy('createdAt', 'desc')
       .get();
     const requesterNotification = requesterNotifications.empty
@@ -126,7 +122,7 @@ app.post(
       writeBatch.update(followDoc, { status: 'accepted' });
       if (requesterNotification) {
         writeBatch.update(requesterNotification.ref, {
-          'data.status': 'accepted',
+          status: 'accepted',
         });
 
         const notification = requesterNotification.data();
@@ -135,7 +131,7 @@ app.post(
           collections.notifications(fromUserId).doc(crypto.randomUUID()),
           {
             ...notification,
-            data: { ...notification.data, status: 'accepted' },
+            status: 'accepted',
             createdAt: Date.now(),
           },
         );

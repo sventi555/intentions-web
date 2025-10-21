@@ -30,15 +30,10 @@ export interface Post {
 }
 
 export interface FollowNotification {
-  kind: 'follow';
-  data: {
-    fromUserId: string;
-    fromUser: Pick<User, 'username' | 'image'>;
-    toUserId: string;
-    toUser: Pick<User, 'username' | 'image'>;
-    status: FollowStatus;
-  };
+  fromUserId: string;
+  fromUser: Pick<User, 'username' | 'image'>;
+  toUserId: string;
+  toUser: Pick<User, 'username' | 'image'>;
+  status: FollowStatus;
   createdAt: number;
 }
-
-export type Notification = FollowNotification;

@@ -1,5 +1,5 @@
 import { collection, doc, QueryDocumentSnapshot } from 'firebase/firestore';
-import { Follow, Intention, Notification, Post, User } from 'lib';
+import { Follow, FollowNotification, Intention, Post, User } from 'lib';
 import { db } from '../firebase';
 
 export type CollectionSort<T extends string> = {
@@ -29,7 +29,7 @@ export const collections = {
     ),
   notifications: (userId: string) =>
     collection(db, `users/${userId}/notifications`).withConverter(
-      firestoreConverter<Notification>(),
+      firestoreConverter<FollowNotification>(),
     ),
 };
 

@@ -1,5 +1,5 @@
 import type { QueryDocumentSnapshot } from 'firebase-admin/firestore';
-import type { Follow, Intention, Notification, Post, User } from 'lib';
+import type { Follow, FollowNotification, Intention, Post, User } from 'lib';
 import { db } from '../config';
 
 const firestoreConverter = <T>() => ({
@@ -23,7 +23,7 @@ export const collections = {
   notifications: (userId: string) =>
     db
       .collection(`users/${userId}/notifications`)
-      .withConverter(firestoreConverter<Notification>()),
+      .withConverter(firestoreConverter<FollowNotification>()),
 };
 
 export const bulkWriter = () => db.bulkWriter();

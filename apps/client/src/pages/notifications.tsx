@@ -34,7 +34,8 @@ export const Notifications: React.FC = () => {
   return (
     <div className="flex flex-col">
       {notifications.map((notification) => {
-        const { data } = notification.data;
+        const { data } = notification;
+
         const isRecipient = data.toUserId === authUser.uid;
         const otherUser = isRecipient
           ? {
