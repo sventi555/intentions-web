@@ -1,6 +1,7 @@
 import { signInWithEmailAndPassword } from 'firebase/auth/web-extension';
 import { useState } from 'react';
 import { Link, Redirect } from 'wouter';
+import { Button } from '../components/button';
 import { auth } from '../firebase';
 import { useAuthState } from '../state/auth';
 
@@ -31,12 +32,12 @@ export const SignIn: React.FC = () => {
           onChange={(e) => setPassword(e.target.value)}
           className="rounded-sm border p-1"
         />
-        <button
+        <Button
+          type="primary"
           onClick={() => signInWithEmailAndPassword(auth, email, password)}
-          className="rounded-sm bg-blue-200"
         >
           Sign in
-        </button>
+        </Button>
       </div>
       <div>
         New user? <Link href="/sign-up">Sign up</Link>

@@ -123,7 +123,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
                   body: { action: 'decline' },
                 }).then(() => invalidateNotifications(authUser.uid))
               }
-              className="rounded-sm bg-red-200 px-2"
+              className="cursor-pointer rounded-sm bg-red-200 px-1 hover:bg-red-300"
             >
               <Close />
             </button>
@@ -134,7 +134,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
                   body: { action: 'accept' },
                 }).then(() => invalidateNotifications(authUser.uid))
               }
-              className="rounded-sm bg-green-200 px-2"
+              className="cursor-pointer rounded-sm bg-green-200 px-1 hover:bg-green-300"
             >
               <Check />
             </button>

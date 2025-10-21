@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link, Redirect, useLocation } from 'wouter';
+import { Button } from '../components/button';
 import { ImagePicker } from '../components/image-picker';
 import { useIntentions } from '../hooks/intentions';
 import {
@@ -71,7 +72,7 @@ export const CreatePost: React.FC = () => {
       {imageDataUrl == null ? (
         <button
           onClick={() => filePickerRef.current?.click()}
-          className="flex h-32 flex-col items-center justify-center rounded-sm border"
+          className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-sm border"
         >
           <div>Select an image</div>
         </button>
@@ -80,7 +81,7 @@ export const CreatePost: React.FC = () => {
           <img src={imageDataUrl} className="w-full" />
           <button
             onClick={() => filePickerRef.current?.click()}
-            className="absolute right-2 bottom-2 left-2 rounded-sm bg-black/50 p-1 text-white"
+            className="absolute right-2 bottom-2 left-2 cursor-pointer rounded-sm bg-black/40 p-1 text-white"
           >
             Change image
           </button>
@@ -94,7 +95,8 @@ export const CreatePost: React.FC = () => {
         className="h-24 rounded-sm border p-1"
       />
 
-      <button
+      <Button
+        type="primary"
         onClick={() =>
           createPost({
             body: {
@@ -112,10 +114,9 @@ export const CreatePost: React.FC = () => {
             )
             .then(() => setLocation('/'))
         }
-        className="rounded-sm bg-blue-200 p-1"
       >
         Create
-      </button>
+      </Button>
     </div>
   );
 };

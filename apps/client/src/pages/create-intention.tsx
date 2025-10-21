@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
+import { Button } from '../components/button';
 import {
   useCreateIntention,
   useInvalidateIntentions,
@@ -25,16 +26,16 @@ export const CreateIntention: React.FC = () => {
         onChange={(e) => setIntention(e.target.value)}
         className="rounded-sm border p-1 text-center"
       />
-      <button
+      <Button
+        type="primary"
         onClick={() =>
           createIntention({ body: { name: intention } })
             .then(() => invalidateIntentions(authUser.uid))
             .then(() => setLocation('/create'))
         }
-        className="rounded-sm bg-blue-200 p-1"
       >
         Create intention
-      </button>
+      </Button>
     </div>
   );
 };

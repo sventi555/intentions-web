@@ -1,9 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { signInWithEmailAndPassword } from 'firebase/auth/web-extension';
 import { getDoc, getDocs, query, where } from 'firebase/firestore';
 import { CreateUserBody, UpdateUserBody } from 'lib';
 import { collections, docs } from '../data/db';
-import { auth } from '../firebase';
 import { useAuthState } from '../state/auth';
 
 export const useUser = (userId: string) => {
@@ -75,9 +73,6 @@ export const useCreateUser = () => {
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
       });
-    },
-    onSuccess: (_, { body }) => {
-      signInWithEmailAndPassword(auth, body.email, body.password);
     },
   });
 

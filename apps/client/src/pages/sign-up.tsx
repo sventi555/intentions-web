@@ -1,5 +1,8 @@
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import { Link, Redirect } from 'wouter';
+import { Button } from '../components/button';
+import { auth } from '../firebase';
 import { useCreateUser } from '../hooks/users';
 import { useAuthState } from '../state/auth';
 
@@ -38,12 +41,16 @@ export const SignUp: React.FC = () => {
           onChange={(e) => setPassword(e.target.value)}
           className="rounded-sm border p-1"
         />
-        <button
-          onClick={() => createUser({ body: { email, username, password } })}
-          className="rounded-sm bg-blue-200"
+        <Button
+          type="primary"
+          onClick={() => {
+            createUser({ body: { email, username, password } }).then(() => {
+              signInWithEmailAndPassword(auth, email, password);
+            });
+          }}
         >
           Sign up
-        </button>
+        </Button>
       </div>
       <div>
         Already a user? <Link href="/sign-in">Sign in</Link>

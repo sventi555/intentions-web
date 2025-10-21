@@ -14,6 +14,7 @@ import { signOut } from 'firebase/auth';
 import { useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Link, useParams } from 'wouter';
+import { Button } from '../components/button';
 import { DisplayPic } from '../components/display-pic';
 import { EllipsesVert } from '../components/icons';
 import { ImagePicker } from '../components/image-picker';
@@ -73,6 +74,7 @@ export const Profile: React.FC = () => {
         <button
           disabled={!isAuthUser}
           onClick={() => filePickerRef.current?.click()}
+          className={clsx(isAuthUser && 'cursor-pointer')}
         >
           <DisplayPic imageUri={user?.image} size={64} />
           <ImagePicker
@@ -94,35 +96,35 @@ export const Profile: React.FC = () => {
           <div>{user.username}</div>
 
           {follow == null ? (
-            <button
+            <Button
+              type="primary"
               onClick={() =>
                 followUser({ userId }).then(() => invalidateFollow(userId))
               }
-              className="rounded-sm bg-blue-200 p-1"
             >
               Follow
-            </button>
+            </Button>
           ) : null}
 
           {follow?.status === 'pending' ? (
-            <button
+            <Button
+              type="secondary"
               onClick={() =>
                 removeFollow({
                   userId: userId,
                   body: { direction: 'to' },
                 }).then(() => invalidateFollow(userId))
               }
-              className="rounded-sm bg-neutral-200 p-1"
             >
               Pending
-            </button>
+            </Button>
           ) : null}
         </div>
 
         {isAuthUser ? (
           <button
             onClick={() => signOut(auth)}
-            className="absolute top-1 right-2"
+            className="absolute top-1 right-2 cursor-pointer text-neutral-800 underline"
           >
             Sign out
           </button>
@@ -130,13 +132,10 @@ export const Profile: React.FC = () => {
 
         {!isAuthUser && follow?.status === 'accepted' ? (
           <Menu>
-            <MenuButton className="absolute top-2 right-2">
+            <MenuButton className="absolute top-2 right-2 cursor-pointer">
               <EllipsesVert />
             </MenuButton>
-            <MenuItems
-              anchor="bottom end"
-              className="rounded bg-neutral-100 p-1"
-            >
+            <MenuItems anchor="bottom end" className="rounded bg-neutral-100">
               <MenuItem>
                 <button
                   onClick={() =>
@@ -149,6 +148,7 @@ export const Profile: React.FC = () => {
                         ]),
                     )
                   }
+                  className="cursor-pointer p-1 px-2 hover:bg-neutral-200"
                 >
                   Unfollow
                 </button>
@@ -159,15 +159,13 @@ export const Profile: React.FC = () => {
       </div>
 
       <TabGroup className="flex grow flex-col">
-        <TabList className="flex border-b">
+        <TabList className="flex border-b border-neutral-400">
           <Tab as={Fragment}>
             {({ selected }) => (
               <button
                 className={clsx(
-                  'grow border-b p-2 focus:outline-none',
-                  selected
-                    ? 'border-blue-900 text-blue-900'
-                    : 'border-transparent',
+                  'grow cursor-pointer p-2 focus:outline-none',
+                  selected && 'rounded-t-md bg-neutral-100 text-blue-900',
                 )}
               >
                 Posts
@@ -178,10 +176,8 @@ export const Profile: React.FC = () => {
             {({ selected }) => (
               <button
                 className={clsx(
-                  'grow border-b p-2 focus:outline-none',
-                  selected
-                    ? 'border-blue-900 text-blue-900'
-                    : 'border-transparent',
+                  'grow cursor-pointer p-2 focus:outline-none',
+                  selected && 'rounded-t-md bg-neutral-100 text-blue-900',
                 )}
               >
                 Intentions
@@ -262,19 +258,22 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
   }
 
   return (
-    <div className="p-1">
+    <div className="p-2">
       <div className="flex items-center gap-1">
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as IntentionsSort['by'])}
-          className="rounded-sm border"
+          className="cursor-pointer rounded-sm border"
         >
           <option value="updatedAt">Recently active</option>
           <option value="name">Name</option>
           <option value="postCount">Total posts</option>
           <option value="createdAt">Created at</option>
         </select>
-        <button onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}>
+        <button
+          onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
+          className="cursor-pointer"
+        >
           {sortDir === 'asc' ? '↑' : '↓'}
         </button>
       </div>

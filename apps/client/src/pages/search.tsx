@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { Link } from 'wouter';
+import { Button } from '../components/button';
 import { DisplayPic } from '../components/display-pic';
 import {
   useFollow,
@@ -25,19 +26,21 @@ export const Search: React.FC = () => {
 
   return (
     <div className="flex grow flex-col gap-1 p-1">
-      <div className="flex gap-1">
+      <div className="flex items-center gap-1">
         <input
           placeholder="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="grow rounded-sm border p-1"
         />
-        <button
-          onClick={() => setSearchedUsername(username)}
-          className="basis-24 self-start rounded-sm bg-neutral-200 p-1"
-        >
-          Search
-        </button>
+        <div className="flex basis-24 flex-col">
+          <Button
+            type="secondary"
+            onClick={() => setSearchedUsername(username)}
+          >
+            Search
+          </Button>
+        </div>
       </div>
 
       {searchedUsername && !searchedUser ? (
@@ -50,38 +53,39 @@ export const Search: React.FC = () => {
             href={searchedUserAccepted ? `/profile/${searchedUser.id}` : ''}
             className={clsx(
               'flex flex-col items-center gap-1 rounded-2xl p-4',
-              searchedUserAccepted ? 'border' : null,
+              searchedUserAccepted ? 'border' : 'cursor-default',
             )}
           >
             <DisplayPic imageUri={searchedUser.data.image} size={128} />
             <div>{searchedUser.data.username}</div>
-            {/* once users follow self, this will disappear for self search, which is good */}
-            {searchedUserFollow == null ? (
-              <button
-                onClick={() =>
-                  followUser({ userId: searchedUser.id }).then(() =>
-                    invalidateFollow(searchedUser.id),
-                  )
-                }
-                className="min-w-24 rounded-sm bg-blue-200 p-1"
-              >
-                Follow
-              </button>
-            ) : null}
-            {searchedUserFollow != null &&
-            searchedUserFollow.status === 'pending' ? (
-              <button
-                onClick={() =>
-                  removeFollow({
-                    userId: searchedUser.id,
-                    body: { direction: 'to' },
-                  }).then(() => invalidateFollow(searchedUser.id))
-                }
-                className="min-w-24 rounded-sm bg-neutral-200 p-1"
-              >
-                Pending
-              </button>
-            ) : null}
+            <div className="flex flex-col self-stretch">
+              {searchedUserFollow == null ? (
+                <Button
+                  type="primary"
+                  onClick={() =>
+                    followUser({ userId: searchedUser.id }).then(() =>
+                      invalidateFollow(searchedUser.id),
+                    )
+                  }
+                >
+                  Follow
+                </Button>
+              ) : null}
+              {searchedUserFollow != null &&
+              searchedUserFollow.status === 'pending' ? (
+                <Button
+                  type="secondary"
+                  onClick={() =>
+                    removeFollow({
+                      userId: searchedUser.id,
+                      body: { direction: 'to' },
+                    }).then(() => invalidateFollow(searchedUser.id))
+                  }
+                >
+                  Pending
+                </Button>
+              ) : null}
+            </div>
           </Link>
         </div>
       ) : null}
