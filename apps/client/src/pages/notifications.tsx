@@ -1,6 +1,8 @@
 import { PropsWithChildren } from 'react';
 import { Link } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
+import { Check } from '../components/icons/check';
+import { Close } from '../components/icons/close';
 import { useRespondToFollow } from '../hooks/follows';
 import {
   useInvalidateNotifications,
@@ -123,7 +125,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
               }
               className="rounded-sm bg-red-200 px-2"
             >
-              N
+              <Close />
             </button>
             <button
               onClick={() =>
@@ -134,7 +136,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
               }
               className="rounded-sm bg-green-200 px-2"
             >
-              Y
+              <Check />
             </button>
           </div>
         ) : null}
