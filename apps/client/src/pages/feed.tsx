@@ -1,3 +1,4 @@
+import { Link } from 'wouter';
 import { PostsList } from '../components/posts-list';
 import { useFeedPosts } from '../hooks/posts';
 import { useAuthState } from '../state/auth';
@@ -11,6 +12,21 @@ export const Feed: React.FC = () => {
 
   if (posts == null) {
     return null;
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="flex grow flex-col items-center justify-center">
+        <div>Nothing to show...</div>
+        <Link href="/search" className="underline">
+          Follow someone
+        </Link>{' '}
+        <div>or</div>
+        <Link href="/create" className="underline">
+          Post about an intention
+        </Link>
+      </div>
+    );
   }
 
   return <PostsList posts={posts} />;

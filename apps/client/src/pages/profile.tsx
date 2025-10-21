@@ -50,7 +50,7 @@ export const Profile: React.FC = () => {
   const isAuthUser = userId === authUser?.uid;
 
   return (
-    <div>
+    <div className="flex grow flex-col">
       <div className="flex items-center gap-2 p-4">
         <button
           disabled={!isAuthUser}
@@ -100,7 +100,8 @@ export const Profile: React.FC = () => {
           </button>
         ) : null}
       </div>
-      <TabGroup>
+
+      <TabGroup className="flex grow flex-col">
         <TabList className="flex border-b">
           <Tab as={Fragment}>
             {({ selected }) => (
@@ -131,11 +132,12 @@ export const Profile: React.FC = () => {
             )}
           </Tab>
         </TabList>
-        <TabPanels>
-          <TabPanel>
+
+        <TabPanels className="flex grow flex-col">
+          <TabPanel className="flex grow flex-col">
             <ProfilePosts userId={userId} />
           </TabPanel>
-          <TabPanel>
+          <TabPanel className="flex grow flex-col">
             <ProfileIntentions userId={userId} />
           </TabPanel>
         </TabPanels>
@@ -155,6 +157,14 @@ const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
     return null;
   }
 
+  if (posts.length === 0) {
+    return (
+      <div className="flex grow flex-col items-center justify-center">
+        <div className="text-neutral-600">No posts yet...</div>
+      </div>
+    );
+  }
+
   return <PostsList posts={posts} />;
 };
 
@@ -172,6 +182,14 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
 
   if (intentions == null) {
     return null;
+  }
+
+  if (intentions.length === 0) {
+    return (
+      <div className="flex grow flex-col items-center justify-center">
+        <div className="text-neutral-600">No intentions yet...</div>
+      </div>
+    );
   }
 
   return (

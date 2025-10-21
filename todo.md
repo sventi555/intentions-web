@@ -5,8 +5,4 @@
 - "YOU FOLLOW YOURSELF when you're born into this world"
 - make notification interface simpler. only one type (remove "kind" field)
 
-- empty page state
-    - feed
-    - notifications
-    - profile posts/intentions
 - private profile state posts/intentions
