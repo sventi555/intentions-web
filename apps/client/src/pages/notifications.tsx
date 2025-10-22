@@ -54,13 +54,19 @@ export const Notifications: React.FC = () => {
         if (isRecipient) {
           return (
             <FollowRequestNotification
+              key={notification.id}
               sender={otherUser}
               isPending={data.status === 'pending'}
             />
           );
         }
 
-        return <FollowApprovedNotification recipient={otherUser} />;
+        return (
+          <FollowApprovedNotification
+            key={notification.id}
+            recipient={otherUser}
+          />
+        );
       })}
     </div>
   );
