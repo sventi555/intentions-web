@@ -20,6 +20,7 @@
     "lib": "workspace:*",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-hook-form": "7.65.0",
     "wouter": "3.7.1"
   },
   "devDependencies": {

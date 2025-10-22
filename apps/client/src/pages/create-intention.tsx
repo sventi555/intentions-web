@@ -20,13 +20,14 @@ export const CreateIntention: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-1 p-1">
+    <div className="flex grow flex-col justify-center gap-4 p-4">
       <input
         placeholder="eg. touch grass"
         onChange={(e) => setIntention(e.target.value)}
         className="rounded-sm border p-1 text-center"
       />
       <Button
+        disabled={!intention}
         type="primary"
         onClick={() =>
           createIntention({ body: { name: intention } })

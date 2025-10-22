@@ -80,7 +80,7 @@ const FollowNotificationWrapper: React.FC<
   PropsWithChildren<FollowNotificationWrapperProps>
 > = (props) => {
   return (
-    <div className="flex items-center gap-1 p-1">
+    <div className="flex items-center gap-1 p-2">
       <Link href={`/profile/${props.user.id}`}>
         <DisplayPic imageUri={props.user.dpUri} size={40} />
       </Link>

@@ -1,18 +1,32 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, Redirect } from 'wouter';
-import { Button } from '../components/button';
+import { Input } from '../components/input';
 import { auth } from '../firebase';
 import { useCreateUser } from '../hooks/users';
 import { useAuthState } from '../state/auth';
 
+type Inputs = {
+  username: string;
+  email: string;
+  password: string;
+};
+
 export const SignUp: React.FC = () => {
   const { authUser } = useAuthState();
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
 
   const createUser = useCreateUser();
+
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    createUser({ body: { ...data } }).then(() =>
+      signInWithEmailAndPassword(auth, data.email, data.password),
+    );
 
   if (authUser) {
     return <Redirect to="/" />;
@@ -24,36 +38,37 @@ export const SignUp: React.FC = () => {
         <div className="text-3xl">Intentions</div>
         <div>act intentionally</div>
       </div>
-      <div className="flex flex-col gap-1">
-        <input
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex min-w-64 flex-col gap-1"
+      >
+        <Input
           placeholder="username"
-          onChange={(e) => setUsername(e.target.value)}
-          className="rounded-sm border p-1"
+          formRegister={register('username', { required: true })}
+          errorMessage={errors.username && 'username is required'}
         />
-        <input
+        <Input
           placeholder="email"
-          onChange={(e) => setEmail(e.target.value)}
-          className="rounded-sm border p-1"
+          formRegister={register('email', { required: true })}
+          errorMessage={errors.email && 'email is required'}
+        />
+        <Input
+          type="password"
+          placeholder="password"
+          formRegister={register('password', { required: true })}
+          errorMessage={errors.password && 'password is required'}
         />
         <input
-          placeholder="password"
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-          className="rounded-sm border p-1"
+          type="submit"
+          value="Sign up"
+          className="cursor-pointer rounded-sm bg-blue-200 p-1 hover:bg-blue-300"
         />
-        <Button
-          type="primary"
-          onClick={() => {
-            createUser({ body: { email, username, password } }).then(() => {
-              signInWithEmailAndPassword(auth, email, password);
-            });
-          }}
-        >
-          Sign up
-        </Button>
-      </div>
+      </form>
       <div>
-        Already a user? <Link href="/sign-in">Sign in</Link>
+        Already a user?{' '}
+        <Link href="/sign-in" className="underline">
+          Sign in
+        </Link>
       </div>
     </div>
   );

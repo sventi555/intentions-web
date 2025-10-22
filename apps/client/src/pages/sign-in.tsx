@@ -1,14 +1,26 @@
-import { signInWithEmailAndPassword } from 'firebase/auth/web-extension';
-import { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, Redirect } from 'wouter';
-import { Button } from '../components/button';
+import { Input } from '../components/input';
 import { auth } from '../firebase';
 import { useAuthState } from '../state/auth';
 
+type Inputs = {
+  email: string;
+  password: string;
+};
+
 export const SignIn: React.FC = () => {
   const { authUser } = useAuthState();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    signInWithEmailAndPassword(auth, data.email, data.password);
 
   if (authUser) {
     return <Redirect to="/" />;
@@ -20,27 +32,32 @@ export const SignIn: React.FC = () => {
         <div className="text-3xl">Intentions</div>
         <div>act intentionally</div>
       </div>
-      <div className="flex flex-col gap-1">
-        <input
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex min-w-64 flex-col gap-1"
+      >
+        <Input
           placeholder="email"
-          onChange={(e) => setEmail(e.target.value)}
-          className="rounded-sm border p-1"
+          formRegister={register('email', { required: true })}
+          errorMessage={errors.email && 'email is required'}
+        />
+        <Input
+          type="password"
+          placeholder="password"
+          formRegister={register('password', { required: true })}
+          errorMessage={errors.password && 'password is required'}
         />
         <input
-          placeholder="password"
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-          className="rounded-sm border p-1"
+          type="submit"
+          value="Sign in"
+          className="cursor-pointer rounded-sm bg-blue-200 p-1 hover:bg-blue-300"
         />
-        <Button
-          type="primary"
-          onClick={() => signInWithEmailAndPassword(auth, email, password)}
-        >
-          Sign in
-        </Button>
-      </div>
+      </form>
       <div>
-        New user? <Link href="/sign-up">Sign up</Link>
+        New user?{' '}
+        <Link href="/sign-up" className="underline">
+          Sign up
+        </Link>
       </div>
     </div>
   );

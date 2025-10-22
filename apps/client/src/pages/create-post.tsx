@@ -43,7 +43,7 @@ export const CreatePost: React.FC = () => {
   const computedIntentionId = selectedIntentionId || intentions[0].id;
 
   return (
-    <div className="flex flex-col gap-1 p-1">
+    <div className="flex flex-col gap-2 p-2">
       <div className="flex flex-col">
         <label>Choose an intention:</label>
         <div className="flex gap-1">

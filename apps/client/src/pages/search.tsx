@@ -25,7 +25,7 @@ export const Search: React.FC = () => {
   const invalidateFollow = useInvalidateFollow();
 
   return (
-    <div className="flex grow flex-col gap-1 p-1">
+    <div className="flex grow flex-col p-2">
       <div className="flex items-center gap-1">
         <input
           placeholder="username"
