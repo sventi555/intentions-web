@@ -2,6 +2,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, Redirect } from 'wouter';
 import { Input } from '../components/input';
+import { Submit } from '../components/submit';
 import { auth } from '../firebase';
 import { useAuthState } from '../state/auth';
 
@@ -47,11 +48,7 @@ export const SignIn: React.FC = () => {
           formRegister={register('password', { required: true })}
           errorMessage={errors.password && 'password is required'}
         />
-        <input
-          type="submit"
-          value="Sign in"
-          className="cursor-pointer rounded-sm bg-blue-200 p-1 hover:bg-blue-300"
-        />
+        <Submit label="Sign in" />
       </form>
       <div>
         New user?{' '}
