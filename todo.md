@@ -1,9 +1,3 @@
-- blocking/loading animation for write actions
-    - sign up
-    - create post
-    - create intentions
-    - follow/unfollow
-- form validation for sign up/in and create post
 - press enter key to submit auth forms and intention creation
 - error toasts
 - delete post UI
@@ -16,3 +10,6 @@
 - remove user denorm and use a document reference (if possible)
     - consider removing post denorm as well
 - feed and notification rule tests
+
+
+- consider using optimistic updates. do some research into which is preferable when.

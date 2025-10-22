@@ -24,6 +24,8 @@ export const Search: React.FC = () => {
   const removeFollow = useRemoveFollow();
   const invalidateFollow = useInvalidateFollow();
 
+  const [followPending, setFollowPending] = useState(false);
+
   return (
     <div className="flex grow flex-col p-2">
       <div className="flex items-center gap-1">
@@ -61,12 +63,15 @@ export const Search: React.FC = () => {
             <div className="flex flex-col self-stretch">
               {searchedUserFollow == null ? (
                 <Button
+                  disabled={followPending}
                   type="primary"
-                  onClick={() =>
-                    followUser({ userId: searchedUser.id }).then(() =>
-                      invalidateFollow(searchedUser.id),
-                    )
-                  }
+                  onClick={() => {
+                    setFollowPending(true);
+                    followUser({ userId: searchedUser.id }).then(() => {
+                      setFollowPending(false);
+                      invalidateFollow(searchedUser.id);
+                    });
+                  }}
                 >
                   Follow
                 </Button>
@@ -74,13 +79,18 @@ export const Search: React.FC = () => {
               {searchedUserFollow != null &&
               searchedUserFollow.status === 'pending' ? (
                 <Button
+                  disabled={followPending}
                   type="secondary"
-                  onClick={() =>
+                  onClick={() => {
+                    setFollowPending(true);
                     removeFollow({
                       userId: searchedUser.id,
                       body: { direction: 'to' },
-                    }).then(() => invalidateFollow(searchedUser.id))
-                  }
+                    }).then(() => {
+                      setFollowPending(false);
+                      invalidateFollow(searchedUser.id);
+                    });
+                  }}
                 >
                   Pending
                 </Button>

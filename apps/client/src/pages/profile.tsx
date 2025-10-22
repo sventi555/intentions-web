@@ -62,6 +62,8 @@ export const Profile: React.FC = () => {
   const invalidateFeedPosts = useInvalidateFeedPosts();
   const invalidateIntentions = useInvalidateIntentions();
 
+  const [submittingFollow, setSubmittingFollow] = useState(false);
+
   if (user == null) {
     return null;
   }
@@ -97,10 +99,14 @@ export const Profile: React.FC = () => {
 
           {follow == null ? (
             <Button
+              disabled={submittingFollow}
               type="primary"
-              onClick={() =>
-                followUser({ userId }).then(() => invalidateFollow(userId))
-              }
+              onClick={() => {
+                setSubmittingFollow(true);
+                followUser({ userId })
+                  .then(() => invalidateFollow(userId))
+                  .then(() => setSubmittingFollow(false));
+              }}
             >
               Follow
             </Button>
@@ -108,13 +114,17 @@ export const Profile: React.FC = () => {
 
           {follow?.status === 'pending' ? (
             <Button
+              disabled={submittingFollow}
               type="secondary"
-              onClick={() =>
+              onClick={() => {
+                setSubmittingFollow(true);
                 removeFollow({
                   userId: userId,
                   body: { direction: 'to' },
-                }).then(() => invalidateFollow(userId))
-              }
+                })
+                  .then(() => invalidateFollow(userId))
+                  .then(() => setSubmittingFollow(false));
+              }}
             >
               Pending
             </Button>

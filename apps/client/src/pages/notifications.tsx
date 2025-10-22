@@ -1,4 +1,5 @@
-import { PropsWithChildren } from 'react';
+import clsx from 'clsx';
+import { PropsWithChildren, useState } from 'react';
 import { Link } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
 import { Check } from '../components/icons/check';
@@ -111,6 +112,10 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
   const respondToFollow = useRespondToFollow();
   const invalidateNotifications = useInvalidateNotifications();
 
+  const [submittingResponse, setSubmittingResponse] = useState<
+    'accept' | 'decline' | null
+  >(null);
+
   return (
     <FollowNotificationWrapper user={props.sender}>
       <div className="flex grow items-center justify-between">
@@ -123,24 +128,46 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
         {props.isPending ? (
           <div className="flex gap-1">
             <button
-              onClick={() =>
+              disabled={!!submittingResponse}
+              onClick={() => {
+                setSubmittingResponse('decline');
                 respondToFollow({
                   userId: props.sender.id,
                   body: { action: 'decline' },
-                }).then(() => invalidateNotifications(authUser.uid))
-              }
-              className="cursor-pointer rounded-sm bg-red-200 px-1 hover:bg-red-300"
+                })
+                  .then(() => invalidateNotifications(authUser.uid))
+                  .then(() => setSubmittingResponse(null));
+              }}
+              className={clsx(
+                'rounded-sm px-1',
+                !submittingResponse &&
+                  'cursor-pointer bg-red-200 hover:bg-red-300',
+                submittingResponse !== 'decline' && 'bg-red-100',
+                submittingResponse === 'decline' &&
+                  'cursor-progress bg-red-300',
+              )}
             >
               <Close />
             </button>
             <button
-              onClick={() =>
+              disabled={!!submittingResponse}
+              onClick={() => {
+                setSubmittingResponse('accept');
                 respondToFollow({
                   userId: props.sender.id,
                   body: { action: 'accept' },
-                }).then(() => invalidateNotifications(authUser.uid))
-              }
-              className="cursor-pointer rounded-sm bg-green-200 px-1 hover:bg-green-300"
+                })
+                  .then(() => invalidateNotifications(authUser.uid))
+                  .then(() => setSubmittingResponse(null));
+              }}
+              className={clsx(
+                'rounded-sm px-1',
+                !submittingResponse &&
+                  'cursor-pointer bg-green-200 hover:bg-green-300',
+                submittingResponse !== 'accept' && 'bg-green-100',
+                submittingResponse === 'accept' &&
+                  'cursor-progress bg-green-300',
+              )}
             >
               <Check />
             </button>
