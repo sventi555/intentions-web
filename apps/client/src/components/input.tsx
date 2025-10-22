@@ -1,7 +1,9 @@
+import { clsx } from 'clsx';
 import { useState } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
 import { Visibility } from './icons/visibility';
 import { VisibilityOff } from './icons/visibility-off';
+import { InputError } from './input-error';
 
 interface InputProps {
   type?: 'default' | 'password';
@@ -10,6 +12,7 @@ interface InputProps {
   value?: string;
   onChange?: (val: string) => void;
   formRegister?: UseFormRegisterReturn;
+  centered?: boolean;
 }
 
 export const Input: React.FC<InputProps> = (props) => {
@@ -23,7 +26,10 @@ export const Input: React.FC<InputProps> = (props) => {
             props.type === 'password' && passwordHidden ? 'password' : undefined
           }
           placeholder={props.placeholder}
-          className="rounded-sm border p-1"
+          className={clsx(
+            'rounded-sm border p-1',
+            props.centered && 'text-center',
+          )}
           value={props.value}
           onChange={(e) => props.onChange?.(e.target.value)}
           {...props.formRegister}
@@ -39,7 +45,7 @@ export const Input: React.FC<InputProps> = (props) => {
       </div>
 
       {props.errorMessage ? (
-        <div className="text-sm text-red-400">{props.errorMessage}</div>
+        <InputError>{props.errorMessage}</InputError>
       ) : null}
     </div>
   );

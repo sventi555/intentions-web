@@ -19,7 +19,7 @@ export const SignUp: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
   const createUser = useCreateUser();
@@ -59,7 +59,7 @@ export const SignUp: React.FC = () => {
           formRegister={register('password', { required: true })}
           errorMessage={errors.password && 'password is required'}
         />
-        <Submit label="Sign up" />
+        <Submit disabled={isSubmitting} label="Sign up" />
       </form>
       <div>
         Already a user?{' '}

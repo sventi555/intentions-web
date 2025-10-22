@@ -17,7 +17,7 @@ export const SignIn: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = (data) =>
@@ -48,7 +48,7 @@ export const SignIn: React.FC = () => {
           formRegister={register('password', { required: true })}
           errorMessage={errors.password && 'password is required'}
         />
-        <Submit label="Sign in" />
+        <Submit disabled={isSubmitting} label="Sign in" />
       </form>
       <div>
         New user?{' '}

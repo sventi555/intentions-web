@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
+import { SubmitHandler, useController, useForm } from 'react-hook-form';
 import { Link, Redirect, useLocation } from 'wouter';
-import { Button } from '../components/button';
 import { ImagePicker } from '../components/image-picker';
+import { Submit } from '../components/submit';
+import { TextArea } from '../components/text-area';
 import { useIntentions } from '../hooks/intentions';
 import {
   useCreatePost,
@@ -10,6 +12,12 @@ import {
   useInvalidateUserPosts,
 } from '../hooks/posts';
 import { useAuthState } from '../state/auth';
+
+// no need to control intentionId since it's always set
+type Inputs = {
+  image: string;
+  description: string;
+};
 
 export const CreatePost: React.FC = () => {
   const authUser = useAuthState().authUser;
@@ -22,9 +30,7 @@ export const CreatePost: React.FC = () => {
   const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
     null,
   );
-  const [description, setDescription] = useState('');
   const filePickerRef = useRef<HTMLInputElement | null>(null);
-  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
 
   const createPost = useCreatePost();
   const [, setLocation] = useLocation();
@@ -32,18 +38,47 @@ export const CreatePost: React.FC = () => {
   const invalidateUserPosts = useInvalidateUserPosts();
   const invalidateIntentionPosts = useInvalidateIntentionPosts();
 
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<Inputs>();
+  const { field: imageField } = useController<Inputs>({
+    name: 'image',
+    control,
+    rules: { deps: ['description'] },
+  });
+
   if (intentions == null) {
     return null;
   }
 
   if (intentions.length === 0) {
-    return <Redirect to="/create/intention" />;
+    return <Redirect to="/create/intention" replace={true} />;
   }
 
   const computedIntentionId = selectedIntentionId || intentions[0].id;
 
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    createPost({
+      body: {
+        intentionId: computedIntentionId,
+        description: data.description,
+        ...(imageField.value ? { image: imageField.value } : {}),
+      },
+    })
+      .then(() =>
+        Promise.all([
+          invalidateUserPosts(authUser.uid),
+          invalidateFeedPosts(authUser.uid),
+          invalidateIntentionPosts(authUser.uid, computedIntentionId),
+        ]),
+      )
+      .then(() => setLocation('/'));
+
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2 p-2">
       <div className="flex flex-col">
         <label>Choose an intention:</label>
         <div className="flex gap-1">
@@ -64,13 +99,11 @@ export const CreatePost: React.FC = () => {
         </div>
       </div>
 
-      <ImagePicker
-        onPick={(dataUrl) => setImageDataUrl(dataUrl)}
-        ref={filePickerRef}
-      />
+      <ImagePicker onPick={imageField.onChange} ref={filePickerRef} />
 
-      {imageDataUrl == null ? (
+      {!imageField.value ? (
         <button
+          type="button"
           onClick={() => filePickerRef.current?.click()}
           className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-sm border"
         >
@@ -78,8 +111,9 @@ export const CreatePost: React.FC = () => {
         </button>
       ) : (
         <div className="relative">
-          <img src={imageDataUrl} className="w-full" />
+          <img src={imageField.value} className="w-full" />
           <button
+            type="button"
             onClick={() => filePickerRef.current?.click()}
             className="absolute right-2 bottom-2 left-2 cursor-pointer rounded-sm bg-black/40 p-1 text-white"
           >
@@ -88,35 +122,19 @@ export const CreatePost: React.FC = () => {
         </div>
       )}
 
-      <textarea
-        placeholder="description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="h-24 rounded-sm border p-1"
-      />
+      <div className="flex flex-col">
+        <TextArea
+          placeholder="description"
+          errorMessage={
+            errors.description && 'description or image is required'
+          }
+          formRegister={register('description', {
+            validate: (value, formState) => !!(value || formState.image),
+          })}
+        />
+      </div>
 
-      <Button
-        type="primary"
-        onClick={() =>
-          createPost({
-            body: {
-              intentionId: computedIntentionId,
-              description,
-              ...(imageDataUrl != null ? { image: imageDataUrl } : {}),
-            },
-          })
-            .then(() =>
-              Promise.all([
-                invalidateUserPosts(authUser.uid),
-                invalidateFeedPosts(authUser.uid),
-                invalidateIntentionPosts(authUser.uid, computedIntentionId),
-              ]),
-            )
-            .then(() => setLocation('/'))
-        }
-      >
-        Create
-      </Button>
-    </div>
+      <Submit disabled={isSubmitting} label="Create" />
+    </form>
   );
 };

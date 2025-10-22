@@ -2,6 +2,7 @@ import { getButtonStyle } from './button';
 
 interface SubmitProps {
   label: string;
+  disabled?: boolean;
 }
 
 export const Submit: React.FC<SubmitProps> = (props) => {
@@ -9,7 +10,7 @@ export const Submit: React.FC<SubmitProps> = (props) => {
     <input
       type="submit"
       value={props.label}
-      className={getButtonStyle({ type: 'primary' })}
+      className={getButtonStyle({ type: 'primary', disabled: props.disabled })}
     />
   );
 };

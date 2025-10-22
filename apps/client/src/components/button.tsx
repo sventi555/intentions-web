@@ -10,6 +10,7 @@ interface ButtonProps {
 export const Button: React.FC<PropsWithChildren<ButtonProps>> = (props) => {
   return (
     <button
+      type="button"
       onClick={props.onClick}
       disabled={props.disabled}
       className={getButtonStyle(props)}
