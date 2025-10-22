@@ -70,7 +70,7 @@ export const Profile: React.FC = () => {
 
   return (
     <div className="flex grow flex-col">
-      <div className="flex items-center gap-2 p-4 pr-8">
+      <div className="relative flex items-center gap-2 p-4 pr-8">
         <button
           disabled={!isAuthUser}
           onClick={() => filePickerRef.current?.click()}
