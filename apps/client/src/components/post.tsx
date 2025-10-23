@@ -47,7 +47,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
           </div>
         </div>
         <Link
-          href={`/intention/${data.intentionId}`}
+          href={`/profile/${data.userId}/intention/${data.intentionId}`}
           className="self-start rounded-sm border px-1"
         >
           {data.intention.name}

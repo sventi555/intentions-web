@@ -1,6 +1,6 @@
 Necessary before launch:
-    - flush notifications in DB
     - create self-follows
+    - infinite scroll for posts list
     - clear out my own posts and intentions. I want to start fresh
 
 -----------------------------
