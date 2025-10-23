@@ -30,10 +30,10 @@ export interface Post {
 }
 
 export interface FollowNotification {
-  fromUserId: string;
-  fromUser: Pick<User, 'username' | 'image'>;
-  toUserId: string;
-  toUser: Pick<User, 'username' | 'image'>;
+  userId: string;
+  user: Pick<User, 'username' | 'image'>;
+  kind: 'request' | 'response';
+  // will always be 'success' when `kind` is response since rejections don't generate a notification
   status: FollowStatus;
   createdAt: number;
 }

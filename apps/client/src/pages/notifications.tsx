@@ -39,18 +39,12 @@ export const Notifications: React.FC = () => {
       {notifications.map((notification) => {
         const { data } = notification;
 
-        const isRecipient = data.toUserId === authUser.uid;
-        const otherUser = isRecipient
-          ? {
-              id: data.fromUserId,
-              username: data.fromUser.username,
-              dpUri: data.fromUser.image,
-            }
-          : {
-              id: data.toUserId,
-              username: data.toUser.username,
-              dpUri: data.toUser.image,
-            };
+        const isRecipient = data.kind === 'request';
+        const otherUser = {
+          id: data.userId,
+          username: data.user.username,
+          dpUri: data.user.image,
+        };
 
         if (isRecipient) {
           return (

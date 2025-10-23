@@ -40,27 +40,21 @@ app.post('/:userId', authenticate, async (c) => {
 
   const writeBatch = bulkWriter();
 
-  const followStatus = 'pending';
-
   // create follow
   const followData: Follow = {
-    status: followStatus,
+    status: 'pending',
   };
   writeBatch.create(followDoc, followData);
 
   // send notification so recipient can respond to follow request
   const followNotification: FollowNotification = {
-    fromUserId: requesterId,
-    fromUser: {
+    userId: requesterId,
+    user: {
       username,
       ...(image ? { image } : {}),
     },
-    toUserId: followedUserId,
-    toUser: {
-      username: recipientData.username,
-      ...(recipientData.image ? { image: recipientData.image } : {}),
-    },
-    status: followStatus,
+    kind: 'request',
+    status: 'pending',
     createdAt: Date.now(),
   };
   writeBatch.create(
@@ -104,7 +98,7 @@ app.post(
 
     const writeBatch = bulkWriter();
 
-    const requesterNotification = await getLatestNotification({
+    const requesterNotification = await getLatestRequestNotification({
       fromUserId,
       toUserId: requesterId,
     });
@@ -115,19 +109,25 @@ app.post(
         writeBatch.update(requesterNotification.ref, {
           status: 'accepted',
         });
+      }
 
-        const notification = requesterNotification.data();
-
+      const requesterData = (
+        await collections.users().doc(requesterId).get()
+      ).data();
+      if (requesterData != null) {
         writeBatch.create(
           collections.notifications(fromUserId).doc(crypto.randomUUID()),
           {
-            ...notification,
+            userId: requesterId,
+            user: {
+              username: requesterData.username,
+              ...(requesterData.image ? { image: requesterData.image } : {}),
+            },
+            kind: 'response',
             status: 'accepted',
             createdAt: Date.now(),
           },
         );
-      } else {
-        // notification data missing. Could not create "acceptance" notification
       }
 
       const followedPosts = await collections
@@ -192,7 +192,7 @@ app.delete(
 
     // if the follow is pending, remove the toUserId notification
     if (followData.status === 'pending') {
-      const recipientNotification = await getLatestNotification({
+      const recipientNotification = await getLatestRequestNotification({
         fromUserId,
         toUserId,
       });
@@ -207,7 +207,7 @@ app.delete(
   },
 );
 
-const getLatestNotification = async ({
+const getLatestRequestNotification = async ({
   fromUserId,
   toUserId,
 }: {
@@ -216,7 +216,8 @@ const getLatestNotification = async ({
 }) => {
   const notifications = await collections
     .notifications(toUserId)
-    .where('fromUserId', '==', fromUserId)
+    .where('userId', '==', fromUserId)
+    .where('kind', '==', 'request')
     .orderBy('createdAt', 'desc')
     .get();
   const notification = notifications.empty ? null : notifications.docs[0];

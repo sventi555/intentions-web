@@ -1,6 +1,6 @@
 Necessary before launch:
-    - flush notifications in DB
-    - create self-follows
+    - flush notifications in DB (or wipe DB)
+    - create self-follows (or wipe DB)
     - investigate user and post normalization with doc refs
 
 - edit post UI
@@ -9,6 +9,4 @@ Necessary before launch:
 
 - see your own follows and followers
 
-- remove user denorm and use a document reference (if possible)
-    - consider removing post denorm as well
 - feed and notification rule tests
