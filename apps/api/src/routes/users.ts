@@ -66,7 +66,6 @@ app.patch('/', authenticate, zValidator('json', updateUserBody), async (c) => {
 
   const writeBatch = bulkWriter();
 
-  // const update user profile
   const userDoc = collections.users().doc(requesterId);
   writeBatch.update(userDoc, {
     ...(imageFileName ? { image: imageFileName } : {}),
@@ -79,7 +78,22 @@ app.patch('/', authenticate, zValidator('json', updateUserBody), async (c) => {
   const postDocs = await userPostDocCopies(requesterId);
   postDocs.forEach((doc) => writeBatch.update(doc, updatedData));
 
-  // TODO: need to update notifications as well
+  const followers = await collections.follows(requesterId).get();
+  const notificationUpdates: Promise<void>[] = [];
+  followers.forEach((follower) =>
+    notificationUpdates.push(
+      collections
+        .notifications(follower.id)
+        .where('userId', '==', requesterId)
+        .get()
+        .then((followerNotifications) =>
+          followerNotifications.forEach((notification) => {
+            writeBatch.update(notification.ref, updatedData);
+          }),
+        ),
+    ),
+  );
+  await Promise.all(notificationUpdates);
 
   await writeBatch.close();
 
