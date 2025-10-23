@@ -11,6 +11,7 @@ interface InputProps {
   errorMessage?: string;
   value?: string;
   onChange?: (val: string) => void;
+  onEnter?: () => void;
   formRegister?: UseFormRegisterReturn;
   centered?: boolean;
 }
@@ -32,10 +33,16 @@ export const Input: React.FC<InputProps> = (props) => {
           )}
           value={props.value}
           onChange={(e) => props.onChange?.(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              props.onEnter?.();
+            }
+          }}
           {...props.formRegister}
         />
         {props.type === 'password' ? (
           <button
+            type="button"
             onClick={() => setPasswordHidden(!passwordHidden)}
             className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer text-neutral-600"
           >

@@ -46,6 +46,7 @@ export const CreateIntention: React.FC = () => {
           placeholder="eg. touch grass"
           centered={true}
           errorMessage={errors.intention && 'intention is required'}
+          onEnter={handleSubmit(onSubmit)}
           formRegister={register('intention', { required: true })}
         />
         <div className="flex gap-2">

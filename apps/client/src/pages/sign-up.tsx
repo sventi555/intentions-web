@@ -55,6 +55,7 @@ export const SignUp: React.FC = () => {
         />
         <Input
           type="password"
+          onEnter={handleSubmit(onSubmit)}
           placeholder="password"
           formRegister={register('password', { required: true })}
           errorMessage={errors.password && 'password is required'}

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'wouter';
 import { Button } from '../components/button';
 import { DisplayPic } from '../components/display-pic';
+import { Input } from '../components/input';
 import {
   useFollow,
   useFollowUser,
@@ -29,12 +30,14 @@ export const Search: React.FC = () => {
   return (
     <div className="flex grow flex-col p-2">
       <div className="flex items-center gap-1">
-        <input
-          placeholder="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="grow rounded-sm border p-1"
-        />
+        <div className="flex grow flex-col">
+          <Input
+            placeholder="username"
+            value={username}
+            onEnter={() => setSearchedUsername(username)}
+            onChange={setUsername}
+          />
+        </div>
         <div className="flex basis-24 flex-col">
           <Button
             type="secondary"
