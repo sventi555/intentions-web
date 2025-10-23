@@ -4,7 +4,7 @@ import { Link, Redirect, useLocation } from 'wouter';
 import { ImagePicker } from '../components/image-picker';
 import { Submit } from '../components/submit';
 import { TextArea } from '../components/text-area';
-import { useIntentions } from '../hooks/intentions';
+import { useIntentions, useInvalidateIntentions } from '../hooks/intentions';
 import {
   useCreatePost,
   useInvalidateFeedPosts,
@@ -37,6 +37,7 @@ export const CreatePost: React.FC = () => {
   const invalidateFeedPosts = useInvalidateFeedPosts();
   const invalidateUserPosts = useInvalidateUserPosts();
   const invalidateIntentionPosts = useInvalidateIntentionPosts();
+  const invalidateIntentions = useInvalidateIntentions();
 
   const {
     register,
@@ -73,6 +74,7 @@ export const CreatePost: React.FC = () => {
           invalidateUserPosts(authUser.uid),
           invalidateFeedPosts(authUser.uid),
           invalidateIntentionPosts(authUser.uid, computedIntentionId),
+          invalidateIntentions(authUser.uid),
         ]),
       )
       .then(() => setLocation('/'));

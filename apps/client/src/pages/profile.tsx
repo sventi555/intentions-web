@@ -48,6 +48,10 @@ export const Profile: React.FC = () => {
     throw new Error('Profile rendered without userId');
   }
 
+  if (authUser == null) {
+    throw new Error('must be signed in to view profile');
+  }
+
   const { user } = useUser(userId);
   const { follow, isLoading: followLoading } = useFollow(userId);
 
@@ -155,6 +159,7 @@ export const Profile: React.FC = () => {
                           invalidateFollow(userId),
                           invalidateUserPosts(userId),
                           invalidateIntentions(userId),
+                          invalidateFeedPosts(authUser.uid),
                         ]),
                     )
                   }
