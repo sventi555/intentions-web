@@ -59,11 +59,6 @@ export const useFeedPosts = (userId: string) => {
 
 export const useInvalidateFeedPosts = () => {
   const queryClient = useQueryClient();
-  const authUser = useAuthState().authUser;
-
-  if (authUser == null) {
-    throw new Error('');
-  }
 
   return (userId: string) =>
     queryClient.refetchQueries({ queryKey: ['feed', userId] });

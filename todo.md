@@ -1,4 +1,3 @@
-- delete post UI
 - edit post UI
 - error toasts
 

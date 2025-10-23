@@ -12,7 +12,7 @@ export const PostsList: React.FC<PostsListProps> = ({ posts }) => {
       {posts.map(({ id, data }, index) => {
         return (
           <Fragment key={id}>
-            <Post data={data} />
+            <Post id={id} data={data} />
             {index !== posts.length - 1 ? (
               <div className="h-px w-full bg-neutral-200" />
             ) : null}
