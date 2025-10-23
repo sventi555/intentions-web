@@ -184,18 +184,16 @@ export const Profile: React.FC = () => {
             {follow?.status === 'accepted' || isAuthUser ? (
               <ProfilePosts userId={userId} />
             ) : (
-              <div className="flex grow flex-col items-center justify-center">
-                Follow user to view their posts
-              </div>
+              <TabFallbackText>Follow user to view their posts</TabFallbackText>
             )}
           </TabPanel>
           <TabPanel className="flex grow flex-col">
             {follow?.status === 'accepted' || isAuthUser ? (
               <ProfileIntentions userId={userId} />
             ) : (
-              <div className="flex grow flex-col items-center justify-center">
+              <TabFallbackText>
                 Follow user to view their intentions
-              </div>
+              </TabFallbackText>
             )}
           </TabPanel>
         </TabPanels>
@@ -233,11 +231,7 @@ const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
   }
 
   if (posts.length === 0) {
-    return (
-      <div className="flex grow flex-col items-center justify-center">
-        <div className="text-neutral-600">No posts yet...</div>
-      </div>
-    );
+    return <TabFallbackText>No posts yet...</TabFallbackText>;
   }
 
   return <PostsList posts={posts} />;
@@ -260,11 +254,7 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
   }
 
   if (intentions.length === 0) {
-    return (
-      <div className="flex grow flex-col items-center justify-center">
-        <div className="text-neutral-600">No intentions yet...</div>
-      </div>
-    );
+    return <TabFallbackText>No intentions yet...</TabFallbackText>;
   }
 
   return (
@@ -329,4 +319,12 @@ const fixSortDir = (
   }
 
   return dir === 'asc' ? 'desc' : 'asc';
+};
+
+const TabFallbackText: React.FC<PropsWithChildren> = (props) => {
+  return (
+    <div className="flex grow flex-col items-center justify-center text-neutral-600">
+      {props.children}
+    </div>
+  );
 };
