@@ -1,10 +1,12 @@
 Necessary before launch:
-    - flush notifications in DB (or wipe DB)
-    - create self-follows (or wipe DB)
-    - investigate user and post normalization with doc refs
+    - flush notifications in DB
+    - create self-follows
+    - clear out my own posts and intentions. I want to start fresh
 
+-----------------------------
+
+- error UI for failed fetching and actions
 - edit post UI
-- error toasts
 - invalidate everything on sign out
 
 - see your own follows and followers
