@@ -16,9 +16,11 @@ export const Search: React.FC = () => {
   const [username, setUsername] = useState('');
   const [searchedUsername, setSearchedUsername] = useState('');
 
-  const { user: searchedUser } = useSearchUser(searchedUsername);
+  const { user: searchedUser, isLoading: searchedUserLoading } =
+    useSearchUser(searchedUsername);
 
-  const { follow: searchedUserFollow } = useFollow(searchedUser?.id);
+  const { follow: searchedUserFollow, isLoading: searchedFollowLoading } =
+    useFollow(searchedUser?.id);
   const searchedUserAccepted =
     searchedUserFollow != null && searchedUserFollow.status === 'accepted';
   const followUser = useFollowUser();
@@ -48,11 +50,11 @@ export const Search: React.FC = () => {
         </div>
       </div>
 
-      {searchedUsername && !searchedUser ? (
+      {searchedUsername && !searchedUserLoading && !searchedUser ? (
         <div className="text-neutral-600">user not found</div>
       ) : null}
 
-      {searchedUser != null ? (
+      {searchedUser != null && !searchedFollowLoading ? (
         <div className="flex grow flex-col items-center justify-center">
           <Link
             href={searchedUserAccepted ? `/profile/${searchedUser.id}` : ''}

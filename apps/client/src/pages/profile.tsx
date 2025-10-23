@@ -49,7 +49,7 @@ export const Profile: React.FC = () => {
   }
 
   const { user } = useUser(userId);
-  const { follow } = useFollow(userId);
+  const { follow, isLoading: followLoading } = useFollow(userId);
 
   const filePickerRef = useRef<HTMLInputElement | null>(null);
   const updateUser = useUpdateUser();
@@ -64,7 +64,7 @@ export const Profile: React.FC = () => {
 
   const [submittingFollow, setSubmittingFollow] = useState(false);
 
-  if (user == null) {
+  if (user == null || followLoading) {
     return null;
   }
 

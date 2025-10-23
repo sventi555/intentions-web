@@ -1,7 +1,6 @@
-- error toasts
 - delete post UI
 - edit post UI
-- better loading states to remove flickering
+- error toasts
 
 - see your own follows and followers
 
