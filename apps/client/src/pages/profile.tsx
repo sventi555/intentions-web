@@ -11,7 +11,7 @@ import {
 } from '@headlessui/react';
 import clsx from 'clsx';
 import { signOut } from 'firebase/auth';
-import { useRef, useState } from 'react';
+import { PropsWithChildren, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Link, useParams } from 'wouter';
 import { Button } from '../components/button';
@@ -170,30 +170,8 @@ export const Profile: React.FC = () => {
 
       <TabGroup className="flex grow flex-col">
         <TabList className="flex border-b border-neutral-400">
-          <Tab as={Fragment}>
-            {({ selected }) => (
-              <button
-                className={clsx(
-                  'grow cursor-pointer p-2 focus:outline-none',
-                  selected && 'rounded-t-md bg-neutral-100 text-blue-900',
-                )}
-              >
-                Posts
-              </button>
-            )}
-          </Tab>
-          <Tab as={Fragment}>
-            {({ selected }) => (
-              <button
-                className={clsx(
-                  'grow cursor-pointer p-2 focus:outline-none',
-                  selected && 'rounded-t-md bg-neutral-100 text-blue-900',
-                )}
-              >
-                Intentions
-              </button>
-            )}
-          </Tab>
+          <TabButton>Posts</TabButton>
+          <TabButton>Intentions</TabButton>
         </TabList>
 
         <TabPanels className="flex grow flex-col">
@@ -218,6 +196,23 @@ export const Profile: React.FC = () => {
         </TabPanels>
       </TabGroup>
     </div>
+  );
+};
+
+const TabButton: React.FC<PropsWithChildren> = (props) => {
+  return (
+    <Tab as={Fragment}>
+      {({ selected }) => (
+        <button
+          className={clsx(
+            'grow cursor-pointer p-2 focus:outline-none',
+            selected && 'rounded-t-md bg-neutral-100 text-blue-900',
+          )}
+        >
+          {props.children}
+        </button>
+      )}
+    </Tab>
   );
 };
 
