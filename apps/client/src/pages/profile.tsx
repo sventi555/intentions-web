@@ -224,7 +224,8 @@ interface ProfilePostsProps {
 }
 
 const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
-  const { posts } = useUserPosts(props.userId);
+  const { posts, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useUserPosts(props.userId);
 
   if (posts == null) {
     return null;
@@ -234,7 +235,14 @@ const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
     return <TabFallbackText>No posts yet...</TabFallbackText>;
   }
 
-  return <PostsList posts={posts} />;
+  return (
+    <PostsList
+      posts={posts}
+      fetchNextPage={fetchNextPage}
+      fetchingPage={isFetchingNextPage}
+      hasNextPage={hasNextPage}
+    />
+  );
 };
 
 interface ProfileIntentionsProps {

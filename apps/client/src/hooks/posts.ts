@@ -1,32 +1,38 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getDocs, orderBy, query, where } from 'firebase/firestore';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { orderBy, query, where } from 'firebase/firestore';
 import { CreatePostBody, UpdatePostBody } from 'lib';
 import { collections } from '../data/db';
 import { useAuthState } from '../state/auth';
+import { useInfiniteDocQuery } from './infinite-doc-query';
+
+const PAGE_SIZE = 8;
 
 export const useUserPosts = (userId: string) => {
   const {
     data: posts,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
     isLoading,
     isError,
-  } = useQuery({
+  } = useInfiniteDocQuery({
     queryKey: ['posts', userId],
-    queryFn: async () => {
-      const postDocs = (
-        await getDocs(
-          query(
-            collections.posts(),
-            where('userId', '==', userId),
-            orderBy('createdAt', 'desc'),
-          ),
-        )
-      ).docs;
-
-      return postDocs.map((doc) => ({ id: doc.id, data: doc.data() }));
-    },
+    pageSize: PAGE_SIZE,
+    unpagedQuery: query(
+      collections.posts(),
+      where('userId', '==', userId),
+      orderBy('createdAt', 'desc'),
+    ),
   });
 
-  return { posts, isLoading, isError };
+  return {
+    posts,
+    isLoading,
+    hasNextPage,
+    isError,
+    fetchNextPage,
+    isFetchingNextPage,
+  };
 };
 
 export const useInvalidateUserPosts = () => {
@@ -39,22 +45,25 @@ export const useInvalidateUserPosts = () => {
 export const useFeedPosts = (userId: string) => {
   const {
     data: posts,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
     isLoading,
     isError,
-  } = useQuery({
+  } = useInfiniteDocQuery({
     queryKey: ['feed', userId],
-    queryFn: async () => {
-      const postDocs = (
-        await getDocs(
-          query(collections.feed(userId), orderBy('createdAt', 'desc')),
-        )
-      ).docs;
-
-      return postDocs.map((doc) => ({ id: doc.id, data: doc.data() }));
-    },
+    pageSize: PAGE_SIZE,
+    unpagedQuery: query(collections.feed(userId), orderBy('createdAt', 'desc')),
   });
 
-  return { posts, isLoading, isError };
+  return {
+    posts,
+    isLoading,
+    hasNextPage,
+    isError,
+    fetchNextPage,
+    isFetchingNextPage,
+  };
 };
 
 export const useInvalidateFeedPosts = () => {
@@ -67,27 +76,30 @@ export const useInvalidateFeedPosts = () => {
 export const useIntentionPosts = (userId: string, intentionId: string) => {
   const {
     data: posts,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
     isLoading,
     isError,
-  } = useQuery({
+  } = useInfiniteDocQuery({
     queryKey: ['posts', userId, { intentionId }],
-    queryFn: async () => {
-      const postDocs = (
-        await getDocs(
-          query(
-            collections.posts(),
-            where('userId', '==', userId),
-            where('intentionId', '==', intentionId),
-            orderBy('createdAt', 'desc'),
-          ),
-        )
-      ).docs;
-
-      return postDocs.map((doc) => ({ id: doc.id, data: doc.data() }));
-    },
+    pageSize: PAGE_SIZE,
+    unpagedQuery: query(
+      collections.posts(),
+      where('userId', '==', userId),
+      where('intentionId', '==', intentionId),
+      orderBy('createdAt', 'desc'),
+    ),
   });
 
-  return { posts, isLoading, isError };
+  return {
+    posts,
+    isLoading,
+    hasNextPage,
+    isError,
+    fetchNextPage,
+    isFetchingNextPage,
+  };
 };
 
 export const useInvalidateIntentionPosts = () => {

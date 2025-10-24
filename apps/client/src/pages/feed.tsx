@@ -8,7 +8,8 @@ export const Feed: React.FC = () => {
   if (authUser == null) {
     throw new Error('Must be logged in to view feed');
   }
-  const { posts } = useFeedPosts(authUser.uid);
+  const { posts, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useFeedPosts(authUser.uid);
 
   if (posts == null) {
     return null;
@@ -29,5 +30,12 @@ export const Feed: React.FC = () => {
     );
   }
 
-  return <PostsList posts={posts} />;
+  return (
+    <PostsList
+      posts={posts}
+      fetchNextPage={fetchNextPage}
+      fetchingPage={isFetchingNextPage}
+      hasNextPage={hasNextPage}
+    />
+  );
 };

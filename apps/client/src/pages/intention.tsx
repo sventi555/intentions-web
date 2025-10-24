@@ -11,7 +11,8 @@ export const Intention: React.FC = () => {
   }
 
   const { intention } = useIntention(intentionId);
-  const { posts } = useIntentionPosts(userId, intentionId);
+  const { posts, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useIntentionPosts(userId, intentionId);
 
   if (intention == null || posts == null) {
     return null;
@@ -23,7 +24,12 @@ export const Intention: React.FC = () => {
         <div>{intention.user.username}&apos;s intention:</div>
         <div className="font-bold">{intention.name}</div>
       </div>
-      <PostsList posts={posts} />
+      <PostsList
+        posts={posts}
+        fetchNextPage={fetchNextPage}
+        fetchingPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+      />
     </div>
   );
 };
