@@ -1,7 +1,3 @@
-- title
-- favicon
-- basic metadata
-
 Mobile fixes:
     - exif rotation
     - keyboard should go away after confirming search (and maybe some other things)
