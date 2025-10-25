@@ -29,6 +29,7 @@ export const PostsList: React.FC<PostsListProps> = (props) => {
         return (
           <Fragment key={id}>
             <Post id={id} data={data} />
+
             {index !== props.posts.length - 1 ? (
               <div className="h-px w-full bg-neutral-200" />
             ) : null}

@@ -1,7 +1,12 @@
+- title
+- favicon
+- basic metadata
+
 Mobile fixes:
+    - exif rotation
     - keyboard should go away after confirming search (and maybe some other things)
     - get rid of autocaps (if possible)
-    - safe space at bottom of screen??
+    - safe space
 
 -----------------------------
 
