@@ -47,7 +47,8 @@ export const uploadMedia = async (
 
   let finalImageBuffer: Buffer;
   try {
-    let processedImage = sharp(Buffer.from(image, 'base64'));
+    // remove the exif rotation and bake it into the image
+    let processedImage = sharp(Buffer.from(image, 'base64')).rotate();
     if (opts?.size) {
       processedImage = processedImage.resize(opts.size);
     }
