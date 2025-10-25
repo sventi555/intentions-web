@@ -37,6 +37,7 @@ export const Search: React.FC = () => {
             placeholder="username"
             value={username}
             onEnter={() => setSearchedUsername(username)}
+            closeOnEnter
             onChange={setUsername}
           />
         </div>

@@ -1,7 +1,9 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, Redirect } from 'wouter';
 import { Input } from '../components/input';
+import { InputError } from '../components/input-error';
 import { Submit } from '../components/submit';
 import { auth } from '../firebase';
 import { useAuthState } from '../state/auth';
@@ -20,8 +22,17 @@ export const SignIn: React.FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) =>
-    signInWithEmailAndPassword(auth, data.email, data.password);
+  const [error, setError] = useState('');
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    setError('');
+
+    return signInWithEmailAndPassword(auth, data.email, data.password).catch(
+      () => {
+        setError('unable to log in - please try again');
+      },
+    );
+  };
 
   if (authUser) {
     return <Redirect to="/" />;
@@ -51,6 +62,7 @@ export const SignIn: React.FC = () => {
           errorMessage={errors.password && 'password is required'}
         />
         <Submit disabled={isSubmitting} label="Sign in" />
+        {error && <InputError>{error}</InputError>}
       </form>
       <div>
         New user?{' '}

@@ -1,9 +1,3 @@
-Needed for launch:
-    - auth error messages (after submission)
-
-Mobile fixes:
-    - keyboard should go away after confirming search (and maybe some other things)
-
 -----------------------------
 
 - error UI for failed fetching and actions
@@ -14,4 +8,5 @@ Mobile fixes:
 
 - see your own follows and followers
 
+- error schemas for api error responses
 - feed and notification rule tests

@@ -12,6 +12,7 @@ interface InputProps {
   value?: string;
   onChange?: (val: string) => void;
   onEnter?: () => void;
+  closeOnEnter?: boolean;
   formRegister?: UseFormRegisterReturn;
   centered?: boolean;
 }
@@ -43,6 +44,10 @@ export const Input: React.FC<InputProps> = (props) => {
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               props.onEnter?.();
+
+              if (props.closeOnEnter) {
+                e.currentTarget.blur();
+              }
             }
           }}
           {...props.formRegister}

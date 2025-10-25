@@ -68,11 +68,18 @@ export const useCreateUser = () => {
     { body: CreateUserBody }
   >({
     mutationFn: async ({ body }) => {
-      await fetch(`${import.meta.env.VITE_API_HOST}/users`, {
+      const res = await fetch(`${import.meta.env.VITE_API_HOST}/users`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
       });
+
+      if (!res.ok) {
+        const errMessage = await res.text();
+        throw new Error(
+          errMessage || 'something went wrong - please try again',
+        );
+      }
     },
   });
 

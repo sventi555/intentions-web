@@ -7,7 +7,7 @@ export const TabBar: React.FC = () => {
   const { authUser } = useAuthState();
 
   return (
-    <nav className="pb-safe fixed bottom-0 flex w-full max-w-[640px] bg-white">
+    <nav className="fixed bottom-0 flex w-full max-w-[640px] bg-white pb-[env(safe-area-inset-bottom)]">
       <TabButton href="/">
         <Home />
       </TabButton>
