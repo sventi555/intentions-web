@@ -6,7 +6,7 @@ import { VisibilityOff } from './icons/visibility-off';
 import { InputError } from './input-error';
 
 interface InputProps {
-  type?: 'default' | 'password';
+  type?: 'default' | 'email' | 'password';
   placeholder?: string;
   errorMessage?: string;
   value?: string;
@@ -19,13 +19,20 @@ interface InputProps {
 export const Input: React.FC<InputProps> = (props) => {
   const [passwordHidden, setPasswordHidden] = useState(true);
 
+  let inputType = undefined;
+  if (props.type === 'password' && passwordHidden) {
+    inputType = 'password';
+  } else if (props.type === 'email') {
+    inputType = 'email';
+  }
+
   return (
     <div>
       <div className="relative flex flex-col">
         <input
-          type={
-            props.type === 'password' && passwordHidden ? 'password' : undefined
-          }
+          type={inputType}
+          autoCapitalize="none"
+          autoCorrect="none"
           placeholder={props.placeholder}
           className={clsx(
             'rounded-sm border p-1',

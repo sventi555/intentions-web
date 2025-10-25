@@ -1,8 +1,8 @@
+Needed for launch:
+    - auth error messages (after submission)
+
 Mobile fixes:
-    - exif rotation
     - keyboard should go away after confirming search (and maybe some other things)
-    - get rid of autocaps (if possible)
-    - safe space
 
 -----------------------------
 

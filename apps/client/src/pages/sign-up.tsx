@@ -34,7 +34,7 @@ export const SignUp: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-8">
+    <div className="flex grow flex-col items-center justify-center gap-8">
       <div className="flex flex-col items-center">
         <div className="text-3xl">Intentions</div>
         <div>act intentionally</div>
@@ -49,6 +49,7 @@ export const SignUp: React.FC = () => {
           errorMessage={errors.username && 'username is required'}
         />
         <Input
+          type="email"
           placeholder="email"
           formRegister={register('email', { required: true })}
           errorMessage={errors.email && 'email is required'}
