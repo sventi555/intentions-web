@@ -1,3 +1,5 @@
+- notification alert badge?
+- example intentions 
 -----------------------------
 
 - error UI for failed fetching and actions

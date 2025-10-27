@@ -12,7 +12,12 @@ export const DisplayPic: React.FC<DisplayPicProps> = (props) => {
   return (
     <img
       src={dpUrl ?? placeholder}
-      style={{ width: props.size, height: props.size }}
+      style={{
+        minWidth: props.size,
+        width: props.size,
+        minHeight: props.size,
+        height: props.size,
+      }}
       className="rounded-full border object-cover"
     />
   );

@@ -115,9 +115,9 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
       <div className="flex grow items-center justify-between">
         <div>
           <Link href={`/profile/${props.sender.id}`}>
-            {props.sender.username}
-          </Link>{' '}
-          {props.isPending ? 'requested to follow you' : 'followed you'}
+            {props.sender.username}{' '}
+            {props.isPending ? 'requested to follow you' : 'followed you'}
+          </Link>
         </div>
         {props.isPending ? (
           <div className="flex gap-1">
@@ -133,7 +133,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
                   .then(() => setSubmittingResponse(null));
               }}
               className={clsx(
-                'rounded-sm px-1',
+                'rounded-sm p-1 px-2',
                 !submittingResponse &&
                   'cursor-pointer bg-red-200 hover:bg-red-300',
                 submittingResponse !== 'decline' && 'bg-red-100',
@@ -155,7 +155,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
                   .then(() => setSubmittingResponse(null));
               }}
               className={clsx(
-                'rounded-sm px-1',
+                'rounded-sm p-1 px-2',
                 !submittingResponse &&
                   'cursor-pointer bg-green-200 hover:bg-green-300',
                 submittingResponse !== 'accept' && 'bg-green-100',
