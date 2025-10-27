@@ -10,11 +10,13 @@ interface InputProps {
   placeholder?: string;
   errorMessage?: string;
   value?: string;
+  maxLength?: number;
+  onFocus?: () => void;
   onChange?: (val: string) => void;
   onEnter?: () => void;
   closeOnEnter?: boolean;
   formRegister?: UseFormRegisterReturn;
-  centered?: boolean;
+  className?: string;
 }
 
 export const Input: React.FC<InputProps> = (props) => {
@@ -32,13 +34,12 @@ export const Input: React.FC<InputProps> = (props) => {
       <div className="relative flex flex-col">
         <input
           type={inputType}
+          maxLength={props.maxLength}
           autoCapitalize="none"
           autoCorrect="none"
           placeholder={props.placeholder}
-          className={clsx(
-            'rounded-sm border p-1',
-            props.centered && 'text-center',
-          )}
+          className={clsx(props.className, 'rounded-sm border p-1')}
+          onFocus={props.onFocus}
           value={props.value}
           onChange={(e) => props.onChange?.(e.target.value)}
           onKeyDown={(e) => {

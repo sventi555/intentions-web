@@ -1,5 +1,3 @@
-- notification alert badge?
-- example intentions 
 -----------------------------
 
 - error UI for failed fetching and actions
@@ -7,6 +5,7 @@
 - invalidate everything on sign out
 - delete old profile picture when changing DP
 - delete post image when deleting post
+- notification alert badge?
 
 - see your own follows and followers
 

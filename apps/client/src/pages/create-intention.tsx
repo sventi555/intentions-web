@@ -1,3 +1,5 @@
+import { clsx } from 'clsx';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useLocation } from 'wouter';
 import { Button } from '../components/button';
@@ -8,6 +10,15 @@ import {
   useInvalidateIntentions,
 } from '../hooks/intentions';
 import { useAuthState } from '../state/auth';
+
+const suggestions = [
+  'be more adventurous',
+  'learn new things',
+  'eat healthy food',
+  'spend time with friends',
+  'make my own clothes',
+  'pet lots of dogs',
+];
 
 type Inputs = {
   intention: string;
@@ -35,6 +46,26 @@ export const CreateIntention: React.FC = () => {
       .then(() => invalidateIntentions(authUser.uid))
       .then(() => setLocation('/create'));
 
+  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [suggestionChanging, setSuggestionChanging] = useState(false);
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+
+  useEffect(() => {
+    if (!showSuggestions) {
+      return;
+    }
+
+    const rotateSuggestion = setInterval(() => {
+      setSuggestionChanging(true);
+      setTimeout(() => {
+        setSuggestionIndex((prevIndex) => (prevIndex + 1) % suggestions.length);
+        setSuggestionChanging(false);
+      }, 300);
+    }, 2500);
+
+    return () => clearInterval(rotateSuggestion);
+  }, [showSuggestions]);
+
   return (
     <div className="flex grow flex-col items-center justify-center gap-4">
       <div className="text-lg">Create an intention</div>
@@ -43,11 +74,20 @@ export const CreateIntention: React.FC = () => {
         className="flex min-w-64 flex-col gap-2"
       >
         <Input
-          placeholder="eg. touch grass"
-          centered={true}
+          placeholder={`${suggestions[suggestionIndex]}`}
+          onFocus={() => setShowSuggestions(false)}
+          maxLength={32}
           errorMessage={errors.intention && 'intention is required'}
           onEnter={handleSubmit(onSubmit)}
-          formRegister={register('intention', { required: true })}
+          className={clsx(
+            'text-center placeholder:transition-colors placeholder:duration-300 focus:placeholder:text-transparent',
+            (suggestionChanging || !showSuggestions) &&
+              'placeholder:text-transparent',
+          )}
+          formRegister={register('intention', {
+            required: true,
+            onBlur: () => setShowSuggestions(true),
+          })}
         />
         <div className="flex gap-2">
           <div className="flex grow flex-col">
