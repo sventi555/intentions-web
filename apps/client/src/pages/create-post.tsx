@@ -84,9 +84,7 @@ export const CreatePost: React.FC = () => {
     <div>
       <StickyHeader>
         <div className="text-lg">Create a post</div>
-        <div className="text-sm">
-          Show how you're following your intentions!
-        </div>
+        <div className="text-sm">Show how you're acting with intention</div>
       </StickyHeader>
 
       <form
