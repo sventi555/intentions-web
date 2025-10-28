@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
 import { Link, Redirect, useLocation } from 'wouter';
 import { ImagePicker } from '../components/image-picker';
+import { StickyHeader } from '../components/sticky-header';
 import { Submit } from '../components/submit';
 import { TextArea } from '../components/text-area';
 import { useIntentions, useInvalidateIntentions } from '../hooks/intentions';
@@ -80,63 +81,75 @@ export const CreatePost: React.FC = () => {
       .then(() => setLocation('/'));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2 p-2">
-      <div className="flex flex-col">
-        <label>Choose an intention:</label>
-        <div className="flex gap-1">
-          <select
-            onChange={(e) => setSelectedIntentionId(e.target.value)}
-            value={computedIntentionId}
-            className="grow cursor-pointer rounded-sm border"
-          >
-            {intentions.map(({ id, data }) => (
-              <option value={id} key={id}>
-                {data.name}
-              </option>
-            ))}
-          </select>
-          <Link href="/create/intention" className="rounded-lg border px-2">
-            +
-          </Link>
+    <div>
+      <StickyHeader>
+        <div className="text-lg">Create a post</div>
+        <div className="text-sm">
+          Show how you're following your intentions!
         </div>
-      </div>
+      </StickyHeader>
 
-      <ImagePicker onPick={imageField.onChange} ref={filePickerRef} />
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-2 p-2"
+      >
+        <div className="flex flex-col">
+          <label>Pick an intention:</label>
+          <div className="flex gap-1">
+            <select
+              onChange={(e) => setSelectedIntentionId(e.target.value)}
+              value={computedIntentionId}
+              className="grow cursor-pointer rounded-sm border"
+            >
+              {intentions.map(({ id, data }) => (
+                <option value={id} key={id}>
+                  {data.name}
+                </option>
+              ))}
+            </select>
+            <Link href="/create/intention" className="rounded-lg border px-2">
+              +
+            </Link>
+          </div>
+        </div>
 
-      {!imageField.value ? (
-        <button
-          type="button"
-          onClick={() => filePickerRef.current?.click()}
-          className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-sm border"
-        >
-          <div>Select an image</div>
-        </button>
-      ) : (
-        <div className="relative">
-          <img src={imageField.value} className="w-full" />
+        <ImagePicker onPick={imageField.onChange} ref={filePickerRef} />
+
+        {!imageField.value ? (
           <button
             type="button"
             onClick={() => filePickerRef.current?.click()}
-            className="absolute right-2 bottom-2 left-2 cursor-pointer rounded-sm bg-black/40 p-1 text-white"
+            className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-sm border"
           >
-            Change image
+            <div className="text-neutral-600">Select an image</div>
           </button>
+        ) : (
+          <div className="relative">
+            <img src={imageField.value} className="w-full" />
+            <button
+              type="button"
+              onClick={() => filePickerRef.current?.click()}
+              className="absolute right-2 bottom-2 left-2 cursor-pointer rounded-sm bg-black/40 p-1 text-white"
+            >
+              Change image
+            </button>
+          </div>
+        )}
+
+        <div className="flex flex-col">
+          <TextArea
+            placeholder="description"
+            errorMessage={
+              errors.description && 'description or image is required'
+            }
+            formRegister={register('description', {
+              validate: (value, formState) => !!(value || formState.image),
+            })}
+          />
         </div>
-      )}
 
-      <div className="flex flex-col">
-        <TextArea
-          placeholder="description"
-          errorMessage={
-            errors.description && 'description or image is required'
-          }
-          formRegister={register('description', {
-            validate: (value, formState) => !!(value || formState.image),
-          })}
-        />
-      </div>
-
-      <Submit disabled={isSubmitting} label="Create" />
-    </form>
+        <Submit disabled={isSubmitting} label="Create" />
+      </form>
+    </div>
   );
 };

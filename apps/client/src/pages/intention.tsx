@@ -1,5 +1,6 @@
 import { useParams } from 'wouter';
 import { PostsList } from '../components/posts-list';
+import { StickyHeader } from '../components/sticky-header';
 import { useIntention } from '../hooks/intentions';
 import { useIntentionPosts } from '../hooks/posts';
 
@@ -20,10 +21,10 @@ export const Intention: React.FC = () => {
 
   return (
     <div>
-      <div className="sticky top-0 z-10 border-b bg-white p-1">
+      <StickyHeader>
         <div>{intention.user.username}&apos;s intention:</div>
         <div className="font-bold">{intention.name}</div>
-      </div>
+      </StickyHeader>
       <PostsList
         posts={posts}
         fetchNextPage={fetchNextPage}

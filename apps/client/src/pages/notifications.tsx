@@ -4,6 +4,7 @@ import { Link } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
 import { Check } from '../components/icons/check';
 import { Close } from '../components/icons/close';
+import { StickyHeader } from '../components/sticky-header';
 import { useRespondToFollow } from '../hooks/follows';
 import {
   useInvalidateNotifications,
@@ -36,6 +37,9 @@ export const Notifications: React.FC = () => {
 
   return (
     <div className="flex flex-col">
+      <StickyHeader>
+        <div className="text-lg">Notifications</div>
+      </StickyHeader>
       {notifications.map((notification) => {
         const { data } = notification;
 

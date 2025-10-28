@@ -55,8 +55,8 @@ export const Search: React.FC = () => {
         <div className="text-neutral-600">user not found</div>
       ) : null}
 
-      {searchedUser != null && !searchedFollowLoading ? (
-        <div className="flex grow flex-col items-center justify-center">
+      <div className="flex grow flex-col items-center justify-center">
+        {searchedUser != null && !searchedFollowLoading ? (
           <Link
             href={searchedUserAccepted ? `/profile/${searchedUser.id}` : ''}
             className={clsx(
@@ -103,8 +103,12 @@ export const Search: React.FC = () => {
               ) : null}
             </div>
           </Link>
-        </div>
-      ) : null}
+        ) : (
+          <div className="text-neutral-400">
+            Search for a user to follow them
+          </div>
+        )}
+      </div>
     </div>
   );
 };
