@@ -20,7 +20,7 @@ export const Intention: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="flex grow flex-col">
       <StickyHeader>
         <div>{intention.user.username}&apos;s intention:</div>
         <div className="font-bold">{intention.name}</div>

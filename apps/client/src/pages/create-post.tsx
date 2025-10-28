@@ -81,7 +81,7 @@ export const CreatePost: React.FC = () => {
       .then(() => setLocation('/'));
 
   return (
-    <div>
+    <div className="flex flex-grow flex-col">
       <StickyHeader>
         <div className="text-lg">Create a post</div>
         <div className="text-sm">Show how you're acting with intention</div>

@@ -36,7 +36,7 @@ export const Notifications: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex grow flex-col">
       <StickyHeader>
         <div className="text-lg">Notifications</div>
       </StickyHeader>
