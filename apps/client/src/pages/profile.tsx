@@ -75,7 +75,7 @@ export const Profile: React.FC = () => {
   const isAuthUser = userId === authUser?.uid;
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto">
+    <div className="flex grow flex-col">
       <div className="relative flex items-center gap-2 p-4 pr-8">
         <button
           disabled={!isAuthUser}

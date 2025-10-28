@@ -2,9 +2,9 @@ import clsx from 'clsx';
 import { PropsWithChildren, useState } from 'react';
 import { Link } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
-import { Header } from '../components/header';
 import { Check } from '../components/icons/check';
 import { Close } from '../components/icons/close';
+import { StickyHeader } from '../components/sticky-header';
 import { useRespondToFollow } from '../hooks/follows';
 import {
   useInvalidateNotifications,
@@ -26,7 +26,7 @@ export const Notifications: React.FC = () => {
 
   if (notifications.length === 0) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-2">
+      <div className="flex grow flex-col items-center justify-center gap-2">
         <div>No notifications yet!</div>
         <div className="text-center text-sm text-neutral-600">
           You'll be notified about follow requests and approvals
@@ -36,39 +36,37 @@ export const Notifications: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <Header>
+    <div className="flex flex-col">
+      <StickyHeader>
         <div className="text-lg">Notifications</div>
-      </Header>
-      <div className="overflow-y-auto">
-        {notifications.map((notification) => {
-          const { data } = notification;
+      </StickyHeader>
+      {notifications.map((notification) => {
+        const { data } = notification;
 
-          const isRecipient = data.kind === 'request';
-          const otherUser = {
-            id: data.userId,
-            username: data.user.username,
-            dpUri: data.user.image,
-          };
+        const isRecipient = data.kind === 'request';
+        const otherUser = {
+          id: data.userId,
+          username: data.user.username,
+          dpUri: data.user.image,
+        };
 
-          if (isRecipient) {
-            return (
-              <FollowRequestNotification
-                key={notification.id}
-                sender={otherUser}
-                isPending={data.status === 'pending'}
-              />
-            );
-          }
-
+        if (isRecipient) {
           return (
-            <FollowApprovedNotification
+            <FollowRequestNotification
               key={notification.id}
-              recipient={otherUser}
+              sender={otherUser}
+              isPending={data.status === 'pending'}
             />
           );
-        })}
-      </div>
+        }
+
+        return (
+          <FollowApprovedNotification
+            key={notification.id}
+            recipient={otherUser}
+          />
+        );
+      })}
     </div>
   );
 };
@@ -189,8 +187,9 @@ const FollowApprovedNotification: React.FC<FollowApprovalNotificationProps> = (
     <FollowNotificationWrapper user={props.recipient}>
       <div>
         <Link href={`/profile/${props.recipient.id}`}>
-          {props.recipient.username} approved your follow request
-        </Link>
+          {props.recipient.username}
+        </Link>{' '}
+        approved your follow request
       </div>
     </FollowNotificationWrapper>
   );

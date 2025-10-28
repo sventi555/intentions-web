@@ -67,7 +67,7 @@ export const CreateIntention: React.FC = () => {
   }, [showSuggestions]);
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-4">
+    <div className="flex grow flex-col items-center justify-center gap-4">
       <div className="text-lg">Create an intention</div>
       <form
         onSubmit={handleSubmit(onSubmit)}

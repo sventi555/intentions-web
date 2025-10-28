@@ -1,6 +1,6 @@
 import { useParams } from 'wouter';
-import { Header } from '../components/header';
 import { PostsList } from '../components/posts-list';
+import { StickyHeader } from '../components/sticky-header';
 import { useIntention } from '../hooks/intentions';
 import { useIntentionPosts } from '../hooks/posts';
 
@@ -20,19 +20,17 @@ export const Intention: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <Header>
+    <div>
+      <StickyHeader>
         <div>{intention.user.username}&apos;s intention:</div>
         <div className="font-bold">{intention.name}</div>
-      </Header>
-      <div className="overflow-y-auto">
-        <PostsList
-          posts={posts}
-          fetchNextPage={fetchNextPage}
-          fetchingPage={isFetchingNextPage}
-          hasNextPage={hasNextPage}
-        />
-      </div>
+      </StickyHeader>
+      <PostsList
+        posts={posts}
+        fetchNextPage={fetchNextPage}
+        fetchingPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+      />
     </div>
   );
 };

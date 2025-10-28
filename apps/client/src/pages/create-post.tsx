@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
 import { Link, Redirect, useLocation } from 'wouter';
-import { Header } from '../components/header';
 import { ImagePicker } from '../components/image-picker';
+import { StickyHeader } from '../components/sticky-header';
 import { Submit } from '../components/submit';
 import { TextArea } from '../components/text-area';
 import { useIntentions, useInvalidateIntentions } from '../hooks/intentions';
@@ -81,15 +81,15 @@ export const CreatePost: React.FC = () => {
       .then(() => setLocation('/'));
 
   return (
-    <div className="flex h-full flex-col">
-      <Header>
+    <div>
+      <StickyHeader>
         <div className="text-lg">Create a post</div>
         <div className="text-sm">Show how you're acting with intention</div>
-      </Header>
+      </StickyHeader>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-2 overflow-y-auto p-2"
+        className="flex flex-col gap-2 p-2"
       >
         <div className="flex flex-col">
           <label>Pick an intention:</label>
