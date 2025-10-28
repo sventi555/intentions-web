@@ -1,3 +1,8 @@
+- page titles (and subtitles)
+    - notifications
+    - create post
+    - feed?
+
 -----------------------------
 
 - error UI for failed fetching and actions
