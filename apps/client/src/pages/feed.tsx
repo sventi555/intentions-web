@@ -17,7 +17,7 @@ export const Feed: React.FC = () => {
 
   if (posts.length === 0) {
     return (
-      <div className="flex grow flex-col items-center justify-center">
+      <div className="flex h-full flex-col items-center justify-center">
         <div>Nothing to show...</div>
         <Link href="/search" className="underline">
           Follow someone
@@ -31,11 +31,13 @@ export const Feed: React.FC = () => {
   }
 
   return (
-    <PostsList
-      posts={posts}
-      fetchNextPage={fetchNextPage}
-      fetchingPage={isFetchingNextPage}
-      hasNextPage={hasNextPage}
-    />
+    <div className="h-full overflow-y-auto">
+      <PostsList
+        posts={posts}
+        fetchNextPage={fetchNextPage}
+        fetchingPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+      />
+    </div>
   );
 };

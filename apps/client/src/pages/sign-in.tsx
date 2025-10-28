@@ -39,7 +39,7 @@ export const SignIn: React.FC = () => {
   }
 
   return (
-    <div className="flex grow flex-col items-center justify-center gap-8">
+    <div className="flex h-full flex-col items-center justify-center gap-8">
       <div className="flex flex-col items-center">
         <div className="text-3xl">Why?</div>
         <div>this is why</div>

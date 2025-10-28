@@ -30,7 +30,7 @@ export const Search: React.FC = () => {
   const [followPending, setFollowPending] = useState(false);
 
   return (
-    <div className="flex grow flex-col p-2">
+    <div className="flex h-full flex-col p-2">
       <div className="flex items-center gap-1">
         <div className="flex grow flex-col">
           <Input
