@@ -15,10 +15,10 @@ import { signOut } from 'firebase/auth';
 import { PropsWithChildren, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Link, useParams } from 'wouter';
-import { Button } from '../components/button';
+import { Button } from '../components/atoms/button';
+import { ImagePicker } from '../components/atoms/image-picker';
 import { DisplayPic } from '../components/display-pic';
 import { EllipsesVert } from '../components/icons';
-import { ImagePicker } from '../components/image-picker';
 import { PostsList } from '../components/posts-list';
 import { auth } from '../firebase';
 import {
@@ -138,7 +138,7 @@ export const Profile: React.FC = () => {
         {isAuthUser ? (
           <button
             onClick={() => signOut(auth)}
-            className="absolute top-1 right-2 cursor-pointer text-neutral-800 underline"
+            className="absolute top-3 right-4 cursor-pointer text-neutral-800 underline"
           >
             Sign out
           </button>
@@ -174,7 +174,7 @@ export const Profile: React.FC = () => {
       </div>
 
       <TabGroup className="flex grow flex-col">
-        <TabList className="flex border-b border-neutral-400">
+        <TabList className="flex border-b border-neutral-300">
           <TabButton>Posts</TabButton>
           <TabButton>Intentions</TabButton>
         </TabList>
@@ -209,7 +209,7 @@ const TabButton: React.FC<PropsWithChildren> = (props) => {
         <button
           className={clsx(
             'grow cursor-pointer p-2 focus:outline-none',
-            selected && 'rounded-t-md bg-neutral-100 text-blue-900',
+            selected && 'rounded-t-md bg-neutral-100 text-[#2C3B4E]',
           )}
         >
           {props.children}

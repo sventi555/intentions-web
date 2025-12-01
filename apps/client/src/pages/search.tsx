@@ -1,10 +1,10 @@
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Button } from '../components/button';
+import { Button } from '../components/atoms/button';
+import { Input } from '../components/atoms/input';
 import { DisplayPic } from '../components/display-pic';
 import { Close, Search as SearchIcon } from '../components/icons';
-import { Input } from '../components/input';
 import {
   useFollow,
   useFollowUser,

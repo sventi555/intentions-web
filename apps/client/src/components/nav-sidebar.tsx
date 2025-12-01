@@ -8,7 +8,7 @@ export const NavSidebar: React.FC = () => {
   const [, navigate] = useLocation();
 
   return (
-    <nav className="flex grow flex-col gap-[40px] bg-neutral-50 p-[16px]">
+    <nav className="flex grow flex-col gap-[40px] border-r border-neutral-300 p-[16px]">
       <SidebarButton Icon={Home} onClick={() => navigate('/')} />
       <SidebarButton Icon={Pencil} onClick={() => navigate('/create')} />
       <SidebarButton Icon={AddUser} onClick={() => navigate('/search')} />
@@ -31,7 +31,7 @@ interface SidebarButtonProps {
 const SidebarButton: React.FC<SidebarButtonProps> = ({ onClick, Icon }) => {
   return (
     <button className="cursor-pointer" onClick={onClick}>
-      <Icon />
+      <Icon className="text-neutral-700" />
     </button>
   );
 };

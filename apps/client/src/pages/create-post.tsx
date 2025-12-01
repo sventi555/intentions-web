@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
 import { Link, Redirect, useLocation } from 'wouter';
+import { ImagePicker } from '../components/atoms/image-picker';
+import { Submit } from '../components/atoms/submit';
+import { TextArea } from '../components/atoms/text-area';
 import { Plus } from '../components/icons';
-import { ImagePicker } from '../components/image-picker';
 import { StickyHeader } from '../components/sticky-header';
-import { Submit } from '../components/submit';
-import { TextArea } from '../components/text-area';
 import { useIntentions, useInvalidateIntentions } from '../hooks/intentions';
 import {
   useCreatePost,

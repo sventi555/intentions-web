@@ -1,8 +1,8 @@
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
-import { Visibility, VisibilityOff } from './icons';
-import { Icon } from './icons/icon';
+import { Visibility, VisibilityOff } from '../icons';
+import { Icon } from '../icons/icon';
 import { InputError } from './input-error';
 
 interface InputProps {

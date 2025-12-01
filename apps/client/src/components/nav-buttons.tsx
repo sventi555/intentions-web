@@ -60,7 +60,7 @@ const TabButton: React.FC<TabButtonProps> = ({
     >
       <Icon
         className={clsx(
-          'text-[#444444]',
+          'text-neutral-700',
           iconSize === 'small' ? 'size-[20px]' : 'size-[28px]',
         )}
       />

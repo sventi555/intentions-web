@@ -2,9 +2,9 @@ import { clsx } from 'clsx';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useLocation } from 'wouter';
-import { Button } from '../components/button';
-import { Input } from '../components/input';
-import { Submit } from '../components/submit';
+import { Button } from '../components/atoms/button';
+import { Input } from '../components/atoms/input';
+import { Submit } from '../components/atoms/submit';
 import {
   useCreateIntention,
   useInvalidateIntentions,
