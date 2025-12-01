@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'wouter';
 import { Button } from '../components/button';
 import { DisplayPic } from '../components/display-pic';
+import { Close, Search as SearchIcon } from '../components/icons';
 import { Input } from '../components/input';
 import {
   useFollow,
@@ -30,8 +31,12 @@ export const Search: React.FC = () => {
   const [followPending, setFollowPending] = useState(false);
 
   return (
-    <div className="flex grow flex-col p-2">
-      <div className="flex items-center gap-1">
+    <div className="flex grow flex-col items-center gap-2 p-4">
+      <div className="text-neutral-600">
+        Enter an <b>exact</b> username to follow someone
+      </div>
+
+      <div className="flex items-center gap-1 self-stretch">
         <div className="flex grow flex-col">
           <Input
             placeholder="username"
@@ -39,9 +44,11 @@ export const Search: React.FC = () => {
             onEnter={() => setSearchedUsername(username)}
             closeOnEnter
             onChange={setUsername}
+            Icon={username ? Close : SearchIcon}
+            onClickIcon={username ? () => setUsername('') : undefined}
           />
         </div>
-        <div className="flex basis-24 flex-col">
+        <div className="flex basis-[80px] flex-col">
           <Button
             type="secondary"
             onClick={() => setSearchedUsername(username)}
@@ -50,10 +57,6 @@ export const Search: React.FC = () => {
           </Button>
         </div>
       </div>
-
-      {searchedUsername && !searchedUserLoading && !searchedUser ? (
-        <div className="text-neutral-600">user not found</div>
-      ) : null}
 
       <div className="flex grow flex-col items-center justify-center">
         {searchedUser != null && !searchedFollowLoading ? (
@@ -103,11 +106,11 @@ export const Search: React.FC = () => {
               ) : null}
             </div>
           </Link>
-        ) : (
-          <div className="text-neutral-400">
-            Search for a user to follow them
-          </div>
-        )}
+        ) : null}
+
+        {searchedUsername && !searchedUserLoading && !searchedUser ? (
+          <div>user not found</div>
+        ) : null}
       </div>
     </div>
   );

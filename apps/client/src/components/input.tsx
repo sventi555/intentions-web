@@ -1,8 +1,8 @@
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
-import { Visibility } from './icons/visibility';
-import { VisibilityOff } from './icons/visibility-off';
+import { Visibility, VisibilityOff } from './icons';
+import { Icon } from './icons/icon';
 import { InputError } from './input-error';
 
 interface InputProps {
@@ -17,6 +17,8 @@ interface InputProps {
   closeOnEnter?: boolean;
   formRegister?: UseFormRegisterReturn;
   className?: string;
+  Icon?: Icon;
+  onClickIcon?: () => void;
 }
 
 export const Input: React.FC<InputProps> = (props) => {
@@ -29,6 +31,8 @@ export const Input: React.FC<InputProps> = (props) => {
     inputType = 'email';
   }
 
+  const Icon = props.Icon;
+
   return (
     <div>
       <div className="relative flex flex-col">
@@ -38,7 +42,10 @@ export const Input: React.FC<InputProps> = (props) => {
           autoCapitalize="none"
           autoCorrect="none"
           placeholder={props.placeholder}
-          className={clsx(props.className, 'rounded-sm border p-1')}
+          className={clsx(
+            props.className,
+            'rounded-sm border border-neutral-300 p-1',
+          )}
           onFocus={props.onFocus}
           value={props.value}
           onChange={(e) => props.onChange?.(e.target.value)}
@@ -53,13 +60,32 @@ export const Input: React.FC<InputProps> = (props) => {
           }}
           {...props.formRegister}
         />
+
+        {Icon ? (
+          <button
+            disabled={!props.onClickIcon}
+            type="button"
+            onClick={props.onClickIcon}
+            className={clsx(
+              'absolute top-1/2 right-2 -translate-y-1/2 text-neutral-600',
+              props.onClickIcon && 'cursor-pointer',
+            )}
+          >
+            <Icon className="size-[20px]" />
+          </button>
+        ) : null}
+
         {props.type === 'password' ? (
           <button
             type="button"
             onClick={() => setPasswordHidden(!passwordHidden)}
             className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer text-neutral-600"
           >
-            {passwordHidden ? <VisibilityOff /> : <Visibility />}
+            {passwordHidden ? (
+              <VisibilityOff className="size-[20px]" />
+            ) : (
+              <Visibility className="size-[20px]" />
+            )}
           </button>
         ) : null}
       </div>

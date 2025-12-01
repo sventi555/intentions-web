@@ -1,6 +1,6 @@
 import { Route } from 'wouter';
 import { AuthProtected } from './components/auth-protected';
-import { TabBar } from './components/tab-bar';
+import { PageWrapper } from './components/page-wrapper';
 import { CreateIntention } from './pages/create-intention';
 import { CreatePost } from './pages/create-post';
 import { Feed } from './pages/feed';
@@ -13,52 +13,68 @@ import { SignUp } from './pages/sign-up';
 
 const App: React.FC = () => {
   return (
-    <div className="mx-auto max-w-[640px]">
-      <div className="box-border flex min-h-dvh flex-col pb-[calc(40px+env(safe-area-inset-bottom))]">
-        <Route path="/">
-          <AuthProtected>
+    <>
+      <Route path="/">
+        <AuthProtected>
+          <PageWrapper>
             <Feed />
-          </AuthProtected>
-        </Route>
-        <Route path="/search">
-          <AuthProtected>
+          </PageWrapper>
+        </AuthProtected>
+      </Route>
+      <Route path="/search">
+        <AuthProtected>
+          <PageWrapper>
             <Search />
-          </AuthProtected>
-        </Route>
-        <Route path="/create">
-          <AuthProtected>
+          </PageWrapper>
+        </AuthProtected>
+      </Route>
+      <Route path="/create">
+        <AuthProtected>
+          <PageWrapper>
             <CreatePost />
-          </AuthProtected>
-        </Route>
-        <Route path="/create/intention">
-          <AuthProtected>
+          </PageWrapper>
+        </AuthProtected>
+      </Route>
+      <Route path="/create/intention">
+        <AuthProtected>
+          <PageWrapper>
             <CreateIntention />
-          </AuthProtected>
-        </Route>
-        <Route path="/notifications">
-          <AuthProtected>
+          </PageWrapper>
+        </AuthProtected>
+      </Route>
+      <Route path="/notifications">
+        <AuthProtected>
+          <PageWrapper>
             <Notifications />
-          </AuthProtected>
-        </Route>
-        <Route path="/profile/:userId">
-          <AuthProtected>
+          </PageWrapper>
+        </AuthProtected>
+      </Route>
+      <Route path="/profile/:userId">
+        <AuthProtected>
+          <PageWrapper>
             <Profile />
-          </AuthProtected>
-        </Route>
-        <Route path="/profile/:userId/intention/:intentionId">
-          <AuthProtected>
+          </PageWrapper>
+        </AuthProtected>
+      </Route>
+      <Route path="/profile/:userId/intention/:intentionId">
+        <AuthProtected>
+          <PageWrapper>
             <Intention />
-          </AuthProtected>
-        </Route>
-        <Route path="/sign-in">
+          </PageWrapper>
+        </AuthProtected>
+      </Route>
+
+      <Route path="/sign-in">
+        <PageWrapper showNav={false}>
           <SignIn />
-        </Route>
-        <Route path="/sign-up">
+        </PageWrapper>
+      </Route>
+      <Route path="/sign-up">
+        <PageWrapper showNav={false}>
           <SignUp />
-        </Route>
-      </div>
-      <TabBar />
-    </div>
+        </PageWrapper>
+      </Route>
+    </>
   );
 };
 

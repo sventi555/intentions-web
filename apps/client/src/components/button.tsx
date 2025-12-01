@@ -26,8 +26,8 @@ export const getButtonStyle = ({
 }: Pick<ButtonProps, 'type' | 'disabled'>) => {
   return clsx(
     'rounded-sm p-1',
-    type === 'primary' && !disabled && 'bg-blue-200 hover:bg-blue-300',
-    type === 'secondary' && !disabled && 'bg-neutral-200 hover:bg-neutral-300',
+    type === 'primary' && !disabled && 'bg-[#2C3B4E] text-white',
+    type === 'secondary' && !disabled && 'bg-neutral-200',
     !disabled && 'cursor-pointer',
     disabled && 'bg-neutral-100 text-neutral-500',
   );

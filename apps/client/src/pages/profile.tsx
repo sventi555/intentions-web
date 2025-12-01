@@ -10,6 +10,7 @@ import {
   TabPanels,
 } from '@headlessui/react';
 import clsx from 'clsx';
+import { format, intlFormatDistance } from 'date-fns';
 import { signOut } from 'firebase/auth';
 import { PropsWithChildren, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
@@ -38,7 +39,6 @@ import {
 } from '../hooks/posts';
 import { useInvalidateUser, useUpdateUser, useUser } from '../hooks/users';
 import { useAuthState } from '../state/auth';
-import { dayjs } from '../utils/time';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -236,12 +236,14 @@ const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
   }
 
   return (
-    <PostsList
-      posts={posts}
-      fetchNextPage={fetchNextPage}
-      fetchingPage={isFetchingNextPage}
-      hasNextPage={hasNextPage}
-    />
+    <div className="p-[24px]">
+      <PostsList
+        posts={posts}
+        fetchNextPage={fetchNextPage}
+        fetchingPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+      />
+    </div>
   );
 };
 
@@ -252,26 +254,25 @@ interface ProfileIntentionsProps {
 const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
   const [sortBy, setSortBy] = useState<IntentionsSort['by']>('updatedAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-  const { intentions } = useIntentions(props.userId, {
-    by: sortBy,
-    dir: fixSortDir(sortBy, sortDir),
-  });
+  const { intentions, isLoading: intentionsLoading } = useIntentions(
+    props.userId,
+    {
+      by: sortBy,
+      dir: fixSortDir(sortBy, sortDir),
+    },
+  );
 
-  if (intentions == null) {
-    return null;
-  }
-
-  if (intentions.length === 0) {
+  if (!intentionsLoading && intentions?.length === 0) {
     return <TabFallbackText>No intentions yet...</TabFallbackText>;
   }
 
   return (
-    <div className="p-2">
-      <div className="flex items-center gap-1">
+    <div className="flex flex-col gap-2 p-4">
+      <div className="flex items-center gap-2">
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as IntentionsSort['by'])}
-          className="cursor-pointer rounded-sm border"
+          className="cursor-pointer rounded-lg border border-neutral-300 p-1"
         >
           <option value="updatedAt">Recently active</option>
           <option value="name">Name</option>
@@ -280,20 +281,19 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
         </select>
         <button
           onClick={() => setSortDir(sortDir === 'asc' ? 'desc' : 'asc')}
-          className="cursor-pointer"
+          className="cursor-pointer text-lg text-neutral-600"
         >
           {sortDir === 'asc' ? '↑' : '↓'}
         </button>
       </div>
       <div className="flex flex-col">
-        {intentions.map(({ id, data }, index) => {
-          let stat: string | null = null;
-          if (sortBy === 'postCount') {
-            stat = `${data.postCount} posts`;
-          } else if (sortBy === 'updatedAt') {
-            stat = `Updated ${dayjs(data.updatedAt).fromNow()}`;
+        {intentions?.map(({ id, data }, index) => {
+          let stat = `${data.postCount} posts`;
+
+          if (sortBy === 'updatedAt') {
+            stat = `Updated ${intlFormatDistance(data.updatedAt, Date.now())}`;
           } else if (sortBy === 'createdAt') {
-            stat = `Created ${dayjs(data.createdAt).format('MMM D, YYYY')}`;
+            stat = `Created ${format(data.createdAt, 'MMM d, yyyy')}`;
           }
 
           return (

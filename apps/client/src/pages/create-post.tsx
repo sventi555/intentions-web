@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
 import { Link, Redirect, useLocation } from 'wouter';
+import { Plus } from '../components/icons';
 import { ImagePicker } from '../components/image-picker';
 import { StickyHeader } from '../components/sticky-header';
 import { Submit } from '../components/submit';
@@ -93,11 +94,11 @@ export const CreatePost: React.FC = () => {
       >
         <div className="flex flex-col">
           <label>Pick an intention:</label>
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             <select
               onChange={(e) => setSelectedIntentionId(e.target.value)}
               value={computedIntentionId}
-              className="grow cursor-pointer rounded-sm border"
+              className="grow cursor-pointer rounded-sm border border-neutral-300 p-1"
             >
               {intentions.map(({ id, data }) => (
                 <option value={id} key={id}>
@@ -105,8 +106,11 @@ export const CreatePost: React.FC = () => {
                 </option>
               ))}
             </select>
-            <Link href="/create/intention" className="rounded-lg border px-2">
-              +
+            <Link
+              href="/create/intention"
+              className="rounded-full border border-neutral-300 p-1"
+            >
+              <Plus className="size-[20px] text-neutral-800" />
             </Link>
           </div>
         </div>
@@ -117,7 +121,7 @@ export const CreatePost: React.FC = () => {
           <button
             type="button"
             onClick={() => filePickerRef.current?.click()}
-            className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-sm border"
+            className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-sm border border-neutral-300"
           >
             <div className="text-neutral-600">Select an image</div>
           </button>

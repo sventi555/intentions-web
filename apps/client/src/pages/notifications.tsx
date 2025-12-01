@@ -2,8 +2,7 @@ import clsx from 'clsx';
 import { PropsWithChildren, useState } from 'react';
 import { Link } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
-import { Check } from '../components/icons/check';
-import { Close } from '../components/icons/close';
+import { Check, Close } from '../components/icons';
 import { StickyHeader } from '../components/sticky-header';
 import { useRespondToFollow } from '../hooks/follows';
 import {
@@ -85,7 +84,7 @@ const FollowNotificationWrapper: React.FC<
   PropsWithChildren<FollowNotificationWrapperProps>
 > = (props) => {
   return (
-    <div className="flex items-center gap-1 p-2">
+    <div className="flex items-center gap-2 p-2">
       <Link href={`/profile/${props.user.id}`}>
         <DisplayPic imageUri={props.user.dpUri} size={40} />
       </Link>

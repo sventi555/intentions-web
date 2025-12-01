@@ -1,6 +1,13 @@
+export { AddUser } from './add-user';
 export { Bell } from './bell';
+export { Check } from './check';
+export { Close } from './close';
 export { EllipsesVert } from './ellipses-vert';
 export { Home } from './home';
+export { Logo } from './logo';
 export { Pencil } from './pencil';
+export { Plus } from './plus';
 export { Profile } from './profile';
 export { Search } from './search';
+export { Visibility } from './visibility';
+export { VisibilityOff } from './visibility-off';

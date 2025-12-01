@@ -21,7 +21,7 @@ export const PostsList: React.FC<PostsListProps> = (props) => {
     }
 
     throttledFetchPage();
-  }, [inView, props.fetchingPage, props.hasNextPage]);
+  }, [throttledFetchPage, inView, props.fetchingPage, props.hasNextPage]);
 
   return (
     <div className="flex flex-col gap-1">

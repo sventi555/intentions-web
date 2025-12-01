@@ -31,11 +31,13 @@ export const Feed: React.FC = () => {
   }
 
   return (
-    <PostsList
-      posts={posts}
-      fetchNextPage={fetchNextPage}
-      fetchingPage={isFetchingNextPage}
-      hasNextPage={hasNextPage}
-    />
+    <div className="p-[24px]">
+      <PostsList
+        posts={posts}
+        fetchNextPage={fetchNextPage}
+        fetchingPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+      />
+    </div>
   );
 };

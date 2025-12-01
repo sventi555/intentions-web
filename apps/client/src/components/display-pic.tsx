@@ -2,7 +2,7 @@ import placeholder from '../assets/images/placeholder-dp.jpg';
 import { useDownloadUrl } from '../hooks/download-url';
 
 interface DisplayPicProps {
-  imageUri?: string;
+  imageUri: string | undefined;
   size: number;
 }
 
@@ -18,7 +18,7 @@ export const DisplayPic: React.FC<DisplayPicProps> = (props) => {
         minHeight: props.size,
         height: props.size,
       }}
-      className="rounded-full border object-cover"
+      className="rounded-full object-cover"
     />
   );
 };

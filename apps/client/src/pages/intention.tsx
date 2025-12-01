@@ -22,15 +22,16 @@ export const Intention: React.FC = () => {
   return (
     <div>
       <StickyHeader>
-        <div>{intention.user.username}&apos;s intention:</div>
-        <div className="font-bold">{intention.name}</div>
+        {intention.user.username}&apos;s intention: <b>{intention.name}</b>
       </StickyHeader>
-      <PostsList
-        posts={posts}
-        fetchNextPage={fetchNextPage}
-        fetchingPage={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-      />
+      <div className="p-[24px] pt-[12px]">
+        <PostsList
+          posts={posts}
+          fetchNextPage={fetchNextPage}
+          fetchingPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+        />
+      </div>
     </div>
   );
 };

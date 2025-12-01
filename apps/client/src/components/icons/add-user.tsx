@@ -1,6 +1,6 @@
 import { Icon } from './icon';
 
-export const Visibility: Icon = (props) => {
+export const AddUser: Icon = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -14,8 +14,10 @@ export const Visibility: Icon = (props) => {
       strokeLinejoin="round"
       className={props.className}
     >
-      <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
-      <circle cx="12" cy="12" r="3" />
+      <path d="M2 21a8 8 0 0 1 13.292-6" />
+      <circle cx="10" cy="8" r="5" />
+      <path d="M19 16v6" />
+      <path d="M22 19h-6" />
     </svg>
   );
 };

@@ -14,7 +14,7 @@ export const TextArea: React.FC<TextAreaProps> = (props) => {
     <div className="flex flex-col">
       <textarea
         placeholder={props.placeholder}
-        className="h-24 rounded-sm border p-1"
+        className="h-24 rounded-sm border border-neutral-300 p-1"
         value={props.value}
         onChange={(e) => props.onChange?.(e.target.value)}
         {...props.formRegister}
