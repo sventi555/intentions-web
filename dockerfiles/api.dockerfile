@@ -35,14 +35,11 @@ RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 COPY --from=installer /app/out/full/ .
 
 ################################################################################
-FROM oven/bun:1 AS runner
+FROM oven/bun:1.3.5 AS runner
 
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 hono
-USER hono
+COPY --from=builder /app .
 
-COPY --from=builder --chown=hono:nodejs /app .
-
+USER bun
 CMD bun run --filter api start
