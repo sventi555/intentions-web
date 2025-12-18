@@ -24,14 +24,12 @@ export const Intention: React.FC = () => {
       <StickyHeader>
         {intention.user.username}&apos;s intention: <b>{intention.name}</b>
       </StickyHeader>
-      <div className="p-[24px] pt-[12px]">
-        <PostsList
-          posts={posts}
-          fetchNextPage={fetchNextPage}
-          fetchingPage={isFetchingNextPage}
-          hasNextPage={hasNextPage}
-        />
-      </div>
+      <PostsList
+        posts={posts}
+        fetchNextPage={fetchNextPage}
+        fetchingPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+      />
     </div>
   );
 };

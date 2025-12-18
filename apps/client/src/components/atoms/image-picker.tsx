@@ -9,7 +9,7 @@ export const ImagePicker = forwardRef<HTMLInputElement, ImagePickerProps>(
     return (
       <input
         type="file"
-        accept="image/png, image/jpeg"
+        accept="image/png, image/jpeg, image/webp"
         hidden={true}
         onChange={(e) => {
           const reader = new FileReader();

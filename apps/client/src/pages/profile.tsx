@@ -236,14 +236,12 @@ const ProfilePosts: React.FC<ProfilePostsProps> = (props) => {
   }
 
   return (
-    <div className="p-[24px]">
-      <PostsList
-        posts={posts}
-        fetchNextPage={fetchNextPage}
-        fetchingPage={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-      />
-    </div>
+    <PostsList
+      posts={posts}
+      fetchNextPage={fetchNextPage}
+      fetchingPage={isFetchingNextPage}
+      hasNextPage={hasNextPage}
+    />
   );
 };
 
