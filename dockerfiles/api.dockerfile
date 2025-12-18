@@ -39,10 +39,10 @@ FROM oven/bun:1 AS runner
 
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 hono
+RUN groupadd --system --gid 1001 bun
+RUN useradd --system --uid 1001 hono
 USER hono
 
-COPY --from=builder --chown=hono:nodejs /app .
+COPY --from=builder --chown=hono:bun /app .
 
 CMD bun run --filter api start
