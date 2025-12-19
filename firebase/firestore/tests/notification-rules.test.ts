@@ -6,6 +6,7 @@ import {
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { notificationDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
@@ -19,9 +20,6 @@ const testUsers = {
   [USER_IDS.authUser]: { username: 'auth-user' },
   [USER_IDS.otherUser]: { username: 'other-user' },
 };
-
-const notificationDocPath = (userId: string, notificationId: string) =>
-  `/users/${userId}/notifications/${notificationId}`;
 
 const addNotificationWithoutRules = async (
   testEnv: RulesTestEnvironment,

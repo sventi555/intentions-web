@@ -13,6 +13,7 @@ import {
   setDoc,
   setLogLevel,
 } from 'firebase/firestore';
+import { followDocPath, intentionDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
@@ -30,11 +31,6 @@ const testUsers = {
 };
 
 const STATUS = { accepted: 'accepted', pending: 'pending' };
-
-const followDocPath = (fromId: string, toId: string) =>
-  `follows/${toId}/from/${fromId}`;
-
-const intentionDocPath = (id: string) => `intentions/${id}`;
 
 const addIntentionWithoutRules = async (
   testEnv: RulesTestEnvironment,

@@ -6,6 +6,7 @@ import {
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import { doc, getDoc, setDoc, setLogLevel } from 'firebase/firestore';
+import { followDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
@@ -25,9 +26,6 @@ const testUsers = {
 };
 
 const STATUS = { accepted: 'accepted', pending: 'pending' };
-
-const followDocPath = (fromId: string, toId: string) =>
-  `follows/${toId}/from/${fromId}`;
 
 const addFollowWithoutRules = async (
   testEnv: RulesTestEnvironment,

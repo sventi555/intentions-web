@@ -13,6 +13,7 @@ import {
   setDoc,
   setLogLevel,
 } from 'firebase/firestore';
+import { followDocPath, postDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
@@ -30,10 +31,6 @@ const testUsers = {
 };
 
 const STATUS = { accepted: 'accepted', pending: 'pending' };
-
-const followDocPath = (from: string, to: string) =>
-  `follows/${to}/from/${from}`;
-const postDocPath = (id: string) => `posts/${id}`;
 
 const addPostWithoutRules = async (
   testEnv: RulesTestEnvironment,
@@ -169,6 +166,8 @@ describe('post rules', () => {
         });
         await testEnv.withSecurityRulesDisabled(async (context) => {
           const db = context.firestore();
+
+          console.log(followDocPath(USER_IDS.otherUser, USER_IDS.authUser));
 
           const followDoc = doc(
             db,

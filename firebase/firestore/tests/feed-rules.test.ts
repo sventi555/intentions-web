@@ -13,6 +13,7 @@ import {
   setDoc,
   setLogLevel,
 } from 'firebase/firestore';
+import { feedPostDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
@@ -28,9 +29,6 @@ const testUsers = {
   [USER_IDS.authUser]: { username: 'auth-user' },
   [USER_IDS.otherUser]: { username: 'other-user' },
 };
-
-const feedPostDocPath = (userId: string, postId: string) =>
-  `/users/${userId}/feed/${postId}`;
 
 const addFeedPostWithoutRules = async (
   testEnv: RulesTestEnvironment,

@@ -1,5 +1,20 @@
 import { collection, doc, QueryDocumentSnapshot } from 'firebase/firestore';
-import { Follow, FollowNotification, Intention, Post, User } from 'lib';
+import {
+  feedPostCollectionPath,
+  Follow,
+  followCollectionPath,
+  followDocPath,
+  FollowNotification,
+  Intention,
+  intentionCollectionPath,
+  intentionDocPath,
+  notificationCollectionPath,
+  Post,
+  postCollectionPath,
+  User,
+  userCollectionPath,
+  userDocPath,
+} from 'lib';
 import { db } from '../firebase';
 
 export type CollectionSort<T extends string> = {
@@ -14,34 +29,40 @@ const firestoreConverter = <T>() => ({
 
 export const collections = {
   users: () =>
-    collection(db, 'users').withConverter(firestoreConverter<User>()),
+    collection(db, userCollectionPath()).withConverter(
+      firestoreConverter<User>(),
+    ),
   follows: (toUser: string) =>
-    collection(db, `follows/${toUser}/from`).withConverter(
+    collection(db, followCollectionPath(toUser)).withConverter(
       firestoreConverter<Follow>(),
     ),
   intentions: () =>
-    collection(db, 'intentions').withConverter(firestoreConverter<Intention>()),
+    collection(db, intentionCollectionPath()).withConverter(
+      firestoreConverter<Intention>(),
+    ),
   posts: () =>
-    collection(db, 'posts').withConverter(firestoreConverter<Post>()),
+    collection(db, postCollectionPath()).withConverter(
+      firestoreConverter<Post>(),
+    ),
   feed: (userId: string) =>
-    collection(db, `users/${userId}/feed`).withConverter(
+    collection(db, feedPostCollectionPath(userId)).withConverter(
       firestoreConverter<Post>(),
     ),
   notifications: (userId: string) =>
-    collection(db, `users/${userId}/notifications`).withConverter(
+    collection(db, notificationCollectionPath(userId)).withConverter(
       firestoreConverter<FollowNotification>(),
     ),
 };
 
 export const docs = {
   user: (userId: string) =>
-    doc(db, 'users', userId).withConverter(firestoreConverter<User>()),
+    doc(db, userDocPath(userId)).withConverter(firestoreConverter<User>()),
   follow: (fromUserId: string, toUserId: string) =>
-    doc(db, 'follows', `${toUserId}/from/${fromUserId}`).withConverter(
+    doc(db, followDocPath(fromUserId, toUserId)).withConverter(
       firestoreConverter<Follow>(),
     ),
   intention: (intentionId: string) =>
-    doc(db, 'intentions', intentionId).withConverter(
+    doc(db, intentionDocPath(intentionId)).withConverter(
       firestoreConverter<Intention>(),
     ),
 };

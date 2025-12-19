@@ -1,2 +1,2 @@
-export * from './db-models';
+export * from './db';
 export * from './schemas';

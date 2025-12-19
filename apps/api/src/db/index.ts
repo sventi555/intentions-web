@@ -1,5 +1,17 @@
 import type { QueryDocumentSnapshot } from 'firebase-admin/firestore';
-import type { Follow, FollowNotification, Intention, Post, User } from 'lib';
+import {
+  feedPostCollectionPath,
+  followCollectionPath,
+  intentionCollectionPath,
+  notificationCollectionPath,
+  postCollectionPath,
+  userCollectionPath,
+  type Follow,
+  type FollowNotification,
+  type Intention,
+  type Post,
+  type User,
+} from 'lib';
 import { db } from '../config';
 
 const firestoreConverter = <T>() => ({
@@ -8,21 +20,29 @@ const firestoreConverter = <T>() => ({
 });
 
 export const collections = {
-  users: () => db.collection('users').withConverter(firestoreConverter<User>()),
+  users: () =>
+    db
+      .collection(userCollectionPath())
+      .withConverter(firestoreConverter<User>()),
   follows: (toUser: string) =>
     db
-      .collection(`follows/${toUser}/from`)
+      .collection(followCollectionPath(toUser))
       .withConverter(firestoreConverter<Follow>()),
   intentions: () =>
-    db.collection('intentions').withConverter(firestoreConverter<Intention>()),
-  posts: () => db.collection('posts').withConverter(firestoreConverter<Post>()),
+    db
+      .collection(intentionCollectionPath())
+      .withConverter(firestoreConverter<Intention>()),
+  posts: () =>
+    db
+      .collection(postCollectionPath())
+      .withConverter(firestoreConverter<Post>()),
   feed: (userId: string) =>
     db
-      .collection(`users/${userId}/feed`)
+      .collection(feedPostCollectionPath(userId))
       .withConverter(firestoreConverter<Post>()),
   notifications: (userId: string) =>
     db
-      .collection(`users/${userId}/notifications`)
+      .collection(notificationCollectionPath(userId))
       .withConverter(firestoreConverter<FollowNotification>()),
 };
 
