@@ -5,18 +5,12 @@ import {
   type RulesTestContext,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  setLogLevel,
-} from 'firebase/firestore';
+import { doc, getDoc, setDoc, setLogLevel } from 'firebase/firestore';
 import { feedPostDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
+import { addFeedPostWithoutRules } from './utils';
 
 setLogLevel('silent');
 
@@ -28,25 +22,6 @@ const USER_IDS = {
 const testUsers = {
   [USER_IDS.authUser]: { username: 'auth-user' },
   [USER_IDS.otherUser]: { username: 'other-user' },
-};
-
-const addFeedPostWithoutRules = async (
-  testEnv: RulesTestEnvironment,
-  post: { userId: string },
-) => {
-  let feedPostId: string = '';
-
-  await testEnv.withSecurityRulesDisabled(async (context) => {
-    const db = context.firestore();
-
-    const feedPostDoc = await addDoc(
-      collection(db, `users/${post.userId}/feed`),
-      post,
-    );
-    feedPostId = feedPostDoc.id;
-  });
-
-  return feedPostId;
 };
 
 describe('feed rules', () => {
@@ -91,17 +66,16 @@ describe('feed rules', () => {
   describe('read', () => {
     describe('when the requester owns the feed', () => {
       let postId: string = '';
+      const postUser = USER_IDS.authUser;
 
       beforeEach(async () => {
-        postId = await addFeedPostWithoutRules(testEnv, {
-          userId: USER_IDS.authUser,
-        });
+        postId = await addFeedPostWithoutRules(testEnv, postUser);
       });
 
       it('should allow reading', async () => {
         const db = authContext.firestore();
 
-        const feedPostDoc = doc(db, feedPostDocPath(USER_IDS.authUser, postId));
+        const feedPostDoc = doc(db, feedPostDocPath(postUser, postId));
         await assertSucceeds(getDoc(feedPostDoc));
       });
     });
@@ -111,9 +85,7 @@ describe('feed rules', () => {
       const postUser = USER_IDS.otherUser;
 
       beforeEach(async () => {
-        postId = await addFeedPostWithoutRules(testEnv, {
-          userId: postUser,
-        });
+        postId = await addFeedPostWithoutRules(testEnv, USER_IDS.authUser);
       });
 
       it('should not allow reading as unauthenticated', async () => {

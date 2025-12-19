@@ -5,18 +5,12 @@ import {
   type RulesTestContext,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  setLogLevel,
-} from 'firebase/firestore';
+import { doc, getDoc, setDoc, setLogLevel } from 'firebase/firestore';
 import { followDocPath, postDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
+import { addPostWithoutRules } from './utils';
 
 setLogLevel('silent');
 
@@ -31,22 +25,6 @@ const testUsers = {
 };
 
 const STATUS = { accepted: 'accepted', pending: 'pending' };
-
-const addPostWithoutRules = async (
-  testEnv: RulesTestEnvironment,
-  post: { userId: string },
-) => {
-  let postId: string = '';
-
-  await testEnv.withSecurityRulesDisabled(async (context) => {
-    const db = context.firestore();
-
-    const postDoc = await addDoc(collection(db, 'posts'), post);
-    postId = postDoc.id;
-  });
-
-  return postId;
-};
 
 describe('post rules', () => {
   let testEnv: RulesTestEnvironment;
@@ -93,9 +71,7 @@ describe('post rules', () => {
       let postId: string = '';
 
       beforeEach(async () => {
-        postId = await addPostWithoutRules(testEnv, {
-          userId: USER_IDS.authUser,
-        });
+        postId = await addPostWithoutRules(testEnv, USER_IDS.authUser);
       });
 
       it('should allow reading ', async () => {
@@ -110,9 +86,7 @@ describe('post rules', () => {
       let postId: string;
 
       beforeEach(async () => {
-        postId = await addPostWithoutRules(testEnv, {
-          userId: USER_IDS.otherUser,
-        });
+        postId = await addPostWithoutRules(testEnv, USER_IDS.otherUser);
         await testEnv.withSecurityRulesDisabled(async (context) => {
           const db = context.firestore();
 
@@ -137,9 +111,7 @@ describe('post rules', () => {
       let postId: string;
 
       beforeEach(async () => {
-        postId = await addPostWithoutRules(testEnv, {
-          userId: USER_IDS.otherUser,
-        });
+        postId = await addPostWithoutRules(testEnv, USER_IDS.otherUser);
       });
 
       it('should not allow reading when authenticated', async () => {
@@ -161,13 +133,9 @@ describe('post rules', () => {
       let postId: string;
 
       beforeEach(async () => {
-        postId = await addPostWithoutRules(testEnv, {
-          userId: USER_IDS.otherUser,
-        });
+        postId = await addPostWithoutRules(testEnv, USER_IDS.otherUser);
         await testEnv.withSecurityRulesDisabled(async (context) => {
           const db = context.firestore();
-
-          console.log(followDocPath(USER_IDS.otherUser, USER_IDS.authUser));
 
           const followDoc = doc(
             db,

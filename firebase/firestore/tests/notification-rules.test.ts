@@ -5,11 +5,12 @@ import {
   type RulesTestContext,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { notificationDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
+import { addNotificationWithoutRules } from './utils';
 
 const USER_IDS = {
   authUser: 'authUser',
@@ -19,25 +20,6 @@ const USER_IDS = {
 const testUsers = {
   [USER_IDS.authUser]: { username: 'auth-user' },
   [USER_IDS.otherUser]: { username: 'other-user' },
-};
-
-const addNotificationWithoutRules = async (
-  testEnv: RulesTestEnvironment,
-  notification: { userId: string },
-) => {
-  let notificationId: string = '';
-
-  await testEnv.withSecurityRulesDisabled(async (context) => {
-    const db = context.firestore();
-
-    const notificationDoc = await addDoc(
-      collection(db, `users/${notification.userId}/notifications`),
-      notification,
-    );
-    notificationId = notificationDoc.id;
-  });
-
-  return notificationId;
 };
 
 describe('feed rules', () => {
@@ -84,9 +66,10 @@ describe('feed rules', () => {
       let notificationId: string = '';
 
       beforeEach(async () => {
-        notificationId = await addNotificationWithoutRules(testEnv, {
-          userId: USER_IDS.authUser,
-        });
+        notificationId = await addNotificationWithoutRules(
+          testEnv,
+          USER_IDS.authUser,
+        );
       });
 
       it('should allow reading', async () => {
@@ -105,9 +88,10 @@ describe('feed rules', () => {
       const notificationUser = USER_IDS.otherUser;
 
       beforeEach(async () => {
-        notificationId = await addNotificationWithoutRules(testEnv, {
-          userId: notificationUser,
-        });
+        notificationId = await addNotificationWithoutRules(
+          testEnv,
+          notificationUser,
+        );
       });
 
       it('should not allow reading as unauthenticated', async () => {

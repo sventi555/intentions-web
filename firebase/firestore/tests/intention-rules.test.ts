@@ -5,18 +5,12 @@ import {
   type RulesTestContext,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  setLogLevel,
-} from 'firebase/firestore';
+import { doc, getDoc, setDoc, setLogLevel } from 'firebase/firestore';
 import { followDocPath, intentionDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
+import { addIntentionWithoutRules } from './utils';
 
 setLogLevel('silent');
 
@@ -31,22 +25,6 @@ const testUsers = {
 };
 
 const STATUS = { accepted: 'accepted', pending: 'pending' };
-
-const addIntentionWithoutRules = async (
-  testEnv: RulesTestEnvironment,
-  intention: { userId: string; name: string },
-) => {
-  let intentionId: string = '';
-
-  await testEnv.withSecurityRulesDisabled(async (context) => {
-    const db = context.firestore();
-
-    const intentionDoc = await addDoc(collection(db, 'intentions'), intention);
-    intentionId = intentionDoc.id;
-  });
-
-  return intentionId;
-};
 
 describe('intention rules', () => {
   let testEnv: RulesTestEnvironment;
@@ -93,10 +71,10 @@ describe('intention rules', () => {
       let intentionId: string;
 
       beforeEach(async () => {
-        intentionId = await addIntentionWithoutRules(testEnv, {
-          userId: USER_IDS.authUser,
-          name: 'cook grub',
-        });
+        intentionId = await addIntentionWithoutRules(
+          testEnv,
+          USER_IDS.authUser,
+        );
       });
 
       it('should allow reading intention', async () => {
@@ -111,10 +89,10 @@ describe('intention rules', () => {
       let intentionId: string;
 
       beforeEach(async () => {
-        intentionId = await addIntentionWithoutRules(testEnv, {
-          userId: USER_IDS.otherUser,
-          name: 'cook grub',
-        });
+        intentionId = await addIntentionWithoutRules(
+          testEnv,
+          USER_IDS.otherUser,
+        );
         await testEnv.withSecurityRulesDisabled(async (context) => {
           const db = context.firestore();
 
@@ -139,10 +117,10 @@ describe('intention rules', () => {
       let intentionId: string;
 
       beforeEach(async () => {
-        intentionId = await addIntentionWithoutRules(testEnv, {
-          userId: USER_IDS.otherUser,
-          name: 'cook grub',
-        });
+        intentionId = await addIntentionWithoutRules(
+          testEnv,
+          USER_IDS.otherUser,
+        );
       });
 
       it('should not allow reading when authenticated', async () => {
@@ -164,10 +142,10 @@ describe('intention rules', () => {
       let intentionId: string;
 
       beforeEach(async () => {
-        intentionId = await addIntentionWithoutRules(testEnv, {
-          userId: USER_IDS.otherUser,
-          name: 'cook grub',
-        });
+        intentionId = await addIntentionWithoutRules(
+          testEnv,
+          USER_IDS.otherUser,
+        );
         await testEnv.withSecurityRulesDisabled(async (context) => {
           const db = context.firestore();
 

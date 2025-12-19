@@ -10,6 +10,7 @@ import { followDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
+import { addFollowWithoutRules } from './utils';
 
 setLogLevel('silent');
 
@@ -26,18 +27,6 @@ const testUsers = {
 };
 
 const STATUS = { accepted: 'accepted', pending: 'pending' };
-
-const addFollowWithoutRules = async (
-  testEnv: RulesTestEnvironment,
-  { from, to, status }: { from: string; to: string; status: string },
-) => {
-  await testEnv.withSecurityRulesDisabled(async (context) => {
-    const db = context.firestore();
-
-    const followDoc = doc(db, followDocPath(from, to));
-    await setDoc(followDoc, { status });
-  });
-};
 
 describe('follow rules', () => {
   let testEnv: RulesTestEnvironment;
