@@ -31,31 +31,13 @@ const testUsers = {
 
 const STATUS = { accepted: 'accepted', pending: 'pending' };
 
-interface Post {
-  userId: string;
-  user: any;
-  intentionId: string;
-  intention: any;
-  createdAt: number;
-  description?: string;
-  imageUrl?: string;
-}
-
-const mockPost: Post = {
-  userId: '',
-  user: {},
-  intentionId: '',
-  intention: {},
-  createdAt: 0,
-};
-
 const followDocPath = (from: string, to: string) =>
   `follows/${to}/from/${from}`;
 const postDocPath = (id: string) => `posts/${id}`;
 
 const addPostWithoutRules = async (
   testEnv: RulesTestEnvironment,
-  post: Post,
+  post: { userId: string },
 ) => {
   let postId: string = '';
 
@@ -115,7 +97,6 @@ describe('post rules', () => {
 
       beforeEach(async () => {
         postId = await addPostWithoutRules(testEnv, {
-          ...mockPost,
           userId: USER_IDS.authUser,
         });
       });
@@ -133,7 +114,6 @@ describe('post rules', () => {
 
       beforeEach(async () => {
         postId = await addPostWithoutRules(testEnv, {
-          ...mockPost,
           userId: USER_IDS.otherUser,
         });
         await testEnv.withSecurityRulesDisabled(async (context) => {
@@ -161,7 +141,6 @@ describe('post rules', () => {
 
       beforeEach(async () => {
         postId = await addPostWithoutRules(testEnv, {
-          ...mockPost,
           userId: USER_IDS.otherUser,
         });
       });
@@ -186,7 +165,6 @@ describe('post rules', () => {
 
       beforeEach(async () => {
         postId = await addPostWithoutRules(testEnv, {
-          ...mockPost,
           userId: USER_IDS.otherUser,
         });
         await testEnv.withSecurityRulesDisabled(async (context) => {
