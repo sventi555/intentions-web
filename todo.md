@@ -1,6 +1,5 @@
 Tech debt:
 - error schemas for api error responses
-- feed and notification rule tests
 - invalidate everything on sign out
 - delete old profile picture when changing DP
 - delete post image when deleting post
