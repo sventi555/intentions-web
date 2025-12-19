@@ -2,19 +2,19 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function existsIn(collection, id) {
-      return exists(/databases/$(database)/documents/$(collection)/$(id));
-    }
-
     function getIn(collection, id) {
       return get(/databases/$(database)/documents/$(collection)/$(id));
     }
 
-    function isFollowing(user1Id, user2Id) {
+    function isFollowing(userId) {
       return (
-        existsIn(/follows, /$(user2Id)/from/$(user1Id)) &&
-        getIn(/follows, /$(user2Id)/from/$(user1Id)).data.status == 'accepted'
+        request.auth.uid != null &&
+        getIn(/follows, /$(userId)/from/$(request.auth.uid)).data.status == 'accepted'
       );
+    }
+
+    function isOwner(resourceOwnerId) {
+      return request.auth != null && request.auth.uid == resourceOwnerId;
     }
 
     match /{document=**} {
@@ -22,20 +22,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    match /usernames/{username} {
+    match /users/{userId} {
       allow read: if true;
-    }
 
-    match /users/{id} {
-      allow read: if true;
-    }
+      match /feed/{postId} {
+        allow read: if isOwner(userId);
+      }
 
-    match /users/{userId}/feed/{postId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-    }
-
-    match /users/{userId}/notifications/{notificationId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
+      match /notifications/{notificationId} {
+        allow read: if isOwner(userId);
+      }
     }
 
     match /follows/{toUserId}/from/{fromUserId} {
@@ -45,7 +41,7 @@ service cloud.firestore {
 
       function belongsToFollowed() {
         return request.auth != null && (
-          isFollowing(request.auth.uid, fromUserId) || isFollowing(request.auth.uid, toUserId)
+          isFollowing(fromUserId) || isFollowing(toUserId)
         );
       }
 
@@ -55,28 +51,22 @@ service cloud.firestore {
       );
     }
 
-    match /intentions/{id} {
-      function isOwner() {
-        return request.auth != null && request.auth.uid == resource.data.userId;
-      }
-
-      function followsOwner() {
-        return request.auth != null && isFollowing(request.auth.uid, resource.data.userId);
-      }
-
-      allow read: if (isOwner() || followsOwner());
+    match /intentions/{intentionId} {
+      allow read: if (isOwner(resource.data.userId) || isFollowing(resource.data.userId));
     }
 
-    match /posts/{id} {
-      function isOwner() {
-        return request.auth != null && request.auth.uid == resource.data.userId;
-      }
+    match /posts/{postId} {
+      allow read: if (isOwner(resource.data.userId) || isFollowing(resource.data.userId));
 
-      function followsOwner() {
-        return request.auth != null && isFollowing(request.auth.uid, resource.data.userId);
-      }
+      match /comments/{commentId} {
+        function canRead() {
+          let postUserId = getIn(/posts, /$(postId)).data.userId;
 
-      allow read: if (isOwner() || followsOwner());
+          return (isOwner(postUserId) || isFollowing(postUserId));
+        }
+
+        allow read: if canRead();
+      }
     }
   }
 }
