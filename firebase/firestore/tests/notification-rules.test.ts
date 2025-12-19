@@ -22,7 +22,7 @@ const testUsers = {
   [USER_IDS.otherUser]: { username: 'other-user' },
 };
 
-describe('feed rules', () => {
+describe('notification rules', () => {
   let testEnv: RulesTestEnvironment;
 
   let authContext: RulesTestContext;
