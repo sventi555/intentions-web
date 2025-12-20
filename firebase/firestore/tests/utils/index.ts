@@ -1,6 +1,7 @@
 import type { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import {
+  commentCollectionPath,
   feedPostCollectionPath,
   followDocPath,
   intentionCollectionPath,
@@ -62,3 +63,8 @@ export const addNotificationWithoutRules = async (
   testEnv: RulesTestEnvironment,
   userId: string,
 ) => addWithoutRules(testEnv, notificationCollectionPath(userId));
+
+export const addCommentWithoutRules = async (
+  testEnv: RulesTestEnvironment,
+  postId: string,
+) => addWithoutRules(testEnv, commentCollectionPath(postId));
