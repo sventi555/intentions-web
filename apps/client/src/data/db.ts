@@ -1,5 +1,7 @@
 import { collection, doc, QueryDocumentSnapshot } from 'firebase/firestore';
 import {
+  Comment,
+  commentCollectionPath,
   feedPostCollectionPath,
   Follow,
   followCollectionPath,
@@ -51,6 +53,10 @@ export const collections = {
   notifications: (userId: string) =>
     collection(db, notificationCollectionPath(userId)).withConverter(
       firestoreConverter<FollowNotification>(),
+    ),
+  comments: (postId: string) =>
+    collection(db, commentCollectionPath(postId)).withConverter(
+      firestoreConverter<Comment>(),
     ),
 };
 
