@@ -1,11 +1,13 @@
 import type { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import {
+  commentCollectionPath,
   feedPostCollectionPath,
   followCollectionPath,
   intentionCollectionPath,
   notificationCollectionPath,
   postCollectionPath,
   userCollectionPath,
+  type Comment,
   type Follow,
   type FollowNotification,
   type Intention,
@@ -44,6 +46,10 @@ export const collections = {
     db
       .collection(notificationCollectionPath(userId))
       .withConverter(firestoreConverter<FollowNotification>()),
+  comments: (postId: string) =>
+    db
+      .collection(commentCollectionPath(postId))
+      .withConverter(firestoreConverter<Comment>()),
 };
 
 export const bulkWriter = () => db.bulkWriter();

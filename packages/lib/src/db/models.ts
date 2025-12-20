@@ -29,6 +29,13 @@ export interface Post {
   image?: string;
 }
 
+export interface Comment {
+  userId: string;
+  user: Pick<User, 'username' | 'image'>;
+  body: string;
+  createdAt: number;
+}
+
 export interface FollowNotification {
   userId: string;
   user: Pick<User, 'username' | 'image'>;
