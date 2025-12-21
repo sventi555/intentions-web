@@ -1,7 +1,20 @@
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import {
+  Dialog,
+  DialogPanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+} from '@headlessui/react';
 import { intlFormatDistance } from 'date-fns';
 import { Post as _Post } from 'lib';
+import { useState } from 'react';
 import { Link } from 'wouter';
+import {
+  useComments,
+  useCreateComment,
+  useInvalidateComments,
+} from '../hooks/comments';
 import { useDownloadUrl } from '../hooks/download-url';
 import { useInvalidateIntentions } from '../hooks/intentions';
 import {
@@ -12,7 +25,7 @@ import {
 } from '../hooks/posts';
 import { useAuthState } from '../state/auth';
 import { DisplayPic } from './display-pic';
-import { EllipsesVert } from './icons';
+import { EllipsesVert, Send } from './icons';
 
 interface PostProps {
   id: string;
@@ -28,6 +41,8 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
   const invalidateIntentionPosts = useInvalidateIntentionPosts();
   const invalidateIntentions = useInvalidateIntentions();
   const invalidateFeedPosts = useInvalidateFeedPosts();
+
+  const [commentDialogOpen, setCommentDialogOpen] = useState(false);
 
   return (
     <div className="flex flex-col">
@@ -49,8 +64,6 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
           >
             {data.intention.name}
           </Link>
-
-          {/* <div className="text-sm text-neutral-300">•</div> */}
         </div>
         {data.userId === authUser?.uid ? (
           <Menu>
@@ -85,11 +98,111 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
 
       <img className="rounded-2xl" src={imageUrl} />
 
-      <div className="p-2">{data.description}</div>
+      <div className="p-2">
+        <div>{data.description}</div>
+        <button
+          className="cursor-pointer text-neutral-400"
+          onClick={() => setCommentDialogOpen(true)}
+        >
+          View comments...
+        </button>
+      </div>
 
       <div className="self-end text-sm text-neutral-400 italic">
         {intlFormatDistance(data.createdAt, Date.now(), { style: 'short' })}
       </div>
+
+      {commentDialogOpen && (
+        <CommentsDialog
+          postId={id}
+          open={commentDialogOpen}
+          setOpen={setCommentDialogOpen}
+        />
+      )}
     </div>
+  );
+};
+
+interface CommentsDialogProps {
+  postId: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+
+const CommentsDialog: React.FC<CommentsDialogProps> = ({
+  postId,
+  open,
+  setOpen,
+}) => {
+  const { comments } = useComments(postId);
+  const createComment = useCreateComment();
+  const invalidateComments = useInvalidateComments();
+  const [draftComment, setDraftComment] = useState('');
+
+  const onCreateComment = () => {
+    createComment({
+      postId,
+      body: { body: draftComment },
+    }).then(() => {
+      invalidateComments(postId);
+      setDraftComment('');
+    });
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={() => setOpen(false)}
+      className="relative z-50"
+    >
+      <div className="fixed inset-0 flex items-center justify-center bg-black/20 p-4">
+        <DialogPanel className="relative flex h-1/2 w-full max-w-[540px] flex-col overflow-hidden rounded-lg bg-white">
+          <div className="flex grow flex-col gap-2 overflow-hidden overflow-y-scroll p-4">
+            {comments?.map((c) => (
+              <div key={c.id} className="flex gap-2">
+                <Link href={`/profile/${c.data.userId}`}>
+                  <DisplayPic imageUri={c.data.user.image} size={32} />
+                </Link>
+                <div className="text-sm">
+                  <div>
+                    <Link
+                      href={`/profile/${c.data.userId}`}
+                      className="font-semibold"
+                    >
+                      {c.data.user.username}
+                    </Link>{' '}
+                    {c.data.body}
+                  </div>
+                  <div className="text-xs text-neutral-400 italic">
+                    {intlFormatDistance(c.data.createdAt, Date.now(), {
+                      style: 'short',
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="self-center text-sm text-neutral-400">
+              No more comments...
+            </div>
+          </div>
+          <div className="flex justify-between border-t border-neutral-300 p-1">
+            <textarea
+              placeholder="Add comment..."
+              value={draftComment}
+              onChange={(e) => setDraftComment(e.target.value)}
+              className="field-sizing-content max-h-[180px] grow resize-none p-2"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  onCreateComment();
+                }
+              }}
+            />
+            <button className="cursor-pointer p-2" onClick={onCreateComment}>
+              <Send className="text-neutral-600" />
+            </button>
+          </div>
+        </DialogPanel>
+      </div>
+    </Dialog>
   );
 };

@@ -9,5 +9,6 @@ export { Pencil } from './pencil';
 export { Plus } from './plus';
 export { Profile } from './profile';
 export { Search } from './search';
+export { Send } from './send';
 export { Visibility } from './visibility';
 export { VisibilityOff } from './visibility-off';
