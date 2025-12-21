@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Follow } from '../db-models';
+import type { Follow } from '../db/models';
 
 export type FollowUserResponse = Pick<Follow, 'status'>;
 
