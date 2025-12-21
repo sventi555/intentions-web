@@ -36,7 +36,6 @@
     "eslint-plugin-react-hooks": "5.0.0",
     "eslint-plugin-react-refresh": "0.4.14",
     "globals": "15.11.0",
-    "lib": "workspace:*",
     "postcss": "8.4.49",
     "prettier": "3.3.3",
     "prettier-plugin-tailwindcss": "0.6.14",
