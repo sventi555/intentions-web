@@ -58,3 +58,30 @@ export const useCreateComment = () => {
 
   return createComment;
 };
+
+export const useDeleteComment = () => {
+  const authUser = useAuthState().authUser;
+
+  const { mutateAsync: deleteComment } = useMutation<
+    unknown,
+    Error,
+    { postId: string; commentId: string }
+  >({
+    mutationFn: async ({ postId, commentId }) => {
+      const token = await authUser?.getIdToken();
+
+      await fetch(
+        `${import.meta.env.VITE_API_HOST}/posts/${postId}/comments/${commentId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token ?? '',
+          },
+        },
+      );
+    },
+  });
+
+  return deleteComment;
+};

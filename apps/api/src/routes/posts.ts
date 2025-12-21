@@ -166,4 +166,20 @@ app.post(
   },
 );
 
+app.delete('/:postId/comments/:commentId', authenticate, async (c) => {
+  const requesterId = c.var.uid;
+  const postId = c.req.param('postId');
+  const commentId = c.req.param('commentId');
+
+  const commentDoc = collections.comments(postId).doc(commentId);
+  const commentData = (await commentDoc.get()).data();
+  if (!commentData || commentData.userId !== requesterId) {
+    return c.body(null, 204);
+  }
+
+  await commentDoc.delete();
+
+  return c.body(null, 204);
+});
+
 export default app;

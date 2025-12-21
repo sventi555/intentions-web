@@ -13,6 +13,7 @@ import { Link } from 'wouter';
 import {
   useComments,
   useCreateComment,
+  useDeleteComment,
   useInvalidateComments,
 } from '../hooks/comments';
 import { useDownloadUrl } from '../hooks/download-url';
@@ -134,19 +135,24 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
   open,
   setOpen,
 }) => {
+  const { authUser } = useAuthState();
+
   const { comments } = useComments(postId);
   const createComment = useCreateComment();
+  const deleteComment = useDeleteComment();
   const invalidateComments = useInvalidateComments();
   const [draftComment, setDraftComment] = useState('');
 
   const onCreateComment = () => {
-    createComment({
-      postId,
-      body: { body: draftComment },
-    }).then(() => {
-      invalidateComments(postId);
-      setDraftComment('');
-    });
+    if (draftComment.trim()) {
+      createComment({
+        postId,
+        body: { body: draftComment },
+      }).then(() => {
+        invalidateComments(postId);
+        setDraftComment('');
+      });
+    }
   };
 
   return (
@@ -159,26 +165,54 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
         <DialogPanel className="relative flex h-1/2 w-full max-w-[540px] flex-col overflow-hidden rounded-lg bg-white">
           <div className="flex grow flex-col gap-2 overflow-hidden overflow-y-scroll p-4">
             {comments?.map((c) => (
-              <div key={c.id} className="flex gap-2">
-                <Link href={`/profile/${c.data.userId}`}>
-                  <DisplayPic imageUri={c.data.user.image} size={32} />
-                </Link>
-                <div className="text-sm">
-                  <div>
-                    <Link
-                      href={`/profile/${c.data.userId}`}
-                      className="font-semibold"
-                    >
-                      {c.data.user.username}
-                    </Link>{' '}
-                    {c.data.body}
-                  </div>
-                  <div className="text-xs text-neutral-400 italic">
-                    {intlFormatDistance(c.data.createdAt, Date.now(), {
-                      style: 'short',
-                    })}
+              <div key={c.id} className="flex justify-between">
+                <div className="flex grow gap-2">
+                  <Link href={`/profile/${c.data.userId}`}>
+                    <DisplayPic imageUri={c.data.user.image} size={32} />
+                  </Link>
+                  <div className="text-sm">
+                    <div>
+                      <Link
+                        href={`/profile/${c.data.userId}`}
+                        className="font-semibold"
+                      >
+                        {c.data.user.username}
+                      </Link>{' '}
+                      {c.data.body}
+                    </div>
+                    <div className="text-xs text-neutral-400 italic">
+                      {intlFormatDistance(c.data.createdAt, Date.now(), {
+                        style: 'short',
+                      })}
+                    </div>
                   </div>
                 </div>
+                {authUser?.uid === c.data.userId && (
+                  <div className="pt-1.5">
+                    <Menu>
+                      <MenuButton className="cursor-pointer">
+                        <EllipsesVert className="size-[20px] text-neutral-500" />
+                      </MenuButton>
+                      <MenuItems
+                        anchor="bottom end"
+                        className="rounded border border-neutral-400 bg-neutral-100 shadow-sm"
+                      >
+                        <MenuItem>
+                          <button
+                            onClick={() =>
+                              deleteComment({ postId, commentId: c.id }).then(
+                                () => Promise.all([invalidateComments(postId)]),
+                              )
+                            }
+                            className="cursor-pointer p-1 px-2 text-red-500 hover:bg-neutral-200"
+                          >
+                            Delete
+                          </button>
+                        </MenuItem>
+                      </MenuItems>
+                    </Menu>
+                  </div>
+                )}
               </div>
             ))}
             <div className="self-center text-sm text-neutral-400">
@@ -189,11 +223,16 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
             <textarea
               placeholder="Add comment..."
               value={draftComment}
-              onChange={(e) => setDraftComment(e.target.value)}
+              onChange={(e) => {
+                setDraftComment(e.target.value);
+              }}
               className="field-sizing-content max-h-[180px] grow resize-none p-2"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   onCreateComment();
+
+                  // don't call onChange after this
+                  e.preventDefault();
                 }
               }}
             />
