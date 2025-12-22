@@ -5,12 +5,19 @@ Tech debt:
     - less rigorous invalidation otherwise (only navigable things)
 - delete old profile picture when changing DP
 - delete post image when deleting post
+- restructure firebase directory?
 
 Features:
+- forgot password flow
 - see your own follows and followers
 - image placeholders
 - error UI for failed fetching and actions
 - edit post UI
 - notification alert badge?
+- create post progressive disclosure (or at least don't lose image when making intentions)
+- intention pie chart breakdown (colour coding!)?
+- comment notifications?
 
 Fixes:
+- intention new line on posts when overflow
+- notification DPs aren't always updating correctly
