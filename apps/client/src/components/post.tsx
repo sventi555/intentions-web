@@ -6,6 +6,7 @@ import {
   MenuItem,
   MenuItems,
 } from '@headlessui/react';
+import { clsx } from 'clsx';
 import { intlFormatDistance } from 'date-fns';
 import { Post as _Post } from 'lib';
 import { useState } from 'react';
@@ -48,27 +49,30 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
   return (
     <div className="flex flex-col">
       <div className="relative p-2">
-        <div className="flex items-center gap-1">
+        <div
+          className={clsx(
+            'flex flex-wrap items-center gap-2',
+            data.userId === authUser?.uid && 'pr-4',
+          )}
+        >
           <Link
             href={`/profile/${data.userId}`}
             className="flex items-center gap-2"
           >
             <DisplayPic size={36} imageUri={data.user.image} />
-            <div>{data.user.username}</div>
+            <div className="font-medium">{data.user.username}</div>
           </Link>
-
-          <div className="text-sm text-neutral-300">•</div>
 
           <Link
             href={`/profile/${data.userId}/intention/${data.intentionId}`}
-            className="self-center rounded-[32px] border border-neutral-300 p-1 px-2"
+            className="self-center rounded-[32px] border border-neutral-300 p-1 px-2 whitespace-nowrap"
           >
             {data.intention.name}
           </Link>
         </div>
         {data.userId === authUser?.uid ? (
           <Menu>
-            <MenuButton className="absolute top-2 right-2 cursor-pointer">
+            <MenuButton className="absolute top-[14px] right-0 cursor-pointer">
               <EllipsesVert className="text-neutral-600" />
             </MenuButton>
             <MenuItems

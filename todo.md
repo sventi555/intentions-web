@@ -1,5 +1,4 @@
 Fixes:
-- intention new line on posts when overflow
 - notification DPs aren't always updating correctly
 
 Features:
