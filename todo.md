@@ -1,11 +1,6 @@
-Tech debt:
-- paginate notifications and comments
-- error schemas for api error responses
-- invalidate everything on sign out
-    - less rigorous invalidation otherwise (only navigable things)
-- delete old profile picture when changing DP
-- delete post image when deleting post
-- restructure firebase directory?
+Fixes:
+- intention new line on posts when overflow
+- notification DPs aren't always updating correctly
 
 Features:
 - forgot password flow
@@ -18,6 +13,11 @@ Features:
 - intention pie chart breakdown (colour coding!)?
 - comment notifications?
 
-Fixes:
-- intention new line on posts when overflow
-- notification DPs aren't always updating correctly
+Tech debt:
+- restructure firebase directory?
+- paginate notifications and comments
+- error schemas for api error responses
+- invalidate everything on sign out
+    - less rigorous invalidation otherwise (only navigable things)
+- delete old profile picture when changing DP
+- delete post image when deleting post
