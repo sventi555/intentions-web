@@ -4,6 +4,7 @@ export { Check } from './check';
 export { Close } from './close';
 export { EllipsesVert } from './ellipses-vert';
 export { Home } from './home';
+export { Loading } from './loading';
 export { Logo } from './logo';
 export { Pencil } from './pencil';
 export { Plus } from './plus';

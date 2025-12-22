@@ -26,7 +26,7 @@ import {
 } from '../hooks/posts';
 import { useAuthState } from '../state/auth';
 import { DisplayPic } from './display-pic';
-import { EllipsesVert, Send } from './icons';
+import { EllipsesVert, Loading, Send } from './icons';
 
 interface PostProps {
   id: string;
@@ -142,16 +142,20 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
   const deleteComment = useDeleteComment();
   const invalidateComments = useInvalidateComments();
   const [draftComment, setDraftComment] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   const onCreateComment = () => {
     if (draftComment.trim()) {
+      setSubmittingComment(true);
       createComment({
         postId,
         body: { body: draftComment },
-      }).then(() => {
-        invalidateComments(postId);
-        setDraftComment('');
-      });
+      })
+        .then(() => invalidateComments(postId))
+        .then(() => {
+          setDraftComment('');
+          setSubmittingComment(false);
+        });
     }
   };
 
@@ -222,6 +226,7 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
           <div className="flex justify-between border-t border-neutral-300 p-1">
             <textarea
               placeholder="Add comment..."
+              disabled={submittingComment}
               value={draftComment}
               onChange={(e) => {
                 setDraftComment(e.target.value);
@@ -230,14 +235,23 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   onCreateComment();
+                  e.currentTarget.blur();
 
                   // don't call onChange after this
                   e.preventDefault();
                 }
               }}
             />
-            <button className="cursor-pointer p-2" onClick={onCreateComment}>
-              <Send className="text-neutral-600" />
+            <button
+              className="cursor-pointer p-2"
+              onClick={onCreateComment}
+              disabled={submittingComment}
+            >
+              {submittingComment ? (
+                <Loading className="animate-spin text-neutral-400" />
+              ) : (
+                <Send className="text-neutral-600" />
+              )}
             </button>
           </div>
         </DialogPanel>
