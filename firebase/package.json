@@ -1,5 +1,5 @@
 {
-  "name": "firestore",
+  "name": "firebase",
   "type": "module",
   "scripts": {
     "test": "firebase emulators:exec --only firestore \"vitest run --no-file-parallelism\"",
