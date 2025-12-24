@@ -11,24 +11,27 @@ const app = initializeApp({
 
 const db = getFirestore(app);
 
-const userIds = (await db.collection('/users').get()).docs.map((d) => d.id);
-
 const writeBatch = db.bulkWriter();
 
-await Promise.all(
-  userIds.map((userId) =>
-    db
-      .collection(`/follows/${userId}/from`)
-      .get()
-      .then((follows) =>
-        follows.docs.map((follow) =>
-          writeBatch.set(
-            db.collection(`/follows/${follow.id}/to`).doc(userId),
-            follow.data(),
+await db
+  .collection('/users')
+  .get()
+  .then((users) =>
+    Promise.all(
+      users.docs.map((user) =>
+        db
+          .collection(`/follows/${user.id}/from`)
+          .get()
+          .then((follows) =>
+            follows.forEach((follow) =>
+              writeBatch.set(
+                db.collection(`/follows/${follow.id}/to`).doc(user.id),
+                follow.data(),
+              ),
+            ),
           ),
-        ),
       ),
-  ),
-);
+    ),
+  );
 
 await writeBatch.close();
