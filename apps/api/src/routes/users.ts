@@ -80,9 +80,11 @@ app.patch('/', authenticate, zValidator('json', updateUserBody), async (c) => {
   const postDocs = await userPostDocCopies(requesterId);
   postDocs.forEach((doc) => writeBatch.update(doc, updatedData));
 
-  const followers = await collections.followsTo(requesterId).get();
+  const followers = (await collections.followsTo(requesterId).get()).docs;
+  const following = (await collections.followsFrom(requesterId).get()).docs;
+
   const notificationUpdates: Promise<void>[] = [];
-  followers.forEach((follower) =>
+  [...followers, ...following].forEach((follower) =>
     notificationUpdates.push(
       collections
         .notifications(follower.id)
