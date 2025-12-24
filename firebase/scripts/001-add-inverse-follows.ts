@@ -3,6 +3,10 @@ import 'dotenv/config';
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
+/**
+ * Add /follows/{fromUserId}/to/{toUserId} for every /follows/{toUserId}/from/{fromUserId}
+ */
+
 const app = initializeApp({
   credential: applicationDefault(),
   projectId: process.env.FIREBASE_PROJECT_ID,

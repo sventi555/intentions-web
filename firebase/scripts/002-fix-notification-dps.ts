@@ -4,6 +4,10 @@ import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { FollowNotification, User } from 'lib';
 
+/**
+ * Set each notification's user.image to the user's current dp
+ */
+
 const app = initializeApp({
   credential: applicationDefault(),
   projectId: process.env.FIREBASE_PROJECT_ID,
