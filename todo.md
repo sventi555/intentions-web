@@ -12,7 +12,6 @@ Features:
 - comment notifications?
 
 Tech debt:
-- restructure firebase directory?
 - paginate notifications and comments
 - error schemas for api error responses
 - invalidate everything on sign out
