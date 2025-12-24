@@ -1,5 +1,4 @@
 Fixes:
-- script for fixing notification images
 - comment DPs aren't updating
 - script for fixing comment dps
 
