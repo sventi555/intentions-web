@@ -109,6 +109,12 @@ app.delete('/:id', authenticate, async (c) => {
     writeBatch.update(intentionDoc, { postCount: intentionData.postCount - 1 });
   }
 
+  const comments = await collections
+    .comments()
+    .where('postId', '==', postId)
+    .get();
+  comments.forEach((comment) => writeBatch.delete(comment.ref));
+
   await writeBatch.close();
 
   return c.body(null, 204);

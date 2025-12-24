@@ -1,5 +1,4 @@
 Fixes:
-- delete comments when deleting post
 
 Features:
 - forgot password flow
