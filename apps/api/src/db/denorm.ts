@@ -8,7 +8,7 @@ export const postDocCopies = async (postId: string, ownerId: string) => {
 
   // Includes self! Hooray
   const followers = await collections
-    .follows(ownerId)
+    .followsTo(ownerId)
     .where('status', '==', 'accepted')
     .get();
   const followerPostDocs = followers.docs.map((follower) =>
@@ -27,7 +27,7 @@ export const userPostDocCopies = async (userId: string) => {
   ).docs.map((doc) => doc.ref);
 
   const followers = await collections
-    .follows(userId)
+    .followsTo(userId)
     .where('status', '==', 'accepted')
     .get();
   const followerPostDocs = await Promise.all(

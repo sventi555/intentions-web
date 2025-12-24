@@ -2,9 +2,13 @@ export const userCollectionPath = () => '/users';
 export const userDocPath = (userId: string) =>
   `${userCollectionPath()}/${userId}`;
 
-export const followCollectionPath = (to: string) => `follows/${to}/from`;
-export const followDocPath = (from: string, to: string) =>
-  `${followCollectionPath(to)}/${from}`;
+export const followToCollectionPath = (to: string) => `follows/${to}/from`;
+export const followToDocPath = (from: string, to: string) =>
+  `${followToCollectionPath(to)}/${from}`;
+
+export const followFromCollectionPath = (from: string) => `follows/${from}/to`;
+export const followFromDocPath = (from: string, to: string) =>
+  `${followFromCollectionPath(from)}/${to}`;
 
 export const intentionCollectionPath = () => '/intentions';
 export const intentionDocPath = (intentionId: string) =>

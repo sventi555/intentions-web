@@ -6,7 +6,7 @@ import {
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import { doc, getDoc, setDoc, setLogLevel } from 'firebase/firestore';
-import { followDocPath, postDocPath } from 'lib';
+import { followToDocPath, postDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
@@ -92,7 +92,7 @@ describe('post rules', () => {
 
           const followDoc = doc(
             db,
-            followDocPath(USER_IDS.authUser, USER_IDS.otherUser),
+            followToDocPath(USER_IDS.authUser, USER_IDS.otherUser),
           );
           await setDoc(followDoc, { status: STATUS.accepted });
         });
@@ -139,7 +139,7 @@ describe('post rules', () => {
 
           const followDoc = doc(
             db,
-            followDocPath(USER_IDS.otherUser, USER_IDS.authUser),
+            followToDocPath(USER_IDS.otherUser, USER_IDS.authUser),
           );
           await setDoc(followDoc, { status: STATUS.accepted });
         });

@@ -6,7 +6,7 @@ import {
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import { doc, getDoc, setDoc, setLogLevel } from 'firebase/firestore';
-import { followDocPath } from 'lib';
+import { followFromDocPath, followToDocPath } from 'lib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
@@ -98,8 +98,11 @@ describe('follow rules', () => {
       it('should allow reading', async () => {
         const db = authContext.firestore();
 
-        const followDoc = doc(db, followDocPath(from, to));
-        await assertSucceeds(getDoc(followDoc));
+        const followToDoc = doc(db, followToDocPath(from, to));
+        const followFromDoc = doc(db, followFromDocPath(from, to));
+
+        await assertSucceeds(getDoc(followToDoc));
+        await assertSucceeds(getDoc(followFromDoc));
       });
     });
 
@@ -129,8 +132,11 @@ describe('follow rules', () => {
         it('should allow reading', async () => {
           const db = authContext.firestore();
 
-          const followDoc = doc(db, followDocPath(from, to));
-          await assertSucceeds(getDoc(followDoc));
+          const followToDoc = doc(db, followToDocPath(from, to));
+          const followFromDoc = doc(db, followFromDocPath(from, to));
+
+          await assertSucceeds(getDoc(followToDoc));
+          await assertSucceeds(getDoc(followFromDoc));
         });
       },
     );
@@ -162,8 +168,11 @@ describe('follow rules', () => {
         it('should not allow reading', async () => {
           const db = authContext.firestore();
 
-          const followDoc = doc(db, followDocPath(from, to));
-          await assertFails(getDoc(followDoc));
+          const followToDoc = doc(db, followToDocPath(from, to));
+          const followFromDoc = doc(db, followFromDocPath(from, to));
+
+          await assertFails(getDoc(followToDoc));
+          await assertFails(getDoc(followFromDoc));
         });
       },
     );
@@ -184,8 +193,11 @@ describe('follow rules', () => {
         it('should not allow reading', async () => {
           const db = authContext.firestore();
 
-          const followDoc = doc(db, followDocPath(from, to));
-          await assertFails(getDoc(followDoc));
+          const followToDoc = doc(db, followToDocPath(from, to));
+          const followFromDoc = doc(db, followFromDocPath(from, to));
+
+          await assertFails(getDoc(followToDoc));
+          await assertFails(getDoc(followFromDoc));
         });
       },
     );
@@ -204,8 +216,11 @@ describe('follow rules', () => {
       it('should not allow reading', async () => {
         const db = authContext.firestore();
 
-        const followDoc = doc(db, followDocPath(from, to));
-        await assertFails(getDoc(followDoc));
+        const followToDoc = doc(db, followToDocPath(from, to));
+        const followFromDoc = doc(db, followFromDocPath(from, to));
+
+        await assertFails(getDoc(followToDoc));
+        await assertFails(getDoc(followFromDoc));
       });
     });
   });

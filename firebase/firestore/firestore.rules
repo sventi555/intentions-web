@@ -6,6 +6,10 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/$(collection)/$(id));
     }
 
+    function isOwner(resourceOwnerId) {
+      return request.auth != null && request.auth.uid == resourceOwnerId;
+    }
+
     function isFollowing(userId) {
       return (
         request.auth.uid != null &&
@@ -13,9 +17,14 @@ service cloud.firestore {
       );
     }
 
-    function isOwner(resourceOwnerId) {
-      return request.auth != null && request.auth.uid == resourceOwnerId;
+    function followIncludesMe(fromUserId, toUserId) {
+      return request.auth != null && (fromUserId == request.auth.uid || toUserId == request.auth.uid);
     }
+
+    function belongsToFollowed(fromUserId, toUserId) {
+      return isFollowing(fromUserId) || isFollowing(toUserId);
+    }
+
 
     match /{document=**} {
       allow read: if false;
@@ -35,19 +44,16 @@ service cloud.firestore {
     }
 
     match /follows/{toUserId}/from/{fromUserId} {
-      function includesMe() {
-        return request.auth != null && (fromUserId == request.auth.uid || toUserId == request.auth.uid);
-      }
-
-      function belongsToFollowed() {
-        return request.auth != null && (
-          isFollowing(fromUserId) || isFollowing(toUserId)
-        );
-      }
-
       allow read: if (
-        includesMe() ||
-        (resource.data.status == 'accepted' && belongsToFollowed())
+        followIncludesMe(fromUserId, toUserId) ||
+        (resource.data.status == 'accepted' && belongsToFollowed(fromUserId, toUserId))
+      );
+    }
+
+    match /follows/{fromUserId}/to/{toUserId} {
+      allow read: if (
+        followIncludesMe(fromUserId, toUserId) ||
+        (resource.data.status == 'accepted' && belongsToFollowed(fromUserId, toUserId))
       );
     }
 

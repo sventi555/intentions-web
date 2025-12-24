@@ -138,7 +138,7 @@ app.post(
     // bail if requester does not own or follow post
     const postOwner = postData.userId;
     if (postOwner !== requesterId) {
-      const followDoc = collections.follows(postData.userId).doc(requesterId);
+      const followDoc = collections.followsTo(postData.userId).doc(requesterId);
       const followData = (await followDoc.get()).data();
 
       if (followData == null || followData.status !== 'accepted') {

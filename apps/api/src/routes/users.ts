@@ -44,7 +44,7 @@ app.post('/', zValidator('json', createUserBody), async (c) => {
   writeBatch.create(userDoc, { email, username });
 
   // follow self to simplify permission checks and feed mechanics
-  const followDoc = collections.follows(user.uid).doc(user.uid);
+  const followDoc = collections.followsTo(user.uid).doc(user.uid);
   writeBatch.create(followDoc, { status: 'accepted' });
 
   await writeBatch.close();
@@ -78,7 +78,7 @@ app.patch('/', authenticate, zValidator('json', updateUserBody), async (c) => {
   const postDocs = await userPostDocCopies(requesterId);
   postDocs.forEach((doc) => writeBatch.update(doc, updatedData));
 
-  const followers = await collections.follows(requesterId).get();
+  const followers = await collections.followsTo(requesterId).get();
   const notificationUpdates: Promise<void>[] = [];
   followers.forEach((follower) =>
     notificationUpdates.push(

@@ -3,7 +3,8 @@ import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import {
   commentCollectionPath,
   feedPostCollectionPath,
-  followDocPath,
+  followFromDocPath,
+  followToDocPath,
   intentionCollectionPath,
   notificationCollectionPath,
   postCollectionPath,
@@ -52,8 +53,11 @@ export const addFeedPostWithoutRules = async (
 export const addFollowWithoutRules = async (
   testEnv: RulesTestEnvironment,
   { from, to, status }: { from: string; to: string; status: string },
-) => setWithoutRules(testEnv, followDocPath(from, to), { status });
-
+) =>
+  Promise.all([
+    setWithoutRules(testEnv, followToDocPath(from, to), { status }),
+    setWithoutRules(testEnv, followFromDocPath(from, to), { status }),
+  ]);
 export const addIntentionWithoutRules = async (
   testEnv: RulesTestEnvironment,
   userId: string,

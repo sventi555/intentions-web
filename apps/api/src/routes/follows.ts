@@ -18,7 +18,7 @@ app.post('/:userId', authenticate, async (c) => {
   const followedUserId = c.req.param('userId');
 
   // check for pre-existing follow
-  const followDoc = collections.follows(followedUserId).doc(requesterId);
+  const followDoc = collections.followsTo(followedUserId).doc(requesterId);
   const followDocResource = await followDoc.get();
   if (followDocResource.exists) {
     return;
@@ -76,7 +76,7 @@ app.post(
     const fromUserId = c.req.param('userId');
     const { action } = c.req.valid('json');
 
-    const followDoc = collections.follows(requesterId).doc(fromUserId);
+    const followDoc = collections.followsTo(requesterId).doc(fromUserId);
     const followData = (await followDoc.get()).data();
     if (!followData) {
       throw new HTTPException(404, {
@@ -170,7 +170,7 @@ app.delete(
     const fromUserId = direction === 'from' ? userId : requesterId;
     const toUserId = direction === 'from' ? requesterId : userId;
 
-    const followDoc = collections.follows(toUserId).doc(fromUserId);
+    const followDoc = collections.followsTo(toUserId).doc(fromUserId);
     const followData = (await followDoc.get()).data();
 
     if (followData == null) {
