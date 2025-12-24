@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getDocs, orderBy, query } from 'firebase/firestore';
+import { getDocs, orderBy, query, where } from 'firebase/firestore';
 import { CreateCommentBody } from 'lib';
 import { collections } from '../data/db';
 import { useAuthState } from '../state/auth';
@@ -14,7 +14,11 @@ export const useComments = (postId: string) => {
     queryFn: async () => {
       const commentDocs = (
         await getDocs(
-          query(collections.comments(postId), orderBy('createdAt', 'desc')),
+          query(
+            collections.comments(),
+            where('postId', '==', postId),
+            orderBy('createdAt', 'desc'),
+          ),
         )
       ).docs;
 
@@ -40,12 +44,12 @@ export const useCreateComment = () => {
   const { mutateAsync: createComment } = useMutation<
     unknown,
     Error,
-    { postId: string; body: CreateCommentBody }
+    { body: CreateCommentBody }
   >({
-    mutationFn: async ({ postId, body }) => {
+    mutationFn: async ({ body }) => {
       const token = await authUser?.getIdToken();
 
-      await fetch(`${import.meta.env.VITE_API_HOST}/posts/${postId}/comments`, {
+      await fetch(`${import.meta.env.VITE_API_HOST}/comments`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
@@ -65,21 +69,18 @@ export const useDeleteComment = () => {
   const { mutateAsync: deleteComment } = useMutation<
     unknown,
     Error,
-    { postId: string; commentId: string }
+    { commentId: string }
   >({
-    mutationFn: async ({ postId, commentId }) => {
+    mutationFn: async ({ commentId }) => {
       const token = await authUser?.getIdToken();
 
-      await fetch(
-        `${import.meta.env.VITE_API_HOST}/posts/${postId}/comments/${commentId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: token ?? '',
-          },
+      await fetch(`${import.meta.env.VITE_API_HOST}/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ?? '',
         },
-      );
+      });
     },
   });
 

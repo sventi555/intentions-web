@@ -64,15 +64,16 @@ service cloud.firestore {
     match /posts/{postId} {
       allow read: if (isOwner(resource.data.userId) || isFollowing(resource.data.userId));
 
-      match /comments/{commentId} {
-        function canRead() {
-          let postUserId = getIn(/posts, /$(postId)).data.userId;
+    }
 
-          return (isOwner(postUserId) || isFollowing(postUserId));
-        }
+    match /comments/{commentId} {
+      function canRead() {
+        let postUserId = getIn(/posts, /$(resource.data.postId)).data.userId;
 
-        allow read: if canRead();
+        return (isOwner(postUserId) || isFollowing(postUserId));
       }
+
+      allow read: if canRead();
     }
   }
 }

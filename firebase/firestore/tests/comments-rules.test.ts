@@ -83,7 +83,7 @@ describe('comment rules', () => {
       it('should allow reading comment', async () => {
         const db = authContext.firestore();
 
-        const commentDoc = doc(db, commentDocPath(postId, commentId));
+        const commentDoc = doc(db, commentDocPath(commentId));
         await assertSucceeds(getDoc(commentDoc));
       });
     });
@@ -105,7 +105,7 @@ describe('comment rules', () => {
       it('should allow reading comment', async () => {
         const db = authContext.firestore();
 
-        const commentDoc = doc(db, commentDocPath(postId, commentId));
+        const commentDoc = doc(db, commentDocPath(commentId));
         await assertSucceeds(getDoc(commentDoc));
       });
     });
@@ -123,14 +123,14 @@ describe('comment rules', () => {
       it('should not allow reading comment without follow when authenticated', async () => {
         const db = authContext.firestore();
 
-        const commentDoc = doc(db, commentDocPath(postId, commentId));
+        const commentDoc = doc(db, commentDocPath(commentId));
         await assertFails(getDoc(commentDoc));
       });
 
       it('should not allow reading comment without follow when unauthenticated', async () => {
         const db = unauthContext.firestore();
 
-        const commentDoc = doc(db, commentDocPath(postId, commentId));
+        const commentDoc = doc(db, commentDocPath(commentId));
         await assertFails(getDoc(commentDoc));
       });
     });
@@ -152,7 +152,7 @@ describe('comment rules', () => {
       it('should not allow reading comment', async () => {
         const db = authContext.firestore();
 
-        const commentDoc = doc(db, commentDocPath(postId, commentId));
+        const commentDoc = doc(db, commentDocPath(commentId));
         await assertFails(getDoc(commentDoc));
       });
     });

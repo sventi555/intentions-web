@@ -1,13 +1,7 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import {
-  createCommentBody,
-  createPostBody,
-  updatePostBody,
-  type Comment,
-  type Post,
-} from 'lib';
+import { createPostBody, updatePostBody, type Post } from 'lib';
 import { bulkWriter, collections } from '../db';
 import { postDocCopies } from '../db/denorm';
 import { authenticate } from '../middleware/auth';
@@ -116,68 +110,6 @@ app.delete('/:id', authenticate, async (c) => {
   }
 
   await writeBatch.close();
-
-  return c.body(null, 204);
-});
-
-app.post(
-  '/:id/comments',
-  authenticate,
-  zValidator('json', createCommentBody),
-  async (c) => {
-    const requesterId = c.var.uid;
-    const postId = c.req.param('id');
-    const data = c.req.valid('json');
-
-    // bail if post does not exist
-    const postData = (await collections.posts().doc(postId).get()).data();
-    if (!postData) {
-      throw new HTTPException(404, { message: 'post does not exist' });
-    }
-
-    // bail if requester does not own or follow post
-    const postOwner = postData.userId;
-    if (postOwner !== requesterId) {
-      const followDoc = collections.followsTo(postData.userId).doc(requesterId);
-      const followData = (await followDoc.get()).data();
-
-      if (followData == null || followData.status !== 'accepted') {
-        throw new HTTPException(404, { message: 'post does not exist' });
-      }
-    }
-
-    const userData = (await collections.users().doc(requesterId).get()).data();
-    if (!userData) {
-      throw new HTTPException(500);
-    }
-
-    const commentData: Comment = {
-      userId: requesterId,
-      user: {
-        username: userData.username,
-        ...(userData.image ? { image: userData.image } : {}),
-      },
-      body: data.body,
-      createdAt: Date.now(),
-    };
-    await collections.comments(postId).add(commentData);
-
-    return c.body(null, 201);
-  },
-);
-
-app.delete('/:postId/comments/:commentId', authenticate, async (c) => {
-  const requesterId = c.var.uid;
-  const postId = c.req.param('postId');
-  const commentId = c.req.param('commentId');
-
-  const commentDoc = collections.comments(postId).doc(commentId);
-  const commentData = (await commentDoc.get()).data();
-  if (!commentData || commentData.userId !== requesterId) {
-    return c.body(null, 204);
-  }
-
-  await commentDoc.delete();
 
   return c.body(null, 204);
 });

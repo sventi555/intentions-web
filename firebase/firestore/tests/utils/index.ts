@@ -71,4 +71,4 @@ export const addNotificationWithoutRules = async (
 export const addCommentWithoutRules = async (
   testEnv: RulesTestEnvironment,
   postId: string,
-) => addWithoutRules(testEnv, commentCollectionPath(postId));
+) => addWithoutRules(testEnv, commentCollectionPath(), { postId });

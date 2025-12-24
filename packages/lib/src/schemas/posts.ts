@@ -15,6 +15,3 @@ export const updatePostBody = z.object({
   description: z.string().optional(),
 });
 export type UpdatePostBody = z.infer<typeof updatePostBody>;
-
-export const createCommentBody = z.object({ body: z.string() });
-export type CreateCommentBody = z.infer<typeof createCommentBody>;

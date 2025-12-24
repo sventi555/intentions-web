@@ -1,3 +1,4 @@
+export * from './comments';
 export * from './follows';
 export * from './intentions';
 export * from './posts';

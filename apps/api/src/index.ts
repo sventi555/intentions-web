@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import comments from './routes/comments';
 import follows from './routes/follows';
 import intentions from './routes/intentions';
 import posts from './routes/posts';
@@ -15,6 +16,7 @@ app.route('/follows', follows);
 app.route('/intentions', intentions);
 app.route('/posts', posts);
 app.route('/users', users);
+app.route('/comments', comments);
 
 const port = process.env.PORT;
 

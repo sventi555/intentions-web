@@ -1,4 +1,6 @@
 Fixes:
+- script to copy comments to root level
+- delete comments when deleting post
 - comment DPs aren't updating
 - script for fixing comment dps
 

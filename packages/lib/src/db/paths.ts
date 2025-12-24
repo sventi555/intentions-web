@@ -28,7 +28,6 @@ export const notificationCollectionPath = (userId: string) =>
 export const notificationDocPath = (userId: string, notificationId: string) =>
   `${notificationCollectionPath(userId)}/${notificationId}`;
 
-export const commentCollectionPath = (postId: string) =>
-  `/posts/${postId}/comments`;
-export const commentDocPath = (postId: string, commentId: string) =>
-  `${commentCollectionPath(postId)}/${commentId}`;
+export const commentCollectionPath = () => `/comments`;
+export const commentDocPath = (commentId: string) =>
+  `${commentCollectionPath()}/${commentId}`;

@@ -152,8 +152,7 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
     if (draftComment.trim()) {
       setSubmittingComment(true);
       createComment({
-        postId,
-        body: { body: draftComment },
+        body: { postId, body: draftComment },
       })
         .then(() => invalidateComments(postId))
         .then(() => {
@@ -208,8 +207,8 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
                         <MenuItem>
                           <button
                             onClick={() =>
-                              deleteComment({ postId, commentId: c.id }).then(
-                                () => Promise.all([invalidateComments(postId)]),
+                              deleteComment({ commentId: c.id }).then(() =>
+                                Promise.all([invalidateComments(postId)]),
                               )
                             }
                             className="cursor-pointer p-1 px-2 text-red-500 hover:bg-neutral-200"

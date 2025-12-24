@@ -30,6 +30,7 @@ export interface Post {
 }
 
 export interface Comment {
+  postId: string;
   userId: string;
   user: Pick<User, 'username' | 'image'>;
   body: string;

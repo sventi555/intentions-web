@@ -51,9 +51,9 @@ export const collections = {
     db
       .collection(notificationCollectionPath(userId))
       .withConverter(firestoreConverter<FollowNotification>()),
-  comments: (postId: string) =>
+  comments: () =>
     db
-      .collection(commentCollectionPath(postId))
+      .collection(commentCollectionPath())
       .withConverter(firestoreConverter<Comment>()),
 };
 
