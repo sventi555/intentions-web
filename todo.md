@@ -1,5 +1,7 @@
 Fixes:
-- notification DPs aren't always updating correctly
+- script for fixing notification images
+- comment DPs aren't updating
+- script for fixing comment dps
 
 Features:
 - forgot password flow

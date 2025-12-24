@@ -9,11 +9,13 @@
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "4.0.1",
+    "dotenv": "16.4.5",
     "firebase": "11.5.0",
+    "firebase-admin": "13.3.0",
+    "lib": "workspace:*",
     "prettier": "3.3.3",
     "typescript": "5.6.2",
-    "vitest": "3.1.1",
-    "lib": "workspace:*"
+    "vitest": "3.1.1"
   },
   "private": true
 }
