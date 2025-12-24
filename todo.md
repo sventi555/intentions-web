@@ -1,5 +1,4 @@
 Fixes:
-- script for fixing comment dps
 - delete comments when deleting post
 
 Features:
