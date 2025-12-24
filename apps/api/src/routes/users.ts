@@ -44,8 +44,10 @@ app.post('/', zValidator('json', createUserBody), async (c) => {
   writeBatch.create(userDoc, { email, username });
 
   // follow self to simplify permission checks and feed mechanics
-  const followDoc = collections.followsTo(user.uid).doc(user.uid);
-  writeBatch.create(followDoc, { status: 'accepted' });
+  const followToDoc = collections.followsTo(user.uid).doc(user.uid);
+  const followFromDoc = collections.followsFrom(user.uid).doc(user.uid);
+  writeBatch.create(followToDoc, { status: 'accepted' });
+  writeBatch.create(followFromDoc, { status: 'accepted' });
 
   await writeBatch.close();
 

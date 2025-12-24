@@ -18,9 +18,9 @@ app.post('/:userId', authenticate, async (c) => {
   const followedUserId = c.req.param('userId');
 
   // check for pre-existing follow
-  const followDoc = collections.followsTo(followedUserId).doc(requesterId);
-  const followDocResource = await followDoc.get();
-  if (followDocResource.exists) {
+  const followToDoc = collections.followsTo(followedUserId).doc(requesterId);
+  const followToDocResource = await followToDoc.get();
+  if (followToDocResource.exists) {
     return;
   }
 
@@ -44,7 +44,11 @@ app.post('/:userId', authenticate, async (c) => {
   const followData: Follow = {
     status: 'pending',
   };
-  writeBatch.create(followDoc, followData);
+  writeBatch.create(followToDoc, followData);
+  writeBatch.create(
+    collections.followsFrom(requesterId).doc(followedUserId),
+    followData,
+  );
 
   // send notification so recipient can respond to follow request
   const followNotification: FollowNotification = {
@@ -76,8 +80,8 @@ app.post(
     const fromUserId = c.req.param('userId');
     const { action } = c.req.valid('json');
 
-    const followDoc = collections.followsTo(requesterId).doc(fromUserId);
-    const followData = (await followDoc.get()).data();
+    const followToDoc = collections.followsTo(requesterId).doc(fromUserId);
+    const followData = (await followToDoc.get()).data();
     if (!followData) {
       throw new HTTPException(404, {
         message: 'no follow request from user',
@@ -104,7 +108,11 @@ app.post(
     });
 
     if (action === 'accept') {
-      writeBatch.update(followDoc, { status: 'accepted' });
+      writeBatch.update(followToDoc, { status: 'accepted' });
+      writeBatch.update(collections.followsFrom(fromUserId).doc(requesterId), {
+        status: 'accepted',
+      });
+
       if (requesterNotification) {
         writeBatch.update(requesterNotification.ref, {
           status: 'accepted',
@@ -140,7 +148,7 @@ app.post(
         writeBatch.create(feedPostDoc, post.data());
       });
     } else {
-      writeBatch.delete(followDoc);
+      writeBatch.delete(followToDoc);
       if (requesterNotification) {
         writeBatch.delete(requesterNotification.ref);
       }
@@ -170,8 +178,8 @@ app.delete(
     const fromUserId = direction === 'from' ? userId : requesterId;
     const toUserId = direction === 'from' ? requesterId : userId;
 
-    const followDoc = collections.followsTo(toUserId).doc(fromUserId);
-    const followData = (await followDoc.get()).data();
+    const followToDoc = collections.followsTo(toUserId).doc(fromUserId);
+    const followData = (await followToDoc.get()).data();
 
     if (followData == null) {
       return c.body(null, 204);
@@ -179,7 +187,8 @@ app.delete(
 
     const writeBatch = bulkWriter();
 
-    writeBatch.delete(followDoc);
+    writeBatch.delete(followToDoc);
+    writeBatch.delete(collections.followsFrom(fromUserId).doc(toUserId));
 
     const followedPosts = await collections
       .feed(fromUserId)

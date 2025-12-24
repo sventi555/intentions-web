@@ -2,6 +2,7 @@ import type { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import {
   commentCollectionPath,
   feedPostCollectionPath,
+  followFromCollectionPath,
   followToCollectionPath,
   intentionCollectionPath,
   notificationCollectionPath,
@@ -29,6 +30,10 @@ export const collections = {
   followsTo: (toUser: string) =>
     db
       .collection(followToCollectionPath(toUser))
+      .withConverter(firestoreConverter<Follow>()),
+  followsFrom: (fromUser: string) =>
+    db
+      .collection(followFromCollectionPath(fromUser))
       .withConverter(firestoreConverter<Follow>()),
   intentions: () =>
     db
