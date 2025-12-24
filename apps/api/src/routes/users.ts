@@ -83,9 +83,8 @@ app.patch('/', authenticate, zValidator('json', updateUserBody), async (c) => {
   const followers = (await collections.followsTo(requesterId).get()).docs;
   const following = (await collections.followsFrom(requesterId).get()).docs;
 
-  const notificationUpdates: Promise<void>[] = [];
-  [...followers, ...following].forEach((follower) =>
-    notificationUpdates.push(
+  await Promise.all(
+    [...followers, ...following].map((follower) =>
       collections
         .notifications(follower.id)
         .where('userId', '==', requesterId)
@@ -97,7 +96,12 @@ app.patch('/', authenticate, zValidator('json', updateUserBody), async (c) => {
         ),
     ),
   );
-  await Promise.all(notificationUpdates);
+
+  const comments = await collections
+    .comments()
+    .where('userId', '==', requesterId)
+    .get();
+  comments.forEach((doc) => writeBatch.update(doc.ref, updatedData));
 
   await writeBatch.close();
 

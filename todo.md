@@ -1,7 +1,6 @@
 Fixes:
-- delete comments when deleting post
-- comment DPs aren't updating
 - script for fixing comment dps
+- delete comments when deleting post
 
 Features:
 - forgot password flow
