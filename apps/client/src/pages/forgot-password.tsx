@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, Redirect } from 'wouter';
@@ -10,10 +10,9 @@ import { useAuthState } from '../state/auth';
 
 type Inputs = {
   email: string;
-  password: string;
 };
 
-export const SignIn: React.FC = () => {
+export const ForgotPassword: React.FC = () => {
   const { authUser } = useAuthState();
 
   const {
@@ -23,15 +22,18 @@ export const SignIn: React.FC = () => {
   } = useForm<Inputs>();
 
   const [error, setError] = useState('');
+  const [sent, setSent] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setError('');
 
-    return signInWithEmailAndPassword(auth, data.email, data.password).catch(
-      () => {
-        setError('unable to log in - please try again');
-      },
-    );
+    return sendPasswordResetEmail(auth, data.email)
+      .then(() => {
+        setSent(true);
+      })
+      .catch(() => {
+        setError('failed to send - please try again');
+      });
   };
 
   if (authUser) {
@@ -39,11 +41,8 @@ export const SignIn: React.FC = () => {
   }
 
   return (
-    <div className="flex grow flex-col items-center justify-center gap-8">
-      <div className="flex flex-col items-center">
-        <div className="text-3xl">Why?</div>
-        <div>this is why</div>
-      </div>
+    <div className="flex grow flex-col items-center justify-center gap-4">
+      <div className="text-lg">Reset password</div>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex min-w-64 flex-col gap-1"
@@ -54,25 +53,15 @@ export const SignIn: React.FC = () => {
           formRegister={register('email', { required: true })}
           errorMessage={errors.email && 'email is required'}
         />
-        <Input
-          type="password"
-          onEnter={handleSubmit(onSubmit)}
-          placeholder="password"
-          formRegister={register('password', { required: true })}
-          errorMessage={errors.password && 'password is required'}
-        />
-        <Submit disabled={isSubmitting} label="Sign in" />
+        <Submit disabled={isSubmitting} label="Send reset" />
+        {sent && (
+          <div className="text-sm">Sent! Check email for reset link</div>
+        )}
         {error && <InputError>{error}</InputError>}
-        <Link href="/forgot-password" className="underline">
-          Forgot password
-        </Link>
       </form>
-      <div>
-        New user?{' '}
-        <Link href="/sign-up" className="underline">
-          Sign up
-        </Link>
-      </div>
+      <Link href="/sign-in" className="underline">
+        Sign in
+      </Link>
     </div>
   );
 };

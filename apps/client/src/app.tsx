@@ -4,6 +4,7 @@ import { PageWrapper } from './components/page-wrapper';
 import { CreateIntention } from './pages/create-intention';
 import { CreatePost } from './pages/create-post';
 import { Feed } from './pages/feed';
+import { ForgotPassword } from './pages/forgot-password';
 import { Intention } from './pages/intention';
 import { Notifications } from './pages/notifications';
 import { Profile } from './pages/profile';
@@ -72,6 +73,11 @@ const App: React.FC = () => {
       <Route path="/sign-up">
         <PageWrapper showNav={false}>
           <SignUp />
+        </PageWrapper>
+      </Route>
+      <Route path="/forgot-password">
+        <PageWrapper showNav={false}>
+          <ForgotPassword />
         </PageWrapper>
       </Route>
     </>
