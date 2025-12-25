@@ -1,7 +1,6 @@
 Fixes:
 
 Features:
-- forgot password flow
 - see your own follows and followers
 - image placeholders
 - error UI for failed fetching and actions
