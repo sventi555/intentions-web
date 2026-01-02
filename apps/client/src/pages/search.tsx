@@ -9,11 +9,14 @@ import {
   useFollow,
   useFollowUser,
   useInvalidateFollow,
-  useRemoveFollow,
 } from '../hooks/follows';
 import { useSearchUser } from '../hooks/users';
+import { useRemoveFollow } from '../intentions-api';
+import { useAuthState } from '../state/auth';
 
 export const Search: React.FC = () => {
+  const { token } = useAuthState();
+
   const [username, setUsername] = useState('');
   const [searchedUsername, setSearchedUsername] = useState('');
 
@@ -25,7 +28,7 @@ export const Search: React.FC = () => {
   const searchedUserAccepted =
     searchedUserFollow != null && searchedUserFollow.status === 'accepted';
   const followUser = useFollowUser();
-  const removeFollow = useRemoveFollow();
+  const { mutateAsync: removeFollow } = useRemoveFollow();
   const invalidateFollow = useInvalidateFollow();
 
   const [followPending, setFollowPending] = useState(false);
@@ -93,8 +96,9 @@ export const Search: React.FC = () => {
                   onClick={() => {
                     setFollowPending(true);
                     removeFollow({
+                      headers: { authorization: token ?? '' },
                       userId: searchedUser.id,
-                      body: { direction: 'to' },
+                      data: { direction: 'to' },
                     }).then(() => {
                       setFollowPending(false);
                       invalidateFollow(searchedUser.id);

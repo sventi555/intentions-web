@@ -5,10 +5,8 @@ import { useLocation } from 'wouter';
 import { Button } from '../components/atoms/button';
 import { Input } from '../components/atoms/input';
 import { Submit } from '../components/atoms/submit';
-import {
-  useCreateIntention,
-  useInvalidateIntentions,
-} from '../hooks/intentions';
+import { useInvalidateIntentions } from '../hooks/intentions';
+import { useCreateIntention } from '../intentions-api';
 import { useAuthState } from '../state/auth';
 
 const suggestions = [
@@ -27,8 +25,8 @@ type Inputs = {
 export const CreateIntention: React.FC = () => {
   const [, setLocation] = useLocation();
 
-  const authUser = useAuthState().authUser;
-  const createIntention = useCreateIntention();
+  const { authUser, token } = useAuthState();
+  const { mutateAsync: createIntention } = useCreateIntention();
   const invalidateIntentions = useInvalidateIntentions();
 
   const {
@@ -42,7 +40,10 @@ export const CreateIntention: React.FC = () => {
   }
 
   const onSubmit: SubmitHandler<Inputs> = (data) =>
-    createIntention({ body: { name: data.intention } })
+    createIntention({
+      headers: { authorization: token ?? '' },
+      data: { name: data.intention },
+    })
       .then(() => invalidateIntentions(authUser.uid))
       .then(() => setLocation('/create'));
 

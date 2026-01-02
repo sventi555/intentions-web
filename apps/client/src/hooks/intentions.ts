@@ -1,8 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { CreateIntentionBody } from 'lib';
 import { collections, CollectionSort, docs } from '../data/db';
-import { useAuthState } from '../state/auth';
 
 export const useIntention = (intentionId: string) => {
   const {
@@ -65,29 +63,4 @@ export const useInvalidateIntentions = () => {
     queryClient.refetchQueries({
       queryKey: ['intentions', userId],
     });
-};
-
-export const useCreateIntention = () => {
-  const authUser = useAuthState().authUser;
-
-  const { mutateAsync: createIntention } = useMutation<
-    unknown,
-    Error,
-    { body: CreateIntentionBody }
-  >({
-    mutationFn: async ({ body }) => {
-      const token = await authUser?.getIdToken();
-
-      await fetch(`${import.meta.env.VITE_API_HOST}/intentions`, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token ?? '',
-        },
-      });
-    },
-  });
-
-  return createIntention;
 };

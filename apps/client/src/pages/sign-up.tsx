@@ -6,7 +6,7 @@ import { Input } from '../components/atoms/input';
 import { InputError } from '../components/atoms/input-error';
 import { Submit } from '../components/atoms/submit';
 import { auth } from '../firebase';
-import { useCreateUser } from '../hooks/users';
+import { useCreateUser } from '../intentions-api';
 import { useAuthState } from '../state/auth';
 
 type Inputs = {
@@ -24,22 +24,26 @@ export const SignUp: React.FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
-  const createUser = useCreateUser();
+  const { mutateAsync: createUser } = useCreateUser();
   const [error, setError] = useState('');
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     setError('');
 
-    return createUser({ body: { ...data } })
-      .then(() =>
+    return createUser({ data })
+      .then((res) => {
+        if (res.status !== 201) {
+          throw new Error(res.data.message);
+        }
+
         signInWithEmailAndPassword(auth, data.email, data.password).catch(
           () => {
             throw new Error(
               'something went wrong - please try signing in manually',
             );
           },
-        ),
-      )
+        );
+      })
       .catch((err: Error) => setError(err.message));
   };
 

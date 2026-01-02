@@ -1,34 +1,57 @@
-import { zValidator } from '@hono/zod-validator';
-import { Hono } from 'hono';
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { HTTPException } from 'hono/http-exception';
-import {
-  removeFollowBody,
-  respondToFollowBody,
-  type Follow,
-  type FollowNotification,
-  type FollowUserResponse,
-} from 'lib';
+import { type Follow, type FollowNotification } from 'lib';
 import { bulkWriter, collections } from '../db';
 import { authenticate } from '../middleware/auth';
+import {
+  followUserParams,
+  followUserResponse,
+  removeFollowBody,
+  removeFollowParams,
+  respondToFollowBody,
+  respondToFollowParams,
+} from '../schemas/follows';
+import { authHeaderSchema, errorSchema } from '../schemas/shared';
 
-const app = new Hono();
+const app = new OpenAPIHono();
 
-app.post('/:userId', authenticate, async (c) => {
+const followUserRoute = createRoute({
+  operationId: 'followUser',
+  method: 'post',
+  path: '/{userId}',
+  request: {
+    headers: authHeaderSchema,
+    params: followUserParams,
+  },
+  middleware: [authenticate] as const,
+  responses: {
+    201: {
+      description: 'Successfully requested to follow user',
+      content: { 'application/json': { schema: followUserResponse } },
+    },
+    404: {
+      description: 'User does not exist',
+      content: { 'application/json': { schema: errorSchema } },
+    },
+  },
+});
+
+app.openapi(followUserRoute, async (c) => {
   const requesterId = c.var.uid;
   const followedUserId = c.req.param('userId');
 
   // check for pre-existing follow
   const followToDoc = collections.followsTo(followedUserId).doc(requesterId);
-  const followToDocResource = await followToDoc.get();
-  if (followToDocResource.exists) {
-    return;
+  const followToData = (await followToDoc.get()).data();
+  if (followToData) {
+    return c.json({ status: followToData.status }, 201);
   }
 
   // get recipient data
   const recipient = await collections.users().doc(followedUserId).get();
   const recipientData = recipient.data();
   if (!recipientData) {
-    throw new HTTPException(404, { message: 'user does not exist' });
+    return c.json({ message: 'user does not exist' }, 404);
   }
 
   // get requester info for embedding in follow
@@ -68,153 +91,195 @@ app.post('/:userId', authenticate, async (c) => {
 
   await writeBatch.close();
 
-  return c.json<FollowUserResponse>({ status: followData.status }, 201);
+  return c.json({ status: followData.status }, 201);
 });
 
-app.post(
-  '/respond/:userId',
-  authenticate,
-  zValidator('json', respondToFollowBody),
-  async (c) => {
-    const requesterId = c.var.uid;
-    const fromUserId = c.req.param('userId');
-    const { action } = c.req.valid('json');
+const respondToFollowRoute = createRoute({
+  operationId: 'respondToFollow',
+  method: 'post',
+  path: '/respond/{userId}',
+  request: {
+    headers: authHeaderSchema,
+    params: respondToFollowParams,
+    body: { content: { 'application/json': { schema: respondToFollowBody } } },
+  },
+  middleware: [authenticate] as const,
+  responses: {
+    200: {
+      description: 'Successfully responded to user follow request',
+      content: { 'application/json': { schema: z.null() } },
+    },
+    404: {
+      description: 'No follow request from user',
+      content: { 'application/json': { schema: errorSchema } },
+    },
+    412: {
+      description: 'Cannot decline accepted request',
+      content: { 'application/json': { schema: errorSchema } },
+    },
+  },
+});
 
-    const followToDoc = collections.followsTo(requesterId).doc(fromUserId);
-    const followData = (await followToDoc.get()).data();
-    if (!followData) {
-      throw new HTTPException(404, {
-        message: 'no follow request from user',
-      });
-    }
+app.openapi(respondToFollowRoute, async (c) => {
+  const requesterId = c.var.uid;
+  const fromUserId = c.req.param('userId');
+  const { action } = c.req.valid('json');
 
-    // bail out early if request has already been accepted
-    if (followData.status === 'accepted') {
-      if (action === 'decline') {
-        throw new HTTPException(412, {
+  const followToDoc = collections.followsTo(requesterId).doc(fromUserId);
+  const followData = (await followToDoc.get()).data();
+  if (!followData) {
+    return c.json({ message: 'no follow request from user' }, 404);
+  }
+
+  // bail out early if request has already been accepted
+  if (followData.status === 'accepted') {
+    if (action === 'decline') {
+      return c.json(
+        {
           message:
             "cannot decline a request that's already accepted - delete it instead",
-        });
-      }
-
-      return c.body(null, 200);
+        },
+        412,
+      );
     }
 
-    const writeBatch = bulkWriter();
+    return c.json(null, 200);
+  }
 
-    const requesterNotification = await getLatestRequestNotification({
-      fromUserId,
-      toUserId: requesterId,
+  const writeBatch = bulkWriter();
+
+  const requesterNotification = await getLatestRequestNotification({
+    fromUserId,
+    toUserId: requesterId,
+  });
+
+  if (action === 'accept') {
+    writeBatch.update(followToDoc, { status: 'accepted' });
+    writeBatch.update(collections.followsFrom(fromUserId).doc(requesterId), {
+      status: 'accepted',
     });
 
-    if (action === 'accept') {
-      writeBatch.update(followToDoc, { status: 'accepted' });
-      writeBatch.update(collections.followsFrom(fromUserId).doc(requesterId), {
+    if (requesterNotification) {
+      writeBatch.update(requesterNotification.ref, {
         status: 'accepted',
       });
+    }
 
-      if (requesterNotification) {
-        writeBatch.update(requesterNotification.ref, {
-          status: 'accepted',
-        });
-      }
-
-      const requesterData = (
-        await collections.users().doc(requesterId).get()
-      ).data();
-      if (requesterData != null) {
-        writeBatch.create(
-          collections.notifications(fromUserId).doc(crypto.randomUUID()),
-          {
-            userId: requesterId,
-            user: {
-              username: requesterData.username,
-              ...(requesterData.image ? { image: requesterData.image } : {}),
-            },
-            kind: 'response',
-            status: 'accepted',
-            createdAt: Date.now(),
+    const requesterData = (
+      await collections.users().doc(requesterId).get()
+    ).data();
+    if (requesterData != null) {
+      writeBatch.create(
+        collections.notifications(fromUserId).doc(crypto.randomUUID()),
+        {
+          userId: requesterId,
+          user: {
+            username: requesterData.username,
+            ...(requesterData.image ? { image: requesterData.image } : {}),
           },
-        );
-      }
-
-      const followedPosts = await collections
-        .posts()
-        .where('userId', '==', requesterId)
-        .get();
-
-      followedPosts.forEach((post) => {
-        const feedPostDoc = collections.feed(fromUserId).doc(post.id);
-        writeBatch.create(feedPostDoc, post.data());
-      });
-    } else {
-      writeBatch.delete(followToDoc);
-      if (requesterNotification) {
-        writeBatch.delete(requesterNotification.ref);
-      }
+          kind: 'response',
+          status: 'accepted',
+          createdAt: Date.now(),
+        },
+      );
     }
-
-    await writeBatch.close();
-
-    return c.body(null, 200);
-  },
-);
-
-app.delete(
-  '/:userId',
-  authenticate,
-  zValidator('json', removeFollowBody),
-  async (c) => {
-    const requesterId = c.var.uid;
-    const userId = c.req.param('userId');
-    const { direction } = c.req.valid('json');
-
-    if (userId === requesterId) {
-      throw new HTTPException(400, {
-        message: 'cannot unfollow yourself',
-      });
-    }
-
-    const fromUserId = direction === 'from' ? userId : requesterId;
-    const toUserId = direction === 'from' ? requesterId : userId;
-
-    const followToDoc = collections.followsTo(toUserId).doc(fromUserId);
-    const followData = (await followToDoc.get()).data();
-
-    if (followData == null) {
-      return c.body(null, 204);
-    }
-
-    const writeBatch = bulkWriter();
-
-    writeBatch.delete(followToDoc);
-    writeBatch.delete(collections.followsFrom(fromUserId).doc(toUserId));
 
     const followedPosts = await collections
-      .feed(fromUserId)
-      .where('userId', '==', toUserId)
+      .posts()
+      .where('userId', '==', requesterId)
       .get();
 
     followedPosts.forEach((post) => {
-      writeBatch.delete(post.ref);
+      const feedPostDoc = collections.feed(fromUserId).doc(post.id);
+      writeBatch.create(feedPostDoc, post.data());
     });
-
-    // if the follow is pending, remove the toUserId notification
-    if (followData.status === 'pending') {
-      const recipientNotification = await getLatestRequestNotification({
-        fromUserId,
-        toUserId,
-      });
-      if (recipientNotification != null) {
-        writeBatch.delete(recipientNotification.ref);
-      }
+  } else {
+    writeBatch.delete(followToDoc);
+    if (requesterNotification) {
+      writeBatch.delete(requesterNotification.ref);
     }
+  }
 
-    await writeBatch.close();
+  await writeBatch.close();
 
-    return c.body(null, 204);
+  return c.json(null, 200);
+});
+
+const removeFollowRoute = createRoute({
+  operationId: 'removeFollow',
+  method: 'delete',
+  path: '/{userId}',
+  request: {
+    headers: authHeaderSchema,
+    params: removeFollowParams,
+    body: { content: { 'application/json': { schema: removeFollowBody } } },
   },
-);
+  middleware: [authenticate] as const,
+  responses: {
+    204: {
+      description: 'Successfully removed follow',
+      content: { 'application/json': { schema: z.null() } },
+    },
+    400: {
+      description: 'Cannot unfollow yourself',
+      content: { 'application/json': { schema: errorSchema } },
+    },
+  },
+});
+
+app.openapi(removeFollowRoute, async (c) => {
+  const requesterId = c.var.uid;
+  const userId = c.req.param('userId');
+  const { direction } = c.req.valid('json');
+
+  if (userId === requesterId) {
+    return c.json(
+      {
+        message: 'cannot unfollow yourself',
+      },
+      400,
+    );
+  }
+
+  const fromUserId = direction === 'from' ? userId : requesterId;
+  const toUserId = direction === 'from' ? requesterId : userId;
+
+  const followToDoc = collections.followsTo(toUserId).doc(fromUserId);
+  const followData = (await followToDoc.get()).data();
+
+  if (followData == null) {
+    return c.json(null, 204);
+  }
+
+  const writeBatch = bulkWriter();
+
+  writeBatch.delete(followToDoc);
+  writeBatch.delete(collections.followsFrom(fromUserId).doc(toUserId));
+
+  const followedPosts = await collections
+    .feed(fromUserId)
+    .where('userId', '==', toUserId)
+    .get();
+
+  followedPosts.forEach((post) => {
+    writeBatch.delete(post.ref);
+  });
+
+  // if the follow is pending, remove the toUserId notification
+  if (followData.status === 'pending') {
+    const recipientNotification = await getLatestRequestNotification({
+      fromUserId,
+      toUserId,
+    });
+    if (recipientNotification != null) {
+      writeBatch.delete(recipientNotification.ref);
+    }
+  }
+
+  await writeBatch.close();
+
+  return c.json(null, 204);
+});
 
 const getLatestRequestNotification = async ({
   fromUserId,

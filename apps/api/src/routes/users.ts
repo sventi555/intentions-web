@@ -1,24 +1,47 @@
-import { zValidator } from '@hono/zod-validator';
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import type { FirebaseAuthError, UserRecord } from 'firebase-admin/auth';
-import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { createUserBody, updateUserBody } from 'lib';
 import { auth } from '../config';
 import { bulkWriter, collections } from '../db';
 import { userPostDocCopies } from '../db/denorm';
 import { authenticate } from '../middleware/auth';
+import { authHeaderSchema, errorSchema } from '../schemas/shared';
+import { createUserBody, updateUserBody } from '../schemas/users';
 import { uploadMedia } from '../storage';
 
-const app = new Hono();
+const app = new OpenAPIHono();
 
-app.post('/', zValidator('json', createUserBody), async (c) => {
+const createUserRoute = createRoute({
+  operationId: 'createUser',
+  method: 'post',
+  path: '/',
+  request: {
+    body: { content: { 'application/json': { schema: createUserBody } } },
+  },
+  responses: {
+    201: {
+      description: 'Successfully created user',
+      content: { 'application/json': { schema: z.null({}) } },
+    },
+    400: {
+      description: 'Invalid email or password',
+      content: { 'application/json': { schema: errorSchema } },
+    },
+    409: {
+      description: 'Email/username already taken',
+      content: { 'application/json': { schema: errorSchema } },
+    },
+  },
+});
+
+app.openapi(createUserRoute, async (c) => {
   const { username, email, password } = c.req.valid('json');
 
   const existingUsername =
     (await collections.users().where('username', '==', username).get()).size >
     0;
   if (existingUsername) {
-    throw new HTTPException(409, { message: 'username already taken' });
+    return c.json({ message: 'username already taken' }, 409);
   }
 
   let user: UserRecord;
@@ -28,11 +51,11 @@ app.post('/', zValidator('json', createUserBody), async (c) => {
     const authError = err as FirebaseAuthError;
     switch (authError.code) {
       case 'auth/email-already-exists':
-        throw new HTTPException(409, { message: 'email already taken' });
+        return c.json({ message: 'email already taken' }, 409);
       case 'auth/invalid-email':
-        throw new HTTPException(400, { message: 'invalid email' });
+        return c.json({ message: 'invalid email' }, 400);
       case 'auth/invalid-password':
-        throw new HTTPException(400, { message: 'invalid password' });
+        return c.json({ message: 'invalid password' }, 400);
       default:
         throw new HTTPException(500);
     }
@@ -51,10 +74,27 @@ app.post('/', zValidator('json', createUserBody), async (c) => {
 
   await writeBatch.close();
 
-  return c.body(null, 201);
+  return c.json(null, 201);
 });
 
-app.patch('/', authenticate, zValidator('json', updateUserBody), async (c) => {
+const updateUserRoute = createRoute({
+  operationId: 'updateUser',
+  method: 'patch',
+  path: '/',
+  request: {
+    headers: authHeaderSchema,
+    body: { content: { 'application/json': { schema: updateUserBody } } },
+  },
+  middleware: [authenticate] as const,
+  responses: {
+    200: {
+      description: 'Successfully updated user',
+      content: { 'application/json': { schema: z.null() } },
+    },
+  },
+});
+
+app.openapi(updateUserRoute, async (c) => {
   const { image } = c.req.valid('json');
   const requesterId = c.var.uid;
 
@@ -105,7 +145,7 @@ app.patch('/', authenticate, zValidator('json', updateUserBody), async (c) => {
 
   await writeBatch.close();
 
-  return c.body(null, 200);
+  return c.json(null, 200);
 });
 
 export default app;

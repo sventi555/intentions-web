@@ -1,15 +1,42 @@
-import { zValidator } from '@hono/zod-validator';
-import { Hono } from 'hono';
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { HTTPException } from 'hono/http-exception';
-import { createPostBody, updatePostBody, type Post } from 'lib';
+import { type Post } from 'lib';
 import { bulkWriter, collections } from '../db';
 import { postDocCopies } from '../db/denorm';
 import { authenticate } from '../middleware/auth';
+import {
+  createPostBody,
+  deletePostParams,
+  updatePostBody,
+  updatePostParams,
+} from '../schemas/posts';
+import { authHeaderSchema, errorSchema } from '../schemas/shared';
 import { uploadMedia } from '../storage';
 
-const app = new Hono();
+const app = new OpenAPIHono();
 
-app.post('/', authenticate, zValidator('json', createPostBody), async (c) => {
+const createPostRoute = createRoute({
+  operationId: 'createPost',
+  method: 'post',
+  path: '/',
+  request: {
+    headers: authHeaderSchema,
+    body: { content: { 'application/json': { schema: createPostBody } } },
+  },
+  middleware: [authenticate] as const,
+  responses: {
+    201: {
+      description: 'Successfully created post',
+      content: { 'application/json': { schema: z.null() } },
+    },
+    404: {
+      description: 'Intention does not exist',
+      content: { 'application/json': { schema: errorSchema } },
+    },
+  },
+});
+
+app.openapi(createPostRoute, async (c) => {
   const requesterId = c.var.uid;
   const data = c.req.valid('json');
 
@@ -17,9 +44,7 @@ app.post('/', authenticate, zValidator('json', createPostBody), async (c) => {
   const intentionDoc = collections.intentions().doc(data.intentionId);
   const intentionData = (await intentionDoc.get()).data();
   if (!intentionData || intentionData.userId !== requesterId) {
-    throw new HTTPException(404, {
-      message: 'intention does not exist',
-    });
+    return c.json({ message: 'intention does not exist' }, 404);
   }
 
   const user = await collections.users().doc(requesterId).get();
@@ -61,41 +86,75 @@ app.post('/', authenticate, zValidator('json', createPostBody), async (c) => {
 
   await writeBatch.close();
 
-  return c.body(null, 201);
+  return c.json(null, 201);
 });
 
-app.patch(
-  '/:id',
-  authenticate,
-  zValidator('json', updatePostBody),
-  async (c) => {
-    const requesterId = c.var.uid;
-    const postId = c.req.param('id');
-    const updatedData = c.req.valid('json');
-
-    const postData = (await collections.posts().doc(postId).get()).data();
-    if (!postData || postData.userId !== requesterId) {
-      throw new HTTPException(404, { message: 'post does not exist' });
-    }
-
-    const writeBatch = bulkWriter();
-
-    const postDocs = await postDocCopies(postId, requesterId);
-    postDocs.forEach((doc) => writeBatch.update(doc, updatedData));
-
-    await writeBatch.close();
-
-    return c.body(null, 200);
+const updatePostRoute = createRoute({
+  operationId: 'updatePost',
+  method: 'patch',
+  path: '/{id}',
+  request: {
+    headers: authHeaderSchema,
+    params: updatePostParams,
+    body: { content: { 'application/json': { schema: updatePostBody } } },
   },
-);
+  middleware: [authenticate] as const,
+  responses: {
+    200: {
+      description: 'Successfully updated post',
+      content: { 'application/json': { schema: z.null() } },
+    },
+    404: {
+      description: 'Post does not exist',
+      content: { 'application/json': { schema: errorSchema } },
+    },
+  },
+});
 
-app.delete('/:id', authenticate, async (c) => {
+app.openapi(updatePostRoute, async (c) => {
+  const requesterId = c.var.uid;
+  const postId = c.req.param('id');
+  const updatedData = c.req.valid('json');
+
+  const postData = (await collections.posts().doc(postId).get()).data();
+  if (!postData || postData.userId !== requesterId) {
+    return c.json({ message: 'post does not exist' }, 404);
+  }
+
+  const writeBatch = bulkWriter();
+
+  const postDocs = await postDocCopies(postId, requesterId);
+  postDocs.forEach((doc) => writeBatch.update(doc, updatedData));
+
+  await writeBatch.close();
+
+  return c.json(null, 200);
+});
+
+const deletePostRoute = createRoute({
+  operationId: 'deletePost',
+  method: 'delete',
+  path: '/{id}',
+  request: {
+    headers: authHeaderSchema,
+    params: deletePostParams,
+  },
+  middleware: [authenticate] as const,
+  responses: {
+    204: {
+      description: 'Successfully deleted post',
+      content: { 'application/json': { schema: z.null() } },
+    },
+  },
+});
+
+app.openapi(deletePostRoute, async (c) => {
   const requesterId = c.var.uid;
   const postId = c.req.param('id');
 
   const postData = (await collections.posts().doc(postId).get()).data();
   if (!postData || postData.userId !== requesterId) {
-    return c.body(null, 204);
+    return c.json(null, 204);
   }
 
   const writeBatch = bulkWriter();
@@ -117,7 +176,7 @@ app.delete('/:id', authenticate, async (c) => {
 
   await writeBatch.close();
 
-  return c.body(null, 204);
+  return c.json(null, 204);
 });
 
 export default app;

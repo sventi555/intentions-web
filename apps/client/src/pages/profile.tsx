@@ -25,7 +25,6 @@ import {
   useFollow,
   useFollowUser,
   useInvalidateFollow,
-  useRemoveFollow,
 } from '../hooks/follows';
 import {
   IntentionsSort,
@@ -37,12 +36,13 @@ import {
   useInvalidateUserPosts,
   useUserPosts,
 } from '../hooks/posts';
-import { useInvalidateUser, useUpdateUser, useUser } from '../hooks/users';
+import { useInvalidateUser, useUser } from '../hooks/users';
+import { useRemoveFollow, useUpdateUser } from '../intentions-api';
 import { useAuthState } from '../state/auth';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
-  const { authUser } = useAuthState();
+  const { authUser, token } = useAuthState();
 
   if (userId == null) {
     throw new Error('Profile rendered without userId');
@@ -56,10 +56,10 @@ export const Profile: React.FC = () => {
   const { follow, isLoading: followLoading } = useFollow(userId);
 
   const filePickerRef = useRef<HTMLInputElement | null>(null);
-  const updateUser = useUpdateUser();
+  const { mutateAsync: updateUser } = useUpdateUser();
 
   const followUser = useFollowUser();
-  const removeFollow = useRemoveFollow();
+  const { mutateAsync: removeFollow } = useRemoveFollow();
   const invalidateFollow = useInvalidateFollow();
   const invalidateUser = useInvalidateUser();
   const invalidateUserPosts = useInvalidateUserPosts();
@@ -86,7 +86,8 @@ export const Profile: React.FC = () => {
           <ImagePicker
             onPick={(dataUrl) =>
               updateUser({
-                body: { image: dataUrl },
+                headers: { authorization: token ?? '' },
+                data: { image: dataUrl },
               }).then(() =>
                 Promise.all([
                   invalidateUser(userId),
@@ -123,8 +124,9 @@ export const Profile: React.FC = () => {
               onClick={() => {
                 setSubmittingFollow(true);
                 removeFollow({
+                  headers: { authorization: token ?? '' },
                   userId: userId,
-                  body: { direction: 'to' },
+                  data: { direction: 'to' },
                 })
                   .then(() => invalidateFollow(userId))
                   .then(() => setSubmittingFollow(false));
@@ -153,14 +155,17 @@ export const Profile: React.FC = () => {
               <MenuItem>
                 <button
                   onClick={() =>
-                    removeFollow({ userId, body: { direction: 'to' } }).then(
-                      () =>
-                        Promise.all([
-                          invalidateFollow(userId),
-                          invalidateUserPosts(userId),
-                          invalidateIntentions(userId),
-                          invalidateFeedPosts(authUser.uid),
-                        ]),
+                    removeFollow({
+                      headers: { authorization: token ?? '' },
+                      userId,
+                      data: { direction: 'to' },
+                    }).then(() =>
+                      Promise.all([
+                        invalidateFollow(userId),
+                        invalidateUserPosts(userId),
+                        invalidateIntentions(userId),
+                        invalidateFeedPosts(authUser.uid),
+                      ]),
                     )
                   }
                   className="cursor-pointer p-1 px-2 hover:bg-neutral-200"

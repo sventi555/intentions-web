@@ -12,7 +12,6 @@ Features:
 
 Tech debt:
 - paginate notifications and comments
-- error schemas for api error responses
 - invalidate everything on sign out
     - less rigorous invalidation otherwise (only navigable things)
 - delete old profile picture when changing DP

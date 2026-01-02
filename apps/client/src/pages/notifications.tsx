@@ -4,11 +4,11 @@ import { Link } from 'wouter';
 import { DisplayPic } from '../components/display-pic';
 import { Check, Close } from '../components/icons';
 import { StickyHeader } from '../components/sticky-header';
-import { useRespondToFollow } from '../hooks/follows';
 import {
   useInvalidateNotifications,
   useNotifications,
 } from '../hooks/notifications';
+import { useRespondToFollow } from '../intentions-api';
 import { useAuthState } from '../state/auth';
 
 export const Notifications: React.FC = () => {
@@ -101,12 +101,12 @@ interface FollowRequestNotificationProps {
 const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
   props,
 ) => {
-  const authUser = useAuthState().authUser;
+  const { authUser, token } = useAuthState();
   if (authUser == null) {
     throw new Error('must be signed in to view notification');
   }
 
-  const respondToFollow = useRespondToFollow();
+  const { mutateAsync: respondToFollow } = useRespondToFollow();
   const invalidateNotifications = useInvalidateNotifications();
 
   const [submittingResponse, setSubmittingResponse] = useState<
@@ -129,8 +129,9 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
               onClick={() => {
                 setSubmittingResponse('decline');
                 respondToFollow({
+                  headers: { authorization: token ?? '' },
                   userId: props.sender.id,
-                  body: { action: 'decline' },
+                  data: { action: 'decline' },
                 })
                   .then(() => invalidateNotifications(authUser.uid))
                   .then(() => setSubmittingResponse(null));
@@ -151,8 +152,9 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
               onClick={() => {
                 setSubmittingResponse('accept');
                 respondToFollow({
+                  headers: { authorization: token ?? '' },
                   userId: props.sender.id,
-                  body: { action: 'accept' },
+                  data: { action: 'accept' },
                 })
                   .then(() => invalidateNotifications(authUser.uid))
                   .then(() => setSubmittingResponse(null));

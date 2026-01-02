@@ -1,8 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc, getDocs, query, where } from 'firebase/firestore';
-import { CreateUserBody, UpdateUserBody } from 'lib';
 import { collections, docs } from '../data/db';
-import { useAuthState } from '../state/auth';
 
 export const useUser = (userId: string) => {
   const {
@@ -59,54 +57,4 @@ export const useSearchUser = (username?: string) => {
   });
 
   return { user, isLoading, isError };
-};
-
-export const useCreateUser = () => {
-  const { mutateAsync: createUser } = useMutation<
-    unknown,
-    Error,
-    { body: CreateUserBody }
-  >({
-    mutationFn: async ({ body }) => {
-      const res = await fetch(`${import.meta.env.VITE_API_HOST}/users`, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!res.ok) {
-        const errMessage = await res.text();
-        throw new Error(
-          errMessage || 'something went wrong - please try again',
-        );
-      }
-    },
-  });
-
-  return createUser;
-};
-
-export const useUpdateUser = () => {
-  const authUser = useAuthState().authUser;
-
-  const { mutateAsync: updateUser } = useMutation<
-    unknown,
-    Error,
-    { body: UpdateUserBody }
-  >({
-    mutationFn: async ({ body }) => {
-      const token = await authUser?.getIdToken();
-
-      await fetch(`${import.meta.env.VITE_API_HOST}/users`, {
-        method: 'PATCH',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token ?? '',
-        },
-      });
-    },
-  });
-
-  return updateUser;
 };

@@ -9,7 +9,8 @@
     "build": "vite build",
     "start": "vite preview",
     "format": "prettier --check .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "api-gen": "orval --config ./orval.config.js"
   },
   "dependencies": {
     "@headlessui/react": "2.2.9",
@@ -36,6 +37,7 @@
     "eslint-plugin-react-hooks": "5.0.0",
     "eslint-plugin-react-refresh": "0.4.14",
     "globals": "15.11.0",
+    "orval": "7.17.2",
     "postcss": "8.4.49",
     "prettier": "3.3.3",
     "prettier-plugin-tailwindcss": "0.6.14",

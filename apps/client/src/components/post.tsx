@@ -11,20 +11,19 @@ import { intlFormatDistance } from 'date-fns';
 import { Post as _Post } from 'lib';
 import { useState } from 'react';
 import { Link } from 'wouter';
-import {
-  useComments,
-  useCreateComment,
-  useDeleteComment,
-  useInvalidateComments,
-} from '../hooks/comments';
+import { useComments, useInvalidateComments } from '../hooks/comments';
 import { useDownloadUrl } from '../hooks/download-url';
 import { useInvalidateIntentions } from '../hooks/intentions';
 import {
-  useDeletePost,
   useInvalidateFeedPosts,
   useInvalidateIntentionPosts,
   useInvalidateUserPosts,
 } from '../hooks/posts';
+import {
+  useCreateComment,
+  useDeleteComment,
+  useDeletePost,
+} from '../intentions-api';
 import { useAuthState } from '../state/auth';
 import { DisplayPic } from './display-pic';
 import { EllipsesVert, Loading, Send } from './icons';
@@ -36,9 +35,9 @@ interface PostProps {
 
 export const Post: React.FC<PostProps> = ({ id, data }) => {
   const { downloadUrl: imageUrl } = useDownloadUrl(data.image);
-  const authUser = useAuthState().authUser;
+  const { authUser, token } = useAuthState();
 
-  const deletePost = useDeletePost();
+  const { mutateAsync: deletePost } = useDeletePost();
   const invalidateUserPosts = useInvalidateUserPosts();
   const invalidateIntentionPosts = useInvalidateIntentionPosts();
   const invalidateIntentions = useInvalidateIntentions();
@@ -82,7 +81,10 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
               <MenuItem>
                 <button
                   onClick={() =>
-                    deletePost({ id }).then(() =>
+                    deletePost({
+                      headers: { authorization: token ?? '' },
+                      id,
+                    }).then(() =>
                       Promise.all([
                         invalidateUserPosts(data.userId),
                         invalidateIntentionPosts(data.userId, data.intentionId),
@@ -139,11 +141,11 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
   open,
   setOpen,
 }) => {
-  const { authUser } = useAuthState();
+  const { authUser, token } = useAuthState();
 
   const { comments } = useComments(postId);
-  const createComment = useCreateComment();
-  const deleteComment = useDeleteComment();
+  const { mutateAsync: createComment } = useCreateComment();
+  const { mutateAsync: deleteComment } = useDeleteComment();
   const invalidateComments = useInvalidateComments();
   const [draftComment, setDraftComment] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
@@ -152,7 +154,8 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
     if (draftComment.trim()) {
       setSubmittingComment(true);
       createComment({
-        body: { postId, body: draftComment },
+        headers: { authorization: token ?? '' },
+        data: { postId, body: draftComment },
       })
         .then(() => invalidateComments(postId))
         .then(() => {
@@ -207,7 +210,10 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
                         <MenuItem>
                           <button
                             onClick={() =>
-                              deleteComment({ commentId: c.id }).then(() =>
+                              deleteComment({
+                                headers: { authorization: token ?? '' },
+                                id: c.id,
+                              }).then(() =>
                                 Promise.all([invalidateComments(postId)]),
                               )
                             }

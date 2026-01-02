@@ -8,11 +8,11 @@ import { Plus } from '../components/icons';
 import { StickyHeader } from '../components/sticky-header';
 import { useIntentions, useInvalidateIntentions } from '../hooks/intentions';
 import {
-  useCreatePost,
   useInvalidateFeedPosts,
   useInvalidateIntentionPosts,
   useInvalidateUserPosts,
 } from '../hooks/posts';
+import { useCreatePost } from '../intentions-api';
 import { useAuthState } from '../state/auth';
 
 // no need to control intentionId since it's always set
@@ -22,7 +22,7 @@ type Inputs = {
 };
 
 export const CreatePost: React.FC = () => {
-  const authUser = useAuthState().authUser;
+  const { authUser, token } = useAuthState();
 
   if (authUser == null) {
     throw new Error('Must be logged in to view create post page');
@@ -34,7 +34,7 @@ export const CreatePost: React.FC = () => {
   );
   const filePickerRef = useRef<HTMLInputElement | null>(null);
 
-  const createPost = useCreatePost();
+  const { mutateAsync: createPost } = useCreatePost();
   const [, setLocation] = useLocation();
   const invalidateFeedPosts = useInvalidateFeedPosts();
   const invalidateUserPosts = useInvalidateUserPosts();
@@ -65,7 +65,8 @@ export const CreatePost: React.FC = () => {
 
   const onSubmit: SubmitHandler<Inputs> = (data) =>
     createPost({
-      body: {
+      headers: { authorization: token ?? '' },
+      data: {
         intentionId: computedIntentionId,
         description: data.description,
         ...(imageField.value ? { image: imageField.value } : {}),
