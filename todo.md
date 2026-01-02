@@ -1,8 +1,9 @@
 Fixes:
+- sidebar shouldn't scroll on desktop
+- page header should be above other sticky headers in z-index (but below modals)
 
 Features:
 - see your own follows and followers
-- image placeholders
 - error UI for failed fetching and actions
 - edit post UI
 - notification alert badge?

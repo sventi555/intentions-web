@@ -35,6 +35,8 @@ interface PostProps {
 
 export const Post: React.FC<PostProps> = ({ id, data }) => {
   const { downloadUrl: imageUrl } = useDownloadUrl(data.image);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const { authUser, token } = useAuthState();
 
   const { mutateAsync: deletePost } = useDeletePost();
@@ -103,7 +105,17 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
         ) : null}
       </div>
 
-      <img className="rounded-2xl" src={imageUrl} />
+      {data.image && !imageLoaded ? (
+        <div className="aspect-square w-full animate-pulse rounded-2xl bg-neutral-300" />
+      ) : null}
+
+      {imageUrl ? (
+        <img
+          className={clsx('rounded-2xl', !imageLoaded && 'hidden')}
+          src={imageUrl}
+          onLoad={() => setImageLoaded(true)}
+        />
+      ) : null}
 
       <div className="p-2">
         <div>{data.description}</div>
