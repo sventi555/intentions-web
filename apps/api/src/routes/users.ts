@@ -1,6 +1,7 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import type { FirebaseAuthError, UserRecord } from 'firebase-admin/auth';
 import { HTTPException } from 'hono/http-exception';
+import type { Follow } from 'lib';
 import { auth } from '../config';
 import { bulkWriter, collections } from '../db';
 import { userPostDocCopies } from '../db/denorm';
@@ -69,8 +70,9 @@ app.openapi(createUserRoute, async (c) => {
   // follow self to simplify permission checks and feed mechanics
   const followToDoc = collections.followsTo(user.uid).doc(user.uid);
   const followFromDoc = collections.followsFrom(user.uid).doc(user.uid);
-  writeBatch.create(followToDoc, { status: 'accepted' });
-  writeBatch.create(followFromDoc, { status: 'accepted' });
+  const followData: Follow = { status: 'accepted', user: { username } };
+  writeBatch.create(followToDoc, followData);
+  writeBatch.create(followFromDoc, followData);
 
   await writeBatch.close();
 

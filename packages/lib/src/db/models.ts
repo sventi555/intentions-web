@@ -7,6 +7,7 @@ export interface User {
 export type FollowStatus = 'pending' | 'accepted';
 
 export interface Follow {
+  user: Pick<User, 'username'>;
   status: FollowStatus;
 }
 

@@ -41,15 +41,16 @@ app.openapi(followUserRoute, async (c) => {
 
   // check for pre-existing follow
   const followToDoc = collections.followsTo(followedUserId).doc(requesterId);
-  const followToData = (await followToDoc.get()).data();
-  if (followToData) {
+  const existingFollowData = (await followToDoc.get()).data();
+  if (existingFollowData) {
     return c.json(null, 201);
   }
 
   // get recipient data
-  const recipient = await collections.users().doc(followedUserId).get();
-  const recipientData = recipient.data();
-  if (!recipientData) {
+  const recipient = (
+    await collections.users().doc(followedUserId).get()
+  ).data();
+  if (!recipient) {
     return c.json({ message: 'user does not exist' }, 404);
   }
 
@@ -63,13 +64,23 @@ app.openapi(followUserRoute, async (c) => {
   const writeBatch = bulkWriter();
 
   // create follow
-  const followData: Follow = {
+  const followData = {
     status: 'pending',
+  } as const;
+
+  const followToData: Follow = {
+    ...followData,
+    user: { username: recipient.username },
   };
-  writeBatch.create(followToDoc, followData);
+  const followFromData: Follow = {
+    ...followData,
+    user: { username: requester.username },
+  };
+
+  writeBatch.create(followToDoc, followToData);
   writeBatch.create(
     collections.followsFrom(requesterId).doc(followedUserId),
-    followData,
+    followFromData,
   );
 
   // send notification so recipient can respond to follow request
