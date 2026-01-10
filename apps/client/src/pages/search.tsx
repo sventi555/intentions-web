@@ -5,13 +5,9 @@ import { Button } from '../components/atoms/button';
 import { Input } from '../components/atoms/input';
 import { DisplayPic } from '../components/display-pic';
 import { Close, Search as SearchIcon } from '../components/icons';
-import {
-  useFollow,
-  useFollowUser,
-  useInvalidateFollow,
-} from '../hooks/follows';
+import { useFollow, useInvalidateFollow } from '../hooks/follows';
 import { useSearchUser } from '../hooks/users';
-import { useRemoveFollow } from '../intentions-api';
+import { useFollowUser, useRemoveFollow } from '../intentions-api';
 import { useAuthState } from '../state/auth';
 
 export const Search: React.FC = () => {
@@ -27,7 +23,7 @@ export const Search: React.FC = () => {
     useFollow(searchedUser?.id);
   const searchedUserAccepted =
     searchedUserFollow != null && searchedUserFollow.status === 'accepted';
-  const followUser = useFollowUser();
+  const { mutateAsync: followUser } = useFollowUser();
   const { mutateAsync: removeFollow } = useRemoveFollow();
   const invalidateFollow = useInvalidateFollow();
 
@@ -79,7 +75,10 @@ export const Search: React.FC = () => {
                   type="primary"
                   onClick={() => {
                     setFollowPending(true);
-                    followUser({ userId: searchedUser.id }).then(() => {
+                    followUser({
+                      headers: { authorization: token ?? '' },
+                      userId: searchedUser.id,
+                    }).then(() => {
                       setFollowPending(false);
                       invalidateFollow(searchedUser.id);
                     });

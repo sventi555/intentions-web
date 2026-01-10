@@ -21,11 +21,7 @@ import { DisplayPic } from '../components/display-pic';
 import { EllipsesVert } from '../components/icons';
 import { PostsList } from '../components/posts-list';
 import { auth } from '../firebase';
-import {
-  useFollow,
-  useFollowUser,
-  useInvalidateFollow,
-} from '../hooks/follows';
+import { useFollow, useInvalidateFollow } from '../hooks/follows';
 import {
   IntentionsSort,
   useIntentions,
@@ -37,7 +33,11 @@ import {
   useUserPosts,
 } from '../hooks/posts';
 import { useInvalidateUser, useUser } from '../hooks/users';
-import { useRemoveFollow, useUpdateUser } from '../intentions-api';
+import {
+  useFollowUser,
+  useRemoveFollow,
+  useUpdateUser,
+} from '../intentions-api';
 import { useAuthState } from '../state/auth';
 
 export const Profile: React.FC = () => {
@@ -58,7 +58,7 @@ export const Profile: React.FC = () => {
   const filePickerRef = useRef<HTMLInputElement | null>(null);
   const { mutateAsync: updateUser } = useUpdateUser();
 
-  const followUser = useFollowUser();
+  const { mutateAsync: followUser } = useFollowUser();
   const { mutateAsync: removeFollow } = useRemoveFollow();
   const invalidateFollow = useInvalidateFollow();
   const invalidateUser = useInvalidateUser();
@@ -108,7 +108,7 @@ export const Profile: React.FC = () => {
               type="primary"
               onClick={() => {
                 setSubmittingFollow(true);
-                followUser({ userId })
+                followUser({ headers: { authorization: token ?? '' }, userId })
                   .then(() => invalidateFollow(userId))
                   .then(() => setSubmittingFollow(false));
               }}

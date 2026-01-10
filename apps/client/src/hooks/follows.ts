@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc } from 'firebase/firestore';
 import { docs } from '../data/db';
 import { useAuthState } from '../state/auth';
@@ -45,28 +45,4 @@ export const useInvalidateFollow = () => {
     queryClient.refetchQueries({
       queryKey: ['follow', { toUserId }],
     });
-};
-
-export const useFollowUser = () => {
-  const authUser = useAuthState().authUser;
-
-  const { mutateAsync: followUser } = useMutation<
-    unknown,
-    Error,
-    { userId: string }
-  >({
-    mutationFn: async ({ userId }) => {
-      const token = await authUser?.getIdToken();
-
-      await fetch(`${import.meta.env.VITE_API_HOST}/follows/${userId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token ?? '',
-        },
-      });
-    },
-  });
-
-  return followUser;
 };
