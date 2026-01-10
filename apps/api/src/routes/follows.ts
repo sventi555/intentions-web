@@ -5,7 +5,6 @@ import { bulkWriter, collections } from '../db';
 import { authenticate } from '../middleware/auth';
 import {
   followUserParams,
-  followUserResponse,
   removeFollowBody,
   removeFollowParams,
   respondToFollowBody,
@@ -27,7 +26,7 @@ const followUserRoute = createRoute({
   responses: {
     201: {
       description: 'Successfully requested to follow user',
-      content: { 'application/json': { schema: followUserResponse } },
+      content: { 'application/json': { schema: z.null() } },
     },
     404: {
       description: 'User does not exist',
@@ -44,7 +43,7 @@ app.openapi(followUserRoute, async (c) => {
   const followToDoc = collections.followsTo(followedUserId).doc(requesterId);
   const followToData = (await followToDoc.get()).data();
   if (followToData) {
-    return c.json({ status: followToData.status }, 201);
+    return c.json(null, 201);
   }
 
   // get recipient data
@@ -91,7 +90,7 @@ app.openapi(followUserRoute, async (c) => {
 
   await writeBatch.close();
 
-  return c.json({ status: followData.status }, 201);
+  return c.json(null, 201);
 });
 
 const respondToFollowRoute = createRoute({

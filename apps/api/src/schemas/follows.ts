@@ -1,9 +1,6 @@
 import { z } from '@hono/zod-openapi';
 
 export const followUserParams = z.object({ userId: z.string() });
-export const followUserResponse = z.object({
-  status: z.enum(['pending', 'accepted']),
-});
 
 export const respondToFollowParams = z.object({ userId: z.string() });
 export const respondToFollowBody = z.object({

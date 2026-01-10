@@ -18,18 +18,10 @@ export type FollowUserHeaders = {
 authorization: string;
 };
 
-export type FollowUser201Status = typeof FollowUser201Status[keyof typeof FollowUser201Status];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FollowUser201Status = {
-  pending: 'pending',
-  accepted: 'accepted',
-} as const;
-
-export type FollowUser201 = {
-  status: FollowUser201Status;
-};
+/**
+ * @nullable
+ */
+export type FollowUser201 = unknown | null;
 
 export type FollowUser404 = {
   message: string;
