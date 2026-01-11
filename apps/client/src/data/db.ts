@@ -4,6 +4,7 @@ import {
   commentCollectionPath,
   feedPostCollectionPath,
   Follow,
+  followFromCollectionPath,
   FollowNotification,
   followToCollectionPath,
   followToDocPath,
@@ -36,6 +37,10 @@ export const collections = {
     ),
   followsTo: (toUser: string) =>
     collection(db, followToCollectionPath(toUser)).withConverter(
+      firestoreConverter<Follow>(),
+    ),
+  followsFrom: (fromUser: string) =>
+    collection(db, followFromCollectionPath(fromUser)).withConverter(
       firestoreConverter<Follow>(),
     ),
   intentions: () =>
