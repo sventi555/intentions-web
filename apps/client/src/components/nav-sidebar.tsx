@@ -1,7 +1,8 @@
 import { useLocation } from 'wouter';
-import { useAuthState } from '../state/auth';
-import { AddUser, Bell, Home, Pencil, Profile } from './icons';
-import { Icon } from './icons/icon';
+
+import { AddUser, Bell, Home, Pencil, Profile } from '@/components/icons';
+import { Icon } from '@/components/icons/icon';
+import { useAuthState } from '@/state/auth';
 
 export const NavSidebar: React.FC = () => {
   const { authUser } = useAuthState();

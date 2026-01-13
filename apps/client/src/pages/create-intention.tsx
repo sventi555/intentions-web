@@ -2,12 +2,13 @@ import { clsx } from 'clsx';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useLocation } from 'wouter';
-import { Button } from '../components/atoms/button';
-import { Input } from '../components/atoms/input';
-import { Submit } from '../components/atoms/submit';
-import { useInvalidateIntentions } from '../hooks/intentions';
-import { useCreateIntention } from '../intentions-api';
-import { useAuthState } from '../state/auth';
+
+import { Button } from '@/components/atoms/button';
+import { Input } from '@/components/atoms/input';
+import { Submit } from '@/components/atoms/submit';
+import { useInvalidateIntentions } from '@/hooks/intentions';
+import { useCreateIntention } from '@/intentions-api';
+import { useAuthState } from '@/state/auth';
 
 const suggestions = [
   'be more adventurous',

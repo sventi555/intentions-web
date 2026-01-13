@@ -7,7 +7,8 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { auth } from '../firebase';
+
+import { auth } from '@/firebase';
 
 const useAuthUser = () => {
   const [loading, setLoading] = useState(true);

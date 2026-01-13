@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc, getDocs, query, where } from 'firebase/firestore';
-import { collections, docs } from '../data/db';
-import { useAuthState } from '../state/auth';
+
+import { collections, docs } from '@/data/db';
+import { useAuthState } from '@/state/auth';
 
 export const useFollowedUsers = () => {
   const authUser = useAuthState().authUser;

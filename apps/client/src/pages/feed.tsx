@@ -1,7 +1,8 @@
 import { Link } from 'wouter';
-import { PostsList } from '../components/posts-list';
-import { useFeedPosts } from '../hooks/posts';
-import { useAuthState } from '../state/auth';
+
+import { PostsList } from '@/components/posts-list';
+import { useFeedPosts } from '@/hooks/posts';
+import { useAuthState } from '@/state/auth';
 
 export const Feed: React.FC = () => {
   const authUser = useAuthState().authUser;

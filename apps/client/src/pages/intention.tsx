@@ -1,8 +1,9 @@
 import { useParams } from 'wouter';
-import { PostsList } from '../components/posts-list';
-import { StickyHeader } from '../components/sticky-header';
-import { useIntention } from '../hooks/intentions';
-import { useIntentionPosts } from '../hooks/posts';
+
+import { PostsList } from '@/components/posts-list';
+import { StickyHeader } from '@/components/sticky-header';
+import { useIntention } from '@/hooks/intentions';
+import { useIntentionPosts } from '@/hooks/posts';
 
 export const Intention: React.FC = () => {
   const { userId, intentionId } = useParams();

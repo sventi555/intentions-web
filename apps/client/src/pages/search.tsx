@@ -1,14 +1,15 @@
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Button } from '../components/atoms/button';
-import { Input } from '../components/atoms/input';
-import { DisplayPic } from '../components/display-pic';
-import { Close, Search as SearchIcon } from '../components/icons';
-import { useFollow, useInvalidateFollow } from '../hooks/follows';
-import { useSearchUser } from '../hooks/users';
-import { useFollowUser, useRemoveFollow } from '../intentions-api';
-import { useAuthState } from '../state/auth';
+
+import { Button } from '@/components/atoms/button';
+import { Input } from '@/components/atoms/input';
+import { DisplayPic } from '@/components/display-pic';
+import { Close, Search as SearchIcon } from '@/components/icons';
+import { useFollow, useInvalidateFollow } from '@/hooks/follows';
+import { useSearchUser } from '@/hooks/users';
+import { useFollowUser, useRemoveFollow } from '@/intentions-api';
+import { useAuthState } from '@/state/auth';
 
 export const Search: React.FC = () => {
   const { token } = useAuthState();

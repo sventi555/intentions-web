@@ -18,7 +18,8 @@ import {
   userCollectionPath,
   userDocPath,
 } from 'lib';
-import { db } from '../firebase';
+
+import { db } from '@/firebase';
 
 export type CollectionSort<T extends string> = {
   by: T;

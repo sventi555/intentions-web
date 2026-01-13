@@ -1,8 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { orderBy, query, where } from 'firebase/firestore';
-import { collections } from '../data/db';
-import { useAuthState } from '../state/auth';
-import { useInfiniteDocQuery } from './infinite-doc-query';
+
+import { collections } from '@/data/db';
+import { useInfiniteDocQuery } from '@/hooks/infinite-doc-query';
+import { useAuthState } from '@/state/auth';
 
 const PAGE_SIZE = 8;
 

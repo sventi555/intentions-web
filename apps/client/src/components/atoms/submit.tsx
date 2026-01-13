@@ -1,4 +1,4 @@
-import { getButtonStyle } from './button';
+import { getButtonStyle } from '@/components/atoms/button';
 
 interface SubmitProps {
   label: string;

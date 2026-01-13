@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { collections, CollectionSort, docs } from '../data/db';
+
+import { collections, CollectionSort, docs } from '@/data/db';
 
 export const useIntention = (intentionId: string) => {
   const {

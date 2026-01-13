@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc, getDocs, query, where } from 'firebase/firestore';
-import { collections, docs } from '../data/db';
+
+import { collections, docs } from '@/data/db';
 
 export const useUser = (userId: string) => {
   const {

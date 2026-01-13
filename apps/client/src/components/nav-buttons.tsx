@@ -1,9 +1,18 @@
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { useAuthState } from '../state/auth';
-import { AddUser, Bell, Close, Home, Logo, Pencil, Profile } from './icons';
-import { Icon } from './icons/icon';
+
+import {
+  AddUser,
+  Bell,
+  Close,
+  Home,
+  Logo,
+  Pencil,
+  Profile,
+} from '@/components/icons';
+import { Icon } from '@/components/icons/icon';
+import { useAuthState } from '@/state/auth';
 
 export const NavButtons: React.FC = () => {
   const { authUser } = useAuthState();

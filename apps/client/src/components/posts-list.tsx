@@ -2,7 +2,8 @@ import { Post as _Post } from 'lib';
 import { Fragment, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useThrottledCallback } from 'use-debounce';
-import { Post } from './post';
+
+import { Post } from '@/components/post';
 
 interface PostsListProps {
   posts: { id: string; data: _Post }[];

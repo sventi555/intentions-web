@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'wouter';
-import { Button } from '../../components/atoms/button';
-import { Dialog } from '../../components/atoms/dialog';
-import { Input } from '../../components/atoms/input';
-import { Close, Search } from '../../components/icons';
+
+import { Button } from '@/components/atoms/button';
+import { Dialog } from '@/components/atoms/dialog';
+import { Input } from '@/components/atoms/input';
+import { Close, Search } from '@/components/icons';
 import {
   useFollowedUsers,
   useFollowers,
   useInvalidateFollowedUsers,
   useInvalidateFollowers,
-} from '../../hooks/follows';
-import { useRemoveFollow } from '../../intentions-api';
-import { useAuthState } from '../../state/auth';
+} from '@/hooks/follows';
+import { useRemoveFollow } from '@/intentions-api';
+import { useAuthState } from '@/state/auth';
 
 interface FollowDialogProps {
   onClose: () => void;

@@ -15,30 +15,31 @@ import { signOut } from 'firebase/auth';
 import React, { PropsWithChildren, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Link, useParams } from 'wouter';
-import { Button } from '../../components/atoms/button';
-import { ImagePicker } from '../../components/atoms/image-picker';
-import { DisplayPic } from '../../components/display-pic';
-import { EllipsesVert } from '../../components/icons';
-import { PostsList } from '../../components/posts-list';
-import { auth } from '../../firebase';
-import { useFollow, useInvalidateFollow } from '../../hooks/follows';
+
+import { Button } from '@/components/atoms/button';
+import { ImagePicker } from '@/components/atoms/image-picker';
+import { DisplayPic } from '@/components/display-pic';
+import { EllipsesVert } from '@/components/icons';
+import { PostsList } from '@/components/posts-list';
+import { auth } from '@/firebase';
+import { useFollow, useInvalidateFollow } from '@/hooks/follows';
 import {
   IntentionsSort,
   useIntentions,
   useInvalidateIntentions,
-} from '../../hooks/intentions';
+} from '@/hooks/intentions';
 import {
   useInvalidateFeedPosts,
   useInvalidateUserPosts,
   useUserPosts,
-} from '../../hooks/posts';
-import { useInvalidateUser, useUser } from '../../hooks/users';
+} from '@/hooks/posts';
+import { useInvalidateUser, useUser } from '@/hooks/users';
 import {
   useFollowUser,
   useRemoveFollow,
   useUpdateUser,
-} from '../../intentions-api';
-import { useAuthState } from '../../state/auth';
+} from '@/intentions-api';
+import { useAuthState } from '@/state/auth';
 import { FollowersDialog, FollowingDialog } from './follow-dialog';
 
 export const Profile: React.FC = () => {

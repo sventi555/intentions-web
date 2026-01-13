@@ -1,5 +1,5 @@
-import placeholder from '../assets/images/placeholder-dp.jpg';
-import { useDownloadUrl } from '../hooks/download-url';
+import placeholder from '@/assets/images/placeholder-dp.jpg';
+import { useDownloadUrl } from '@/hooks/download-url';
 
 interface DisplayPicProps {
   imageUri: string | undefined;

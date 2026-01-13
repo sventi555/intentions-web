@@ -1,19 +1,20 @@
 import { useRef, useState } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
 import { Link, Redirect, useLocation } from 'wouter';
-import { ImagePicker } from '../components/atoms/image-picker';
-import { Submit } from '../components/atoms/submit';
-import { TextArea } from '../components/atoms/text-area';
-import { Plus } from '../components/icons';
-import { StickyHeader } from '../components/sticky-header';
-import { useIntentions, useInvalidateIntentions } from '../hooks/intentions';
+
+import { ImagePicker } from '@/components/atoms/image-picker';
+import { Submit } from '@/components/atoms/submit';
+import { TextArea } from '@/components/atoms/text-area';
+import { Plus } from '@/components/icons';
+import { StickyHeader } from '@/components/sticky-header';
+import { useIntentions, useInvalidateIntentions } from '@/hooks/intentions';
 import {
   useInvalidateFeedPosts,
   useInvalidateIntentionPosts,
   useInvalidateUserPosts,
-} from '../hooks/posts';
-import { useCreatePost } from '../intentions-api';
-import { useAuthState } from '../state/auth';
+} from '@/hooks/posts';
+import { useCreatePost } from '@/intentions-api';
+import { useAuthState } from '@/state/auth';
 
 // no need to control intentionId since it's always set
 type Inputs = {

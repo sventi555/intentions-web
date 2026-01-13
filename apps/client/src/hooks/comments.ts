@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDocs, orderBy, query, where } from 'firebase/firestore';
-import { collections } from '../data/db';
+
+import { collections } from '@/data/db';
 
 export const useComments = (postId: string) => {
   const {

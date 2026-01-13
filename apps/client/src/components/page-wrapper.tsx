@@ -1,9 +1,10 @@
 import { clsx } from 'clsx';
 import { PropsWithChildren } from 'react';
 import { Link } from 'wouter';
-import LogoUrl from '../assets/images/why.svg';
-import { NavButtons } from './nav-buttons';
-import { NavSidebar } from './nav-sidebar';
+
+import LogoUrl from '@/assets/images/why.svg';
+import { NavButtons } from '@/components/nav-buttons';
+import { NavSidebar } from '@/components/nav-sidebar';
 
 interface PageWrapperProps {
   showNav?: boolean;

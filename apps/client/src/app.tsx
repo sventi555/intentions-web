@@ -1,16 +1,17 @@
 import { Route } from 'wouter';
-import { AuthProtected } from './components/auth-protected';
-import { PageWrapper } from './components/page-wrapper';
-import { CreateIntention } from './pages/create-intention';
-import { CreatePost } from './pages/create-post';
-import { Feed } from './pages/feed';
-import { ForgotPassword } from './pages/forgot-password';
-import { Intention } from './pages/intention';
-import { Notifications } from './pages/notifications';
-import { Profile } from './pages/profile';
-import { Search } from './pages/search';
-import { SignIn } from './pages/sign-in';
-import { SignUp } from './pages/sign-up';
+
+import { AuthProtected } from '@/components/auth-protected';
+import { PageWrapper } from '@/components/page-wrapper';
+import { CreateIntention } from '@/pages/create-intention';
+import { CreatePost } from '@/pages/create-post';
+import { Feed } from '@/pages/feed';
+import { ForgotPassword } from '@/pages/forgot-password';
+import { Intention } from '@/pages/intention';
+import { Notifications } from '@/pages/notifications';
+import { Profile } from '@/pages/profile';
+import { Search } from '@/pages/search';
+import { SignIn } from '@/pages/sign-in';
+import { SignUp } from '@/pages/sign-up';
 
 const App: React.FC = () => {
   return (

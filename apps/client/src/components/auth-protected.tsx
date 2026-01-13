@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { Redirect } from 'wouter';
-import { useAuthState } from '../state/auth';
+
+import { useAuthState } from '@/state/auth';
 
 export const AuthProtected: React.FC<PropsWithChildren> = (props) => {
   const { authUser, loading } = useAuthState();

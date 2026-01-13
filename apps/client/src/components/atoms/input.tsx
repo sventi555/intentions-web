@@ -1,9 +1,10 @@
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
-import { Visibility, VisibilityOff } from '../icons';
-import { Icon } from '../icons/icon';
-import { InputError } from './input-error';
+
+import { InputError } from '@/components/atoms/input-error';
+import { Visibility, VisibilityOff } from '@/components/icons';
+import { Icon } from '@/components/icons/icon';
 
 interface InputProps {
   type?: 'default' | 'email' | 'password';

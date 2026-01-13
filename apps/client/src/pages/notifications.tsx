@@ -1,15 +1,16 @@
 import clsx from 'clsx';
 import { PropsWithChildren, useState } from 'react';
 import { Link } from 'wouter';
-import { DisplayPic } from '../components/display-pic';
-import { Check, Close } from '../components/icons';
-import { StickyHeader } from '../components/sticky-header';
+
+import { DisplayPic } from '@/components/display-pic';
+import { Check, Close } from '@/components/icons';
+import { StickyHeader } from '@/components/sticky-header';
 import {
   useInvalidateNotifications,
   useNotifications,
-} from '../hooks/notifications';
-import { useRespondToFollow } from '../intentions-api';
-import { useAuthState } from '../state/auth';
+} from '@/hooks/notifications';
+import { useRespondToFollow } from '@/intentions-api';
+import { useAuthState } from '@/state/auth';
 
 export const Notifications: React.FC = () => {
   const authUser = useAuthState().authUser;

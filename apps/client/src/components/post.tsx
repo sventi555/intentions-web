@@ -4,23 +4,24 @@ import { intlFormatDistance } from 'date-fns';
 import { Post as _Post } from 'lib';
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { useComments, useInvalidateComments } from '../hooks/comments';
-import { useDownloadUrl } from '../hooks/download-url';
-import { useInvalidateIntentions } from '../hooks/intentions';
+
+import { Dialog } from '@/components/atoms/dialog';
+import { DisplayPic } from '@/components/display-pic';
+import { EllipsesVert, Loading, Send } from '@/components/icons';
+import { useComments, useInvalidateComments } from '@/hooks/comments';
+import { useDownloadUrl } from '@/hooks/download-url';
+import { useInvalidateIntentions } from '@/hooks/intentions';
 import {
   useInvalidateFeedPosts,
   useInvalidateIntentionPosts,
   useInvalidateUserPosts,
-} from '../hooks/posts';
+} from '@/hooks/posts';
 import {
   useCreateComment,
   useDeleteComment,
   useDeletePost,
-} from '../intentions-api';
-import { useAuthState } from '../state/auth';
-import { Dialog } from './atoms/dialog';
-import { DisplayPic } from './display-pic';
-import { EllipsesVert, Loading, Send } from './icons';
+} from '@/intentions-api';
+import { useAuthState } from '@/state/auth';
 
 interface PostProps {
   id: string;
