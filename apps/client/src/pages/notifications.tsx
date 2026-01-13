@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { Link } from 'wouter';
 
 import { DisplayPic } from '@/components/display-pic';
@@ -9,16 +9,29 @@ import {
   useInvalidateNotifications,
   useNotifications,
 } from '@/hooks/notifications';
-import { useRespondToFollow } from '@/intentions-api';
+import { useInvalidateUser, useUser } from '@/hooks/users';
+import { useClearNotifAlert, useRespondToFollow } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
 
 export const Notifications: React.FC = () => {
-  const authUser = useAuthState().authUser;
+  const { authUser, token } = useAuthState();
   if (authUser == null) {
     throw new Error('must be signed in to view notifications');
   }
 
+  const { user } = useUser(authUser.uid);
+  const invalidateUser = useInvalidateUser();
+  const { mutateAsync: clearNotifAlert } = useClearNotifAlert();
+
   const { notifications } = useNotifications(authUser.uid);
+
+  useEffect(() => {
+    if (user?.unreadNotifs) {
+      clearNotifAlert({ headers: { authorization: token ?? '' } }).then(() =>
+        invalidateUser(authUser.uid),
+      );
+    }
+  }, [user, authUser, token, clearNotifAlert, invalidateUser]);
 
   if (notifications == null) {
     return null;

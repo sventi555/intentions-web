@@ -3,14 +3,20 @@ import { getDoc, getDocs, query, where } from 'firebase/firestore';
 
 import { collections, docs } from '@/data/db';
 
-export const useUser = (userId: string) => {
+export const useUser = (userId: string | undefined) => {
   const {
     data: user,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ['user', userId],
+    enabled: !!userId,
     queryFn: async () => {
+      if (userId == null) {
+        // should not be reached
+        return;
+      }
+
       const user = await getDoc(docs.user(userId));
 
       const data = user.data();
