@@ -6,6 +6,6 @@ export const createUserBody = z.object({
   password: z.string(),
 });
 
-export const updateUserBody = z.object({
-  image: z.string().optional(),
+export const updateUserImageBody = z.object({
+  image: z.string(),
 });

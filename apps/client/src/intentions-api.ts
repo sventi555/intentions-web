@@ -165,18 +165,27 @@ export type CreateUser409 = {
   message: string;
 };
 
-export type UpdateUserHeaders = {
+export type UpdateUserImageHeaders = {
 authorization: string;
 };
 
-export type UpdateUserBody = {
-  image?: string;
+export type UpdateUserImageBody = {
+  image: string;
 };
 
 /**
  * @nullable
  */
-export type UpdateUser200 = unknown | null;
+export type UpdateUserImage200 = unknown | null;
+
+export type ClearNotifAlertHeaders = {
+authorization: string;
+};
+
+/**
+ * @nullable
+ */
+export type ClearNotifAlert200 = unknown | null;
 
 export type CreateCommentHeaders = {
 authorization: string;
@@ -944,53 +953,53 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type updateUserResponse200 = {
-  data: UpdateUser200
+export type updateUserImageResponse200 = {
+  data: UpdateUserImage200
   status: 200
 }
     
-export type updateUserResponseSuccess = (updateUserResponse200) & {
+export type updateUserImageResponseSuccess = (updateUserImageResponse200) & {
   headers: Headers;
 };
 ;
 
-export type updateUserResponse = (updateUserResponseSuccess)
+export type updateUserImageResponse = (updateUserImageResponseSuccess)
 
-export const getUpdateUserUrl = () => {
+export const getUpdateUserImageUrl = () => {
 
 
   
 
-  return `http://localhost:3001/users`
+  return `http://localhost:3001/users/image`
 }
 
-export const updateUser = async (updateUserBody: UpdateUserBody,
-    headers: UpdateUserHeaders, options?: RequestInit): Promise<updateUserResponse> => {
+export const updateUserImage = async (updateUserImageBody: UpdateUserImageBody,
+    headers: UpdateUserImageHeaders, options?: RequestInit): Promise<updateUserImageResponse> => {
   
-  const res = await fetch(getUpdateUserUrl(),
+  const res = await fetch(getUpdateUserImageUrl(),
   {      
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json',...headers, ...options?.headers },
     body: JSON.stringify(
-      updateUserBody,)
+      updateUserImageBody,)
   }
 )
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
   
-  const data: updateUserResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as updateUserResponse
+  const data: updateUserImageResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as updateUserImageResponse
 }
 
 
 
 
-export const getUpdateUserMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{data: UpdateUserBody;headers: UpdateUserHeaders}, TContext>, fetch?: RequestInit}
-): UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{data: UpdateUserBody;headers: UpdateUserHeaders}, TContext> => {
+export const getUpdateUserImageMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext> => {
 
-const mutationKey = ['updateUser'];
+const mutationKey = ['updateUserImage'];
 const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1000,10 +1009,10 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateUser>>, {data: UpdateUserBody;headers: UpdateUserHeaders}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateUserImage>>, {data: UpdateUserImageBody;headers: UpdateUserImageHeaders}> = (props) => {
           const {data,headers} = props ?? {};
 
-          return  updateUser(data,headers,fetchOptions)
+          return  updateUserImage(data,headers,fetchOptions)
         }
 
         
@@ -1011,20 +1020,103 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UpdateUserMutationResult = NonNullable<Awaited<ReturnType<typeof updateUser>>>
-    export type UpdateUserMutationBody = UpdateUserBody
-    export type UpdateUserMutationError = unknown
+    export type UpdateUserImageMutationResult = NonNullable<Awaited<ReturnType<typeof updateUserImage>>>
+    export type UpdateUserImageMutationBody = UpdateUserImageBody
+    export type UpdateUserImageMutationError = unknown
 
-    export const useUpdateUser = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{data: UpdateUserBody;headers: UpdateUserHeaders}, TContext>, fetch?: RequestInit}
+    export const useUpdateUserImage = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateUser>>,
+        Awaited<ReturnType<typeof updateUserImage>>,
         TError,
-        {data: UpdateUserBody;headers: UpdateUserHeaders},
+        {data: UpdateUserImageBody;headers: UpdateUserImageHeaders},
         TContext
       > => {
 
-      const mutationOptions = getUpdateUserMutationOptions(options);
+      const mutationOptions = getUpdateUserImageMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+export type clearNotifAlertResponse200 = {
+  data: ClearNotifAlert200
+  status: 200
+}
+    
+export type clearNotifAlertResponseSuccess = (clearNotifAlertResponse200) & {
+  headers: Headers;
+};
+;
+
+export type clearNotifAlertResponse = (clearNotifAlertResponseSuccess)
+
+export const getClearNotifAlertUrl = () => {
+
+
+  
+
+  return `http://localhost:3001/users/notif-alert`
+}
+
+export const clearNotifAlert = async (headers: ClearNotifAlertHeaders, options?: RequestInit): Promise<clearNotifAlertResponse> => {
+  
+  const res = await fetch(getClearNotifAlertUrl(),
+  {      
+    ...options,
+    method: 'DELETE',
+    headers: { ...headers, ...options?.headers }
+    
+  }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  
+  const data: clearNotifAlertResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as clearNotifAlertResponse
+}
+
+
+
+
+export const getClearNotifAlertMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext> => {
+
+const mutationKey = ['clearNotifAlert'];
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, fetch: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof clearNotifAlert>>, {headers: ClearNotifAlertHeaders}> = (props) => {
+          const {headers} = props ?? {};
+
+          return  clearNotifAlert(headers,fetchOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ClearNotifAlertMutationResult = NonNullable<Awaited<ReturnType<typeof clearNotifAlert>>>
+    
+    export type ClearNotifAlertMutationError = unknown
+
+    export const useClearNotifAlert = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext>, fetch?: RequestInit}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof clearNotifAlert>>,
+        TError,
+        {headers: ClearNotifAlertHeaders},
+        TContext
+      > => {
+
+      const mutationOptions = getClearNotifAlertMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

@@ -7,7 +7,7 @@ import { bulkWriter, collections } from '../db';
 import { userPostDocCopies } from '../db/denorm';
 import { authenticate } from '../middleware/auth';
 import { authHeaderSchema, errorSchema } from '../schemas/shared';
-import { createUserBody, updateUserBody } from '../schemas/users';
+import { createUserBody, updateUserImageBody } from '../schemas/users';
 import { uploadMedia } from '../storage';
 
 const app = new OpenAPIHono();
@@ -79,45 +79,38 @@ app.openapi(createUserRoute, async (c) => {
   return c.json(null, 201);
 });
 
-const updateUserRoute = createRoute({
-  operationId: 'updateUser',
+const updateUserImageRoute = createRoute({
+  operationId: 'updateUserImage',
   method: 'patch',
-  path: '/',
+  path: '/image',
   request: {
     headers: authHeaderSchema,
-    body: { content: { 'application/json': { schema: updateUserBody } } },
+    body: { content: { 'application/json': { schema: updateUserImageBody } } },
   },
   middleware: [authenticate] as const,
   responses: {
     200: {
-      description: 'Successfully updated user',
+      description: 'Successfully updated user image',
       content: { 'application/json': { schema: z.null() } },
     },
   },
 });
 
-app.openapi(updateUserRoute, async (c) => {
+app.openapi(updateUserImageRoute, async (c) => {
   const { image } = c.req.valid('json');
   const requesterId = c.var.uid;
 
-  let imageFileName: string | undefined = undefined;
-  if (image) {
-    imageFileName = await uploadMedia(`dps/${requesterId}`, image, {
-      size: 128,
-      validTypes: ['image'],
-    });
-  }
+  const imageFileName = await uploadMedia(`dps/${requesterId}`, image, {
+    size: 128,
+    validTypes: ['image'],
+  });
 
   const writeBatch = bulkWriter();
 
   const userDoc = collections.users().doc(requesterId);
-  writeBatch.update(userDoc, {
-    ...(imageFileName ? { image: imageFileName } : {}),
-  });
+  writeBatch.update(userDoc, { image: imageFileName });
 
-  const updatedData = {
-    ...(imageFileName ? { 'user.image': imageFileName } : {}),
-  };
+  const updatedData = { 'user.image': imageFileName };
 
   const postDocs = await userPostDocCopies(requesterId);
   postDocs.forEach((doc) => writeBatch.update(doc, updatedData));

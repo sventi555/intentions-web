@@ -37,7 +37,7 @@ import { useInvalidateUser, useUser } from '@/hooks/users';
 import {
   useFollowUser,
   useRemoveFollow,
-  useUpdateUser,
+  useUpdateUserImage,
 } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
 import { FollowersDialog, FollowingDialog } from './follow-dialog';
@@ -58,7 +58,7 @@ export const Profile: React.FC = () => {
   const { follow, isLoading: followLoading } = useFollow(userId);
 
   const filePickerRef = useRef<HTMLInputElement | null>(null);
-  const { mutateAsync: updateUser } = useUpdateUser();
+  const { mutateAsync: updateUserImage } = useUpdateUserImage();
 
   const { mutateAsync: followUser } = useFollowUser();
   const { mutateAsync: removeFollow } = useRemoveFollow();
@@ -92,7 +92,7 @@ export const Profile: React.FC = () => {
             <DisplayPic imageUri={user?.image} size={80} />
             <ImagePicker
               onPick={(dataUrl) =>
-                updateUser({
+                updateUserImage({
                   headers: { authorization: token ?? '' },
                   data: { image: dataUrl },
                 }).then(() =>
