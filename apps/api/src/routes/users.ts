@@ -150,4 +150,28 @@ app.openapi(updateUserRoute, async (c) => {
   return c.json(null, 200);
 });
 
+const clearNotifAlertRoute = createRoute({
+  operationId: 'clearNotifAlert',
+  method: 'delete',
+  path: '/notif-alert',
+  request: {
+    headers: authHeaderSchema,
+  },
+  middleware: [authenticate] as const,
+  responses: {
+    200: {
+      description: 'Successfully cleared notification alert',
+      content: { 'application/json': { schema: z.null() } },
+    },
+  },
+});
+
+app.openapi(clearNotifAlertRoute, async (c) => {
+  const requesterId = c.var.uid;
+
+  await collections.users().doc(requesterId).update({ unreadNotifs: false });
+
+  return c.json(null, 200);
+});
+
 export default app;

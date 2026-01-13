@@ -2,6 +2,7 @@ export interface User {
   email: string;
   username: string;
   image?: string;
+  unreadNotifs?: boolean;
 }
 
 export type FollowStatus = 'pending' | 'accepted';

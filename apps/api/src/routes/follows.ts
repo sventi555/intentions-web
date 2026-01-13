@@ -37,29 +37,30 @@ const followUserRoute = createRoute({
 
 app.openapi(followUserRoute, async (c) => {
   const requesterId = c.var.uid;
-  const followedUserId = c.req.param('userId');
+  const recipientId = c.req.param('userId');
 
   // check for pre-existing follow
-  const followToDoc = collections.followsTo(followedUserId).doc(requesterId);
+  const followToDoc = collections.followsTo(recipientId).doc(requesterId);
   const existingFollowData = (await followToDoc.get()).data();
   if (existingFollowData) {
     return c.json(null, 201);
   }
 
   // get recipient data
-  const recipient = (
-    await collections.users().doc(followedUserId).get()
-  ).data();
-  if (!recipient) {
+  const recipientDoc = collections.users().doc(recipientId);
+  const recipientData = (await recipientDoc.get()).data();
+  if (!recipientData) {
     return c.json({ message: 'user does not exist' }, 404);
   }
 
   // get requester info for embedding in follow
-  const requester = (await collections.users().doc(requesterId).get()).data();
-  if (!requester) {
+  const requesterData = (
+    await collections.users().doc(requesterId).get()
+  ).data();
+  if (!requesterData) {
     throw new HTTPException(500);
   }
-  const { username, image } = requester;
+  const { username, image } = requesterData;
 
   const writeBatch = bulkWriter();
 
@@ -70,16 +71,16 @@ app.openapi(followUserRoute, async (c) => {
 
   const followToData: Follow = {
     ...followData,
-    user: { username: recipient.username },
+    user: { username: recipientData.username },
   };
   const followFromData: Follow = {
     ...followData,
-    user: { username: requester.username },
+    user: { username: requesterData.username },
   };
 
   writeBatch.create(followToDoc, followToData);
   writeBatch.create(
-    collections.followsFrom(requesterId).doc(followedUserId),
+    collections.followsFrom(requesterId).doc(recipientId),
     followFromData,
   );
 
@@ -95,9 +96,10 @@ app.openapi(followUserRoute, async (c) => {
     createdAt: Date.now(),
   };
   writeBatch.create(
-    collections.notifications(followedUserId).doc(crypto.randomUUID()),
+    collections.notifications(recipientId).doc(crypto.randomUUID()),
     followNotification,
   );
+  writeBatch.update(recipientDoc, { unreadNotifs: true });
 
   await writeBatch.close();
 
@@ -178,21 +180,27 @@ app.openapi(respondToFollowRoute, async (c) => {
     const requesterData = (
       await collections.users().doc(requesterId).get()
     ).data();
-    if (requesterData != null) {
-      writeBatch.create(
-        collections.notifications(fromUserId).doc(crypto.randomUUID()),
-        {
-          userId: requesterId,
-          user: {
-            username: requesterData.username,
-            ...(requesterData.image ? { image: requesterData.image } : {}),
-          },
-          kind: 'response',
-          status: 'accepted',
-          createdAt: Date.now(),
-        },
-      );
+
+    if (requesterData == null) {
+      throw new HTTPException(500);
     }
+
+    writeBatch.create(
+      collections.notifications(fromUserId).doc(crypto.randomUUID()),
+      {
+        userId: requesterId,
+        user: {
+          username: requesterData.username,
+          ...(requesterData.image ? { image: requesterData.image } : {}),
+        },
+        kind: 'response',
+        status: 'accepted',
+        createdAt: Date.now(),
+      },
+    );
+    writeBatch.update(collections.users().doc(fromUserId), {
+      unreadNotifs: true,
+    });
 
     const followedPosts = await collections
       .posts()
