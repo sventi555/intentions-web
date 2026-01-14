@@ -10,7 +10,6 @@ Features:
 - comment notifications?
 
 Tech debt:
-- create helper to get all user info copies (like post doc denorm)
 - paginate notifications and comments
 - invalidate everything on sign out
     - less rigorous invalidation otherwise (only navigable things)

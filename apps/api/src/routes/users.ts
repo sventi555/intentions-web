@@ -4,7 +4,7 @@ import { HTTPException } from 'hono/http-exception';
 import type { Follow } from 'lib';
 import { auth } from '../config';
 import { bulkWriter, collections } from '../db';
-import { userPostDocCopies } from '../db/denorm';
+import { embeddedUserCopies } from '../db/denorm';
 import { authenticate } from '../middleware/auth';
 import { authHeaderSchema, errorSchema } from '../schemas/shared';
 import { createUserBody, updateUserImageBody } from '../schemas/users';
@@ -112,31 +112,8 @@ app.openapi(updateUserImageRoute, async (c) => {
 
   const updatedData = { 'user.image': imageFileName };
 
-  const postDocs = await userPostDocCopies(requesterId);
-  postDocs.forEach((doc) => writeBatch.update(doc, updatedData));
-
-  const followers = (await collections.followsTo(requesterId).get()).docs;
-  const following = (await collections.followsFrom(requesterId).get()).docs;
-
-  await Promise.all(
-    [...followers, ...following].map((follower) =>
-      collections
-        .notifications(follower.id)
-        .where('userId', '==', requesterId)
-        .get()
-        .then((followerNotifications) =>
-          followerNotifications.forEach((notification) => {
-            writeBatch.update(notification.ref, updatedData);
-          }),
-        ),
-    ),
-  );
-
-  const comments = await collections
-    .comments()
-    .where('userId', '==', requesterId)
-    .get();
-  comments.forEach((doc) => writeBatch.update(doc.ref, updatedData));
+  const embeddedUserDocs = await embeddedUserCopies(requesterId);
+  embeddedUserDocs.forEach((doc) => writeBatch.update(doc, updatedData));
 
   await writeBatch.close();
 
