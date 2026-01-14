@@ -80,7 +80,7 @@ const deleteCommentRoute = createRoute({
   },
   middleware: [authenticate] as const,
   responses: {
-    204: {
+    200: {
       description: 'Successfully deleted comment',
       content: { 'application/json': { schema: z.null() } },
     },
@@ -94,12 +94,12 @@ app.openapi(deleteCommentRoute, async (c) => {
   const commentDoc = collections.comments().doc(commentId);
   const commentData = (await commentDoc.get()).data();
   if (!commentData || commentData.userId !== requesterId) {
-    return c.json(null, 204);
+    return c.json(null, 200);
   }
 
   await commentDoc.delete();
 
-  return c.json(null, 204);
+  return c.json(null, 200);
 });
 
 export default app;

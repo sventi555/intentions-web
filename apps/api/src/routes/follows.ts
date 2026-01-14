@@ -234,7 +234,7 @@ const removeFollowRoute = createRoute({
   },
   middleware: [authenticate] as const,
   responses: {
-    204: {
+    200: {
       description: 'Successfully removed follow',
       content: { 'application/json': { schema: z.null() } },
     },
@@ -266,7 +266,7 @@ app.openapi(removeFollowRoute, async (c) => {
   const followData = (await followToDoc.get()).data();
 
   if (followData == null) {
-    return c.json(null, 204);
+    return c.json(null, 200);
   }
 
   const writeBatch = bulkWriter();
@@ -296,7 +296,7 @@ app.openapi(removeFollowRoute, async (c) => {
 
   await writeBatch.close();
 
-  return c.json(null, 204);
+  return c.json(null, 200);
 });
 
 const getLatestRequestNotification = async ({

@@ -48,7 +48,7 @@ export type RemoveFollowBody = {
 /**
  * @nullable
  */
-export type RemoveFollow204 = unknown | null;
+export type RemoveFollow200 = unknown | null;
 
 export type RemoveFollow400 = {
   message: string;
@@ -145,7 +145,7 @@ authorization: string;
 /**
  * @nullable
  */
-export type DeletePost204 = unknown | null;
+export type DeletePost200 = unknown | null;
 
 export type CreateUserBody = {
   username: string;
@@ -213,7 +213,7 @@ authorization: string;
 /**
  * @nullable
  */
-export type DeleteComment204 = unknown | null;
+export type DeleteComment200 = unknown | null;
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -304,9 +304,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type removeFollowResponse204 = {
-  data: RemoveFollow204
-  status: 204
+export type removeFollowResponse200 = {
+  data: RemoveFollow200
+  status: 200
 }
 
 export type removeFollowResponse400 = {
@@ -314,7 +314,7 @@ export type removeFollowResponse400 = {
   status: 400
 }
     
-export type removeFollowResponseSuccess = (removeFollowResponse204) & {
+export type removeFollowResponseSuccess = (removeFollowResponse200) & {
   headers: Headers;
 };
 export type removeFollowResponseError = (removeFollowResponse400) & {
@@ -742,12 +742,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deletePostResponse204 = {
-  data: DeletePost204
-  status: 204
+export type deletePostResponse200 = {
+  data: DeletePost200
+  status: 200
 }
     
-export type deletePostResponseSuccess = (deletePostResponse204) & {
+export type deletePostResponseSuccess = (deletePostResponse200) & {
   headers: Headers;
 };
 ;
@@ -1152,12 +1152,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export type deleteCommentResponse204 = {
-  data: DeleteComment204
-  status: 204
+export type deleteCommentResponse200 = {
+  data: DeleteComment200
+  status: 200
 }
     
-export type deleteCommentResponseSuccess = (deleteCommentResponse204) & {
+export type deleteCommentResponseSuccess = (deleteCommentResponse200) & {
   headers: Headers;
 };
 ;

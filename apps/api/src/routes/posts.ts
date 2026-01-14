@@ -141,7 +141,7 @@ const deletePostRoute = createRoute({
   },
   middleware: [authenticate] as const,
   responses: {
-    204: {
+    200: {
       description: 'Successfully deleted post',
       content: { 'application/json': { schema: z.null() } },
     },
@@ -154,7 +154,7 @@ app.openapi(deletePostRoute, async (c) => {
 
   const postData = (await collections.posts().doc(postId).get()).data();
   if (!postData || postData.userId !== requesterId) {
-    return c.json(null, 204);
+    return c.json(null, 200);
   }
 
   const writeBatch = bulkWriter();
@@ -176,7 +176,7 @@ app.openapi(deletePostRoute, async (c) => {
 
   await writeBatch.close();
 
-  return c.json(null, 204);
+  return c.json(null, 200);
 });
 
 export default app;
