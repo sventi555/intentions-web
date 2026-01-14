@@ -14,6 +14,7 @@ import type {
   UseMutationResult
 } from '@tanstack/react-query';
 
+import { customFetch } from '../orval.mutator';
 export type FollowUserHeaders = {
 authorization: string;
 };
@@ -214,6 +215,10 @@ authorization: string;
  */
 export type DeleteComment204 = unknown | null;
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+
 export type followUserResponse201 = {
   data: FollowUser201
   status: 201
@@ -238,40 +243,34 @@ export const getFollowUserUrl = (userId: string,) => {
 
   
 
-  return `http://localhost:3001/follows/${userId}`
+  return `/follows/${userId}`
 }
 
 export const followUser = async (userId: string,
     headers: FollowUserHeaders, options?: RequestInit): Promise<followUserResponse> => {
   
-  const res = await fetch(getFollowUserUrl(userId),
+  return customFetch<followUserResponse>(getFollowUserUrl(userId),
   {      
     ...options,
     method: 'POST',
     headers: { ...headers, ...options?.headers }
     
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: followUserResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as followUserResponse
-}
+);}
 
 
 
 
 export const getFollowUserMutationOptions = <TError = FollowUser404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof followUser>>, TError,{userId: string;headers: FollowUserHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof followUser>>, TError,{userId: string;headers: FollowUserHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof followUser>>, TError,{userId: string;headers: FollowUserHeaders}, TContext> => {
 
 const mutationKey = ['followUser'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -279,7 +278,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof followUser>>, {userId: string;headers: FollowUserHeaders}> = (props) => {
           const {userId,headers} = props ?? {};
 
-          return  followUser(userId,headers,fetchOptions)
+          return  followUser(userId,headers,requestOptions)
         }
 
         
@@ -292,7 +291,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type FollowUserMutationError = FollowUser404
 
     export const useFollowUser = <TError = FollowUser404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof followUser>>, TError,{userId: string;headers: FollowUserHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof followUser>>, TError,{userId: string;headers: FollowUserHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof followUser>>,
         TError,
@@ -329,14 +328,14 @@ export const getRemoveFollowUrl = (userId: string,) => {
 
   
 
-  return `http://localhost:3001/follows/${userId}`
+  return `/follows/${userId}`
 }
 
 export const removeFollow = async (userId: string,
     removeFollowBody: RemoveFollowBody,
     headers: RemoveFollowHeaders, options?: RequestInit): Promise<removeFollowResponse> => {
   
-  const res = await fetch(getRemoveFollowUrl(userId),
+  return customFetch<removeFollowResponse>(getRemoveFollowUrl(userId),
   {      
     ...options,
     method: 'DELETE',
@@ -344,27 +343,21 @@ export const removeFollow = async (userId: string,
     body: JSON.stringify(
       removeFollowBody,)
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: removeFollowResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as removeFollowResponse
-}
+);}
 
 
 
 
 export const getRemoveFollowMutationOptions = <TError = RemoveFollow400,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFollow>>, TError,{userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFollow>>, TError,{userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof removeFollow>>, TError,{userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}, TContext> => {
 
 const mutationKey = ['removeFollow'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -372,7 +365,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeFollow>>, {userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}> = (props) => {
           const {userId,data,headers} = props ?? {};
 
-          return  removeFollow(userId,data,headers,fetchOptions)
+          return  removeFollow(userId,data,headers,requestOptions)
         }
 
         
@@ -385,7 +378,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type RemoveFollowMutationError = RemoveFollow400
 
     export const useRemoveFollow = <TError = RemoveFollow400,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFollow>>, TError,{userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFollow>>, TError,{userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof removeFollow>>,
         TError,
@@ -427,14 +420,14 @@ export const getRespondToFollowUrl = (userId: string,) => {
 
   
 
-  return `http://localhost:3001/follows/respond/${userId}`
+  return `/follows/respond/${userId}`
 }
 
 export const respondToFollow = async (userId: string,
     respondToFollowBody: RespondToFollowBody,
     headers: RespondToFollowHeaders, options?: RequestInit): Promise<respondToFollowResponse> => {
   
-  const res = await fetch(getRespondToFollowUrl(userId),
+  return customFetch<respondToFollowResponse>(getRespondToFollowUrl(userId),
   {      
     ...options,
     method: 'POST',
@@ -442,27 +435,21 @@ export const respondToFollow = async (userId: string,
     body: JSON.stringify(
       respondToFollowBody,)
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: respondToFollowResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as respondToFollowResponse
-}
+);}
 
 
 
 
 export const getRespondToFollowMutationOptions = <TError = RespondToFollow404 | RespondToFollow412,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof respondToFollow>>, TError,{userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof respondToFollow>>, TError,{userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof respondToFollow>>, TError,{userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}, TContext> => {
 
 const mutationKey = ['respondToFollow'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -470,7 +457,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof respondToFollow>>, {userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}> = (props) => {
           const {userId,data,headers} = props ?? {};
 
-          return  respondToFollow(userId,data,headers,fetchOptions)
+          return  respondToFollow(userId,data,headers,requestOptions)
         }
 
         
@@ -483,7 +470,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type RespondToFollowMutationError = RespondToFollow404 | RespondToFollow412
 
     export const useRespondToFollow = <TError = RespondToFollow404 | RespondToFollow412,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof respondToFollow>>, TError,{userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof respondToFollow>>, TError,{userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof respondToFollow>>,
         TError,
@@ -520,13 +507,13 @@ export const getCreateIntentionUrl = () => {
 
   
 
-  return `http://localhost:3001/intentions`
+  return `/intentions`
 }
 
 export const createIntention = async (createIntentionBody: CreateIntentionBody,
     headers: CreateIntentionHeaders, options?: RequestInit): Promise<createIntentionResponse> => {
   
-  const res = await fetch(getCreateIntentionUrl(),
+  return customFetch<createIntentionResponse>(getCreateIntentionUrl(),
   {      
     ...options,
     method: 'POST',
@@ -534,27 +521,21 @@ export const createIntention = async (createIntentionBody: CreateIntentionBody,
     body: JSON.stringify(
       createIntentionBody,)
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: createIntentionResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as createIntentionResponse
-}
+);}
 
 
 
 
 export const getCreateIntentionMutationOptions = <TError = CreateIntention409,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIntention>>, TError,{data: CreateIntentionBody;headers: CreateIntentionHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIntention>>, TError,{data: CreateIntentionBody;headers: CreateIntentionHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createIntention>>, TError,{data: CreateIntentionBody;headers: CreateIntentionHeaders}, TContext> => {
 
 const mutationKey = ['createIntention'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -562,7 +543,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof createIntention>>, {data: CreateIntentionBody;headers: CreateIntentionHeaders}> = (props) => {
           const {data,headers} = props ?? {};
 
-          return  createIntention(data,headers,fetchOptions)
+          return  createIntention(data,headers,requestOptions)
         }
 
         
@@ -575,7 +556,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type CreateIntentionMutationError = CreateIntention409
 
     export const useCreateIntention = <TError = CreateIntention409,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIntention>>, TError,{data: CreateIntentionBody;headers: CreateIntentionHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIntention>>, TError,{data: CreateIntentionBody;headers: CreateIntentionHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createIntention>>,
         TError,
@@ -612,13 +593,13 @@ export const getCreatePostUrl = () => {
 
   
 
-  return `http://localhost:3001/posts`
+  return `/posts`
 }
 
 export const createPost = async (createPostBody: CreatePostBody,
     headers: CreatePostHeaders, options?: RequestInit): Promise<createPostResponse> => {
   
-  const res = await fetch(getCreatePostUrl(),
+  return customFetch<createPostResponse>(getCreatePostUrl(),
   {      
     ...options,
     method: 'POST',
@@ -626,27 +607,21 @@ export const createPost = async (createPostBody: CreatePostBody,
     body: JSON.stringify(
       createPostBody,)
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: createPostResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as createPostResponse
-}
+);}
 
 
 
 
 export const getCreatePostMutationOptions = <TError = CreatePost404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPost>>, TError,{data: CreatePostBody;headers: CreatePostHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPost>>, TError,{data: CreatePostBody;headers: CreatePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createPost>>, TError,{data: CreatePostBody;headers: CreatePostHeaders}, TContext> => {
 
 const mutationKey = ['createPost'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -654,7 +629,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPost>>, {data: CreatePostBody;headers: CreatePostHeaders}> = (props) => {
           const {data,headers} = props ?? {};
 
-          return  createPost(data,headers,fetchOptions)
+          return  createPost(data,headers,requestOptions)
         }
 
         
@@ -667,7 +642,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type CreatePostMutationError = CreatePost404
 
     export const useCreatePost = <TError = CreatePost404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPost>>, TError,{data: CreatePostBody;headers: CreatePostHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPost>>, TError,{data: CreatePostBody;headers: CreatePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createPost>>,
         TError,
@@ -704,14 +679,14 @@ export const getUpdatePostUrl = (id: string,) => {
 
   
 
-  return `http://localhost:3001/posts/${id}`
+  return `/posts/${id}`
 }
 
 export const updatePost = async (id: string,
     updatePostBody: UpdatePostBody,
     headers: UpdatePostHeaders, options?: RequestInit): Promise<updatePostResponse> => {
   
-  const res = await fetch(getUpdatePostUrl(id),
+  return customFetch<updatePostResponse>(getUpdatePostUrl(id),
   {      
     ...options,
     method: 'PATCH',
@@ -719,27 +694,21 @@ export const updatePost = async (id: string,
     body: JSON.stringify(
       updatePostBody,)
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: updatePostResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as updatePostResponse
-}
+);}
 
 
 
 
 export const getUpdatePostMutationOptions = <TError = UpdatePost404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePost>>, TError,{id: string;data: UpdatePostBody;headers: UpdatePostHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePost>>, TError,{id: string;data: UpdatePostBody;headers: UpdatePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updatePost>>, TError,{id: string;data: UpdatePostBody;headers: UpdatePostHeaders}, TContext> => {
 
 const mutationKey = ['updatePost'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -747,7 +716,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePost>>, {id: string;data: UpdatePostBody;headers: UpdatePostHeaders}> = (props) => {
           const {id,data,headers} = props ?? {};
 
-          return  updatePost(id,data,headers,fetchOptions)
+          return  updatePost(id,data,headers,requestOptions)
         }
 
         
@@ -760,7 +729,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type UpdatePostMutationError = UpdatePost404
 
     export const useUpdatePost = <TError = UpdatePost404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePost>>, TError,{id: string;data: UpdatePostBody;headers: UpdatePostHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePost>>, TError,{id: string;data: UpdatePostBody;headers: UpdatePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updatePost>>,
         TError,
@@ -790,40 +759,34 @@ export const getDeletePostUrl = (id: string,) => {
 
   
 
-  return `http://localhost:3001/posts/${id}`
+  return `/posts/${id}`
 }
 
 export const deletePost = async (id: string,
     headers: DeletePostHeaders, options?: RequestInit): Promise<deletePostResponse> => {
   
-  const res = await fetch(getDeletePostUrl(id),
+  return customFetch<deletePostResponse>(getDeletePostUrl(id),
   {      
     ...options,
     method: 'DELETE',
     headers: { ...headers, ...options?.headers }
     
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: deletePostResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as deletePostResponse
-}
+);}
 
 
 
 
 export const getDeletePostMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePost>>, TError,{id: string;headers: DeletePostHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePost>>, TError,{id: string;headers: DeletePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deletePost>>, TError,{id: string;headers: DeletePostHeaders}, TContext> => {
 
 const mutationKey = ['deletePost'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -831,7 +794,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePost>>, {id: string;headers: DeletePostHeaders}> = (props) => {
           const {id,headers} = props ?? {};
 
-          return  deletePost(id,headers,fetchOptions)
+          return  deletePost(id,headers,requestOptions)
         }
 
         
@@ -844,7 +807,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type DeletePostMutationError = unknown
 
     export const useDeletePost = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePost>>, TError,{id: string;headers: DeletePostHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePost>>, TError,{id: string;headers: DeletePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deletePost>>,
         TError,
@@ -886,12 +849,12 @@ export const getCreateUserUrl = () => {
 
   
 
-  return `http://localhost:3001/users`
+  return `/users`
 }
 
 export const createUser = async (createUserBody: CreateUserBody, options?: RequestInit): Promise<createUserResponse> => {
   
-  const res = await fetch(getCreateUserUrl(),
+  return customFetch<createUserResponse>(getCreateUserUrl(),
   {      
     ...options,
     method: 'POST',
@@ -899,27 +862,21 @@ export const createUser = async (createUserBody: CreateUserBody, options?: Reque
     body: JSON.stringify(
       createUserBody,)
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: createUserResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as createUserResponse
-}
+);}
 
 
 
 
 export const getCreateUserMutationOptions = <TError = CreateUser400 | CreateUser409,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserBody}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserBody}, TContext> => {
 
 const mutationKey = ['createUser'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -927,7 +884,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof createUser>>, {data: CreateUserBody}> = (props) => {
           const {data} = props ?? {};
 
-          return  createUser(data,fetchOptions)
+          return  createUser(data,requestOptions)
         }
 
         
@@ -940,7 +897,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type CreateUserMutationError = CreateUser400 | CreateUser409
 
     export const useCreateUser = <TError = CreateUser400 | CreateUser409,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserBody}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createUser>>,
         TError,
@@ -970,13 +927,13 @@ export const getUpdateUserImageUrl = () => {
 
   
 
-  return `http://localhost:3001/users/image`
+  return `/users/image`
 }
 
 export const updateUserImage = async (updateUserImageBody: UpdateUserImageBody,
     headers: UpdateUserImageHeaders, options?: RequestInit): Promise<updateUserImageResponse> => {
   
-  const res = await fetch(getUpdateUserImageUrl(),
+  return customFetch<updateUserImageResponse>(getUpdateUserImageUrl(),
   {      
     ...options,
     method: 'PATCH',
@@ -984,27 +941,21 @@ export const updateUserImage = async (updateUserImageBody: UpdateUserImageBody,
     body: JSON.stringify(
       updateUserImageBody,)
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: updateUserImageResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as updateUserImageResponse
-}
+);}
 
 
 
 
 export const getUpdateUserImageMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext> => {
 
 const mutationKey = ['updateUserImage'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -1012,7 +963,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateUserImage>>, {data: UpdateUserImageBody;headers: UpdateUserImageHeaders}> = (props) => {
           const {data,headers} = props ?? {};
 
-          return  updateUserImage(data,headers,fetchOptions)
+          return  updateUserImage(data,headers,requestOptions)
         }
 
         
@@ -1025,7 +976,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type UpdateUserImageMutationError = unknown
 
     export const useUpdateUserImage = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateUserImage>>,
         TError,
@@ -1055,39 +1006,33 @@ export const getClearNotifAlertUrl = () => {
 
   
 
-  return `http://localhost:3001/users/notif-alert`
+  return `/users/notif-alert`
 }
 
 export const clearNotifAlert = async (headers: ClearNotifAlertHeaders, options?: RequestInit): Promise<clearNotifAlertResponse> => {
   
-  const res = await fetch(getClearNotifAlertUrl(),
+  return customFetch<clearNotifAlertResponse>(getClearNotifAlertUrl(),
   {      
     ...options,
     method: 'DELETE',
     headers: { ...headers, ...options?.headers }
     
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: clearNotifAlertResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as clearNotifAlertResponse
-}
+);}
 
 
 
 
 export const getClearNotifAlertMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext> => {
 
 const mutationKey = ['clearNotifAlert'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -1095,7 +1040,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof clearNotifAlert>>, {headers: ClearNotifAlertHeaders}> = (props) => {
           const {headers} = props ?? {};
 
-          return  clearNotifAlert(headers,fetchOptions)
+          return  clearNotifAlert(headers,requestOptions)
         }
 
         
@@ -1108,7 +1053,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type ClearNotifAlertMutationError = unknown
 
     export const useClearNotifAlert = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof clearNotifAlert>>,
         TError,
@@ -1145,13 +1090,13 @@ export const getCreateCommentUrl = () => {
 
   
 
-  return `http://localhost:3001/comments`
+  return `/comments`
 }
 
 export const createComment = async (createCommentBody: CreateCommentBody,
     headers: CreateCommentHeaders, options?: RequestInit): Promise<createCommentResponse> => {
   
-  const res = await fetch(getCreateCommentUrl(),
+  return customFetch<createCommentResponse>(getCreateCommentUrl(),
   {      
     ...options,
     method: 'POST',
@@ -1159,27 +1104,21 @@ export const createComment = async (createCommentBody: CreateCommentBody,
     body: JSON.stringify(
       createCommentBody,)
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: createCommentResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as createCommentResponse
-}
+);}
 
 
 
 
 export const getCreateCommentMutationOptions = <TError = CreateComment404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{data: CreateCommentBody;headers: CreateCommentHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{data: CreateCommentBody;headers: CreateCommentHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{data: CreateCommentBody;headers: CreateCommentHeaders}, TContext> => {
 
 const mutationKey = ['createComment'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -1187,7 +1126,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof createComment>>, {data: CreateCommentBody;headers: CreateCommentHeaders}> = (props) => {
           const {data,headers} = props ?? {};
 
-          return  createComment(data,headers,fetchOptions)
+          return  createComment(data,headers,requestOptions)
         }
 
         
@@ -1200,7 +1139,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type CreateCommentMutationError = CreateComment404
 
     export const useCreateComment = <TError = CreateComment404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{data: CreateCommentBody;headers: CreateCommentHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{data: CreateCommentBody;headers: CreateCommentHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createComment>>,
         TError,
@@ -1230,40 +1169,34 @@ export const getDeleteCommentUrl = (id: string,) => {
 
   
 
-  return `http://localhost:3001/comments/${id}`
+  return `/comments/${id}`
 }
 
 export const deleteComment = async (id: string,
     headers: DeleteCommentHeaders, options?: RequestInit): Promise<deleteCommentResponse> => {
   
-  const res = await fetch(getDeleteCommentUrl(id),
+  return customFetch<deleteCommentResponse>(getDeleteCommentUrl(id),
   {      
     ...options,
     method: 'DELETE',
     headers: { ...headers, ...options?.headers }
     
   }
-)
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-  
-  const data: deleteCommentResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as deleteCommentResponse
-}
+);}
 
 
 
 
 export const getDeleteCommentMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteComment>>, TError,{id: string;headers: DeleteCommentHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteComment>>, TError,{id: string;headers: DeleteCommentHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteComment>>, TError,{id: string;headers: DeleteCommentHeaders}, TContext> => {
 
 const mutationKey = ['deleteComment'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+      : {mutation: { mutationKey, }, request: undefined};
 
       
 
@@ -1271,7 +1204,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteComment>>, {id: string;headers: DeleteCommentHeaders}> = (props) => {
           const {id,headers} = props ?? {};
 
-          return  deleteComment(id,headers,fetchOptions)
+          return  deleteComment(id,headers,requestOptions)
         }
 
         
@@ -1284,7 +1217,7 @@ const {mutation: mutationOptions, fetch: fetchOptions} = options ?
     export type DeleteCommentMutationError = unknown
 
     export const useDeleteComment = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteComment>>, TError,{id: string;headers: DeleteCommentHeaders}, TContext>, fetch?: RequestInit}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteComment>>, TError,{id: string;headers: DeleteCommentHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteComment>>,
         TError,
