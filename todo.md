@@ -1,7 +1,6 @@
 Fixes:
 
 Features:
-- scroll to top of feed when clicking header
 - store image size/ratio on post data for better placeholder sizing
 - error UI for failed fetching and actions
 - edit post UI
