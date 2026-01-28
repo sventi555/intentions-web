@@ -29,7 +29,7 @@ interface PostProps {
 }
 
 export const Post: React.FC<PostProps> = ({ id, data }) => {
-  const { downloadUrl: imageUrl } = useDownloadUrl(data.image);
+  const { downloadUrl: imageUrl } = useDownloadUrl(data.image?.src);
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const { authUser, token } = useAuthState();
@@ -105,7 +105,12 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
         </div>
 
         {data.image && !imageLoaded ? (
-          <div className="aspect-square w-full animate-pulse rounded-2xl bg-neutral-300" />
+          <div
+            style={{
+              aspectRatio: `${data.image.width} / ${data.image.height}`,
+            }}
+            className="w-full animate-pulse rounded-2xl bg-neutral-300"
+          />
         ) : null}
 
         {imageUrl ? (

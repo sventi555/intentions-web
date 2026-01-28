@@ -29,7 +29,11 @@ export interface Post {
   intention: Pick<Intention, 'name'>;
   createdAt: number;
   description?: string;
-  image?: string;
+  image?: {
+    src: string;
+    width: number;
+    height: number;
+  };
 }
 
 export interface Comment {

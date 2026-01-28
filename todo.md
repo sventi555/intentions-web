@@ -1,7 +1,7 @@
 Fixes:
+- script to add width and height to all posts
 
 Features:
-- store image size/ratio on post data for better placeholder sizing
 - error UI for failed fetching and actions
 - edit post UI
 - create post progressive disclosure (or at least don't lose image when making intentions)

@@ -3,6 +3,7 @@ import mime from 'mime-types';
 import path from 'path';
 import sharp from 'sharp';
 import { storage } from './config';
+import { splitDataUrl } from './utils/image';
 
 /**
  * @storageDirName the bucket directory in which the file will be stored
@@ -18,7 +19,7 @@ export const uploadMedia = async (
 ) => {
   const options = { validTypes: ['image', 'video'], ...opts };
 
-  const [imageMeta, image] = mediaBase64.split(',');
+  const [imageMeta, image] = splitDataUrl(mediaBase64);
 
   // i.e. 'image/jpeg'
   const contentType = imageMeta.match(/data:(.*);base64/)?.[1];

@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { AuthProvider } from '@/state/auth.tsx';
 import App from './app.tsx';
 import './index.css';
+import { defaultTransition } from './style.ts';
 
 const queryClient = new QueryClient();
 
@@ -13,7 +14,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <MotionConfig transition={{ duration: 0.1 }}>
+        <MotionConfig transition={defaultTransition}>
           <App />
         </MotionConfig>
       </AuthProvider>

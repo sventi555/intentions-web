@@ -12,6 +12,7 @@ import {
 } from '../schemas/posts';
 import { authHeaderSchema, errorSchema } from '../schemas/shared';
 import { uploadMedia } from '../storage';
+import { getImageDimensions } from '../utils/image';
 
 const app = new OpenAPIHono();
 
@@ -53,11 +54,14 @@ app.openapi(createPostRoute, async (c) => {
     throw new HTTPException(500);
   }
 
-  let imageFileName: string | undefined = undefined;
+  let image: Post['image'] = undefined;
   if (data.image) {
-    imageFileName = await uploadMedia(`posts/${requesterId}`, data.image, {
-      size: 640,
-    });
+    image = {
+      src: await uploadMedia(`posts/${requesterId}`, data.image, {
+        size: 640,
+      }),
+      ...(await getImageDimensions(data.image)),
+    };
   }
 
   const postData: Post = {
@@ -70,7 +74,7 @@ app.openapi(createPostRoute, async (c) => {
     intention: { name: intentionData.name },
     createdAt: Date.now(),
     ...(data.description ? { description: data.description } : {}),
-    ...(imageFileName ? { image: imageFileName } : {}),
+    ...(image ? { image } : {}),
   };
 
   const writeBatch = bulkWriter();
