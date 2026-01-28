@@ -14,7 +14,7 @@ import { format, intlFormatDistance } from 'date-fns';
 import { signOut } from 'firebase/auth';
 import React, { PropsWithChildren, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
-import { Link, useParams } from 'wouter';
+import { Link, useParams, useSearchParams } from 'wouter';
 
 import { Button } from '@/components/atoms/button';
 import { ImagePicker } from '@/components/atoms/image-picker';
@@ -44,6 +44,7 @@ import { FollowersDialog, FollowingDialog } from './follow-dialog';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { authUser, token } = useAuthState();
 
   if (userId == null) {
@@ -53,6 +54,21 @@ export const Profile: React.FC = () => {
   if (authUser == null) {
     throw new Error('must be signed in to view profile');
   }
+
+  const [selectedTab, setSelectedTab] = useState(
+    searchParams.get('tab') === 'intentions' ? 1 : 0,
+  );
+
+  const onTabChange = (tabIndex: number) => {
+    setSelectedTab(tabIndex);
+    setSearchParams(
+      (prev) => {
+        prev.set('tab', tabIndex === 1 ? 'intentions' : 'posts');
+        return prev;
+      },
+      { replace: true },
+    );
+  };
 
   const { user } = useUser(userId);
   const { follow, isLoading: followLoading } = useFollow(userId);
@@ -204,7 +220,11 @@ export const Profile: React.FC = () => {
           ) : null}
         </div>
 
-        <TabGroup className="flex grow flex-col">
+        <TabGroup
+          selectedIndex={selectedTab}
+          onChange={onTabChange}
+          className="flex grow flex-col"
+        >
           <TabList className="flex border-b border-neutral-300">
             <TabButton>Posts</TabButton>
             <TabButton>Intentions</TabButton>

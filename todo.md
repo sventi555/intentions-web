@@ -1,5 +1,4 @@
 Fixes:
-- profile page remember tab navigation (and scroll position)
 
 Features:
 - store image size/ratio on post data for better placeholder sizing
