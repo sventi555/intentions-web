@@ -45,11 +45,19 @@ export const useSearchUser = (username?: string) => {
     isError,
   } = useQuery({
     enabled: !!username,
-    queryKey: ['user', { username }],
+    queryKey: ['user', { username: username?.toLowerCase() }],
     queryFn: async () => {
+      if (username == null) {
+        // should not be reached
+        return;
+      }
+
       const userDocs = (
         await getDocs(
-          query(collections.users(), where('username', '==', username)),
+          query(
+            collections.users(),
+            where('usernameLower', '==', username.toLowerCase()),
+          ),
         )
       ).docs;
 

@@ -1,6 +1,7 @@
 export interface User {
   email: string;
   username: string;
+  usernameLower: string;
   image?: string;
   unreadNotifs?: boolean;
 }

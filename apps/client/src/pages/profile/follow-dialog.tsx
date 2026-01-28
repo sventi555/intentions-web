@@ -33,7 +33,9 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
   const [searchedUsername, setSearchedUsername] = useState('');
 
   const filteredFollowUsers = users?.filter((follower) =>
-    follower.data.username.includes(searchedUsername),
+    follower.data.username
+      .toLowerCase()
+      .includes(searchedUsername.toLowerCase()),
   );
 
   return (

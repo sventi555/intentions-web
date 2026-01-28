@@ -39,8 +39,12 @@ app.openapi(createUserRoute, async (c) => {
   const { username, email, password } = c.req.valid('json');
 
   const existingUsername =
-    (await collections.users().where('username', '==', username).get()).size >
-    0;
+    (
+      await collections
+        .users()
+        .where('usernameLower', '==', username.toLowerCase())
+        .get()
+    ).size > 0;
   if (existingUsername) {
     return c.json({ message: 'username already taken' }, 409);
   }
@@ -65,7 +69,11 @@ app.openapi(createUserRoute, async (c) => {
   const writeBatch = bulkWriter();
 
   const userDoc = collections.users().doc(user.uid);
-  writeBatch.create(userDoc, { email, username });
+  writeBatch.create(userDoc, {
+    email,
+    username,
+    usernameLower: username.toLowerCase(),
+  });
 
   // follow self to simplify permission checks and feed mechanics
   const followToDoc = collections.followsTo(user.uid).doc(user.uid);
