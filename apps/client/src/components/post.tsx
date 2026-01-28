@@ -131,22 +131,26 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
         </div>
       </div>
 
-      {commentDialogOpen && (
-        <CommentsDialog
-          postId={id}
-          onClose={() => setCommentDialogOpen(false)}
-        />
-      )}
+      <CommentsDialog
+        postId={id}
+        open={commentDialogOpen}
+        onClose={() => setCommentDialogOpen(false)}
+      />
     </>
   );
 };
 
 interface CommentsDialogProps {
   postId: string;
+  open: boolean;
   onClose: () => void;
 }
 
-const CommentsDialog: React.FC<CommentsDialogProps> = ({ postId, onClose }) => {
+const CommentsDialog: React.FC<CommentsDialogProps> = ({
+  postId,
+  open,
+  onClose,
+}) => {
   const { authUser, token } = useAuthState();
 
   const { comments } = useComments(postId);
@@ -172,7 +176,7 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({ postId, onClose }) => {
   };
 
   return (
-    <Dialog onClose={onClose}>
+    <Dialog open={open} onClose={onClose}>
       <div className="flex grow flex-col gap-2 overflow-hidden overflow-y-scroll p-4">
         {comments?.map((c) => (
           <div key={c.id} className="flex justify-between">

@@ -233,13 +233,14 @@ export const Profile: React.FC = () => {
         </TabGroup>
       </div>
 
-      {followListDialog === 'following' ? (
-        <FollowingDialog onClose={() => setFollowListDialog(null)} />
-      ) : null}
-
-      {followListDialog === 'followers' ? (
-        <FollowersDialog onClose={() => setFollowListDialog(null)} />
-      ) : null}
+      <FollowingDialog
+        open={followListDialog === 'following'}
+        onClose={() => setFollowListDialog(null)}
+      />
+      <FollowersDialog
+        open={followListDialog === 'followers'}
+        onClose={() => setFollowListDialog(null)}
+      />
     </>
   );
 };

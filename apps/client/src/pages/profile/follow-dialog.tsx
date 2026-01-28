@@ -15,6 +15,7 @@ import { useRemoveFollow } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
 
 interface FollowDialogProps {
+  open: boolean;
   onClose: () => void;
   kind: 'following' | 'followers';
   users: { id: string; data: { username: string } }[] | undefined;
@@ -22,6 +23,7 @@ interface FollowDialogProps {
 }
 
 const FollowDialog: React.FC<FollowDialogProps> = ({
+  open,
   onClose,
   kind,
   users,
@@ -39,7 +41,7 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
   );
 
   return (
-    <Dialog onClose={onClose}>
+    <Dialog open={open} onClose={onClose}>
       <div className="border-b border-neutral-300 p-2 text-center font-medium">
         {kind === 'following' ? 'Following' : 'Followers'}
       </div>
@@ -92,14 +94,15 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
   );
 };
 
-export const FollowingDialog: React.FC<Pick<FollowDialogProps, 'onClose'>> = ({
-  onClose,
-}) => {
+export const FollowingDialog: React.FC<
+  Pick<FollowDialogProps, 'open' | 'onClose'>
+> = ({ open, onClose }) => {
   const { followedUsers } = useFollowedUsers();
   const invalidateFollowedUsers = useInvalidateFollowedUsers();
 
   return (
     <FollowDialog
+      open={open}
       users={followedUsers}
       kind="following"
       onClose={onClose}
@@ -108,14 +111,15 @@ export const FollowingDialog: React.FC<Pick<FollowDialogProps, 'onClose'>> = ({
   );
 };
 
-export const FollowersDialog: React.FC<Pick<FollowDialogProps, 'onClose'>> = ({
-  onClose,
-}) => {
+export const FollowersDialog: React.FC<
+  Pick<FollowDialogProps, 'open' | 'onClose'>
+> = ({ open, onClose }) => {
   const { followers } = useFollowers();
   const invalidateFollowers = useInvalidateFollowers();
 
   return (
     <FollowDialog
+      open={open}
       users={followers}
       kind="followers"
       onClose={onClose}
