@@ -1,5 +1,4 @@
 Fixes:
-- script to add width and height to all posts
 
 Features:
 - error UI for failed fetching and actions
