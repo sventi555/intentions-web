@@ -3,6 +3,7 @@ import { HTTPException } from 'hono/http-exception';
 import { type Post } from 'lib';
 import { bulkWriter, collections } from '../db';
 import { postDocCopies } from '../db/denorm';
+import { storage } from '../firebase';
 import { authenticate } from '../middleware/auth';
 import {
   createPostBody,
@@ -179,6 +180,10 @@ app.openapi(deletePostRoute, async (c) => {
   comments.forEach((comment) => writeBatch.delete(comment.ref));
 
   await writeBatch.close();
+
+  if (postData.image) {
+    await storage.bucket().file(postData.image.src).delete();
+  }
 
   return c.json(null, 200);
 });

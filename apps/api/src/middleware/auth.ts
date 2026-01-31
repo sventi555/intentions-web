@@ -1,6 +1,6 @@
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
-import { auth } from '../config';
+import { auth } from '../firebase';
 
 export const authenticate = createMiddleware<{ Variables: { uid: string } }>(
   async (c, next) => {

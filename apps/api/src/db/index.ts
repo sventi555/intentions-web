@@ -15,7 +15,7 @@ import {
   type Post,
   type User,
 } from 'lib';
-import { db } from '../config';
+import { db } from '../firebase';
 
 const firestoreConverter = <T>() => ({
   toFirestore: (data: T) => data,

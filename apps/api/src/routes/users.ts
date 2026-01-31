@@ -2,9 +2,9 @@ import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import type { FirebaseAuthError, UserRecord } from 'firebase-admin/auth';
 import { HTTPException } from 'hono/http-exception';
 import type { Follow } from 'lib';
-import { auth } from '../config';
 import { bulkWriter, collections } from '../db';
 import { embeddedUserCopies } from '../db/denorm';
+import { auth, storage } from '../firebase';
 import { authenticate } from '../middleware/auth';
 import { authHeaderSchema, errorSchema } from '../schemas/shared';
 import { createUserBody, updateUserImageBody } from '../schemas/users';
@@ -116,6 +116,8 @@ app.openapi(updateUserImageRoute, async (c) => {
   const writeBatch = bulkWriter();
 
   const userDoc = collections.users().doc(requesterId);
+  const oldImage = (await userDoc.get()).data()?.image;
+
   writeBatch.update(userDoc, { image: imageFileName });
 
   const updatedData = { 'user.image': imageFileName };
@@ -124,6 +126,10 @@ app.openapi(updateUserImageRoute, async (c) => {
   embeddedUserDocs.forEach((doc) => writeBatch.update(doc, updatedData));
 
   await writeBatch.close();
+
+  if (oldImage) {
+    await storage.bucket().file(oldImage).delete();
+  }
 
   return c.json(null, 200);
 });
