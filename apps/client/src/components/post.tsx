@@ -2,6 +2,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { clsx } from 'clsx';
 import { intlFormatDistance } from 'date-fns';
 import { Post as _Post } from 'lib';
+import { motion } from 'motion/react';
 import { useState } from 'react';
 import { Link } from 'wouter';
 
@@ -22,6 +23,7 @@ import {
   useDeletePost,
 } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
+import { toast } from 'sonner';
 
 interface PostProps {
   id: string;
@@ -35,6 +37,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
   const { authUser, token } = useAuthState();
 
   const { mutateAsync: deletePost } = useDeletePost();
+  const [isDeleting, setIsDeleting] = useState(false);
   const invalidateUserPosts = useInvalidateUserPosts();
   const invalidateIntentionPosts = useInvalidateIntentionPosts();
   const invalidateIntentions = useInvalidateIntentions();
@@ -44,7 +47,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="relative flex flex-col p-2">
         <div className="relative p-2">
           <div
             className={clsx(
@@ -78,22 +81,37 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
               >
                 <MenuItem>
                   <button
-                    onClick={() =>
+                    onClick={() => {
+                      setIsDeleting(true);
                       deletePost({
                         headers: { authorization: token ?? '' },
                         id,
-                      }).then(() =>
-                        Promise.all([
-                          invalidateUserPosts(data.userId),
-                          invalidateIntentionPosts(
-                            data.userId,
-                            data.intentionId,
-                          ),
-                          invalidateIntentions(data.userId),
-                          invalidateFeedPosts(data.userId),
-                        ]),
-                      )
-                    }
+                      })
+                        .then((res) => {
+                          if (res.status === 401) {
+                            toast.error(
+                              'Could not authenticate - refresh page or log back in.',
+                            );
+                            return;
+                          }
+
+                          return Promise.all([
+                            invalidateUserPosts(data.userId),
+                            invalidateIntentionPosts(
+                              data.userId,
+                              data.intentionId,
+                            ),
+                            invalidateIntentions(data.userId),
+                            invalidateFeedPosts(data.userId),
+                          ]);
+                        })
+                        .catch(() => {
+                          toast.error(
+                            'Something went wrong, please try again.',
+                          );
+                        })
+                        .finally(() => setIsDeleting(false));
+                    }}
                     className="cursor-pointer p-1 px-2 text-red-500 hover:bg-neutral-200"
                   >
                     Delete
@@ -134,6 +152,19 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
         <div className="self-end text-sm text-neutral-400 italic">
           {intlFormatDistance(data.createdAt, Date.now(), { style: 'short' })}
         </div>
+
+        {isDeleting && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 flex items-center justify-center rounded-md bg-neutral-300/60"
+          >
+            <div className="flex flex-col items-center">
+              <Loading className="size-[40px] animate-spin" />
+              <div>Deleting</div>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       <CommentsDialog

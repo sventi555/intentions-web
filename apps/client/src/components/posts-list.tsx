@@ -25,7 +25,7 @@ export const PostsList: React.FC<PostsListProps> = (props) => {
   }, [throttledFetchPage, inView, props.fetchingPage, props.hasNextPage]);
 
   return (
-    <div className="flex flex-col gap-1 p-[24px] pt-[12px] pb-[80px]">
+    <div className="flex flex-col gap-1 p-4 pt-1 pb-[80px]">
       {props.posts.map(({ id, data }, index) => {
         return (
           <Fragment key={id}>
