@@ -203,9 +203,22 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
         headers: { authorization: token ?? '' },
         data: { postId, body: draftComment },
       })
-        .then(() => invalidateComments(postId))
-        .then(() => {
-          setDraftComment('');
+        .then((res) => {
+          if (res.status === 401) {
+            toast.error(
+              'Could not authenticate - refresh page or log back in.',
+            );
+            return;
+          }
+
+          return invalidateComments(postId).then(() => {
+            setDraftComment('');
+          });
+        })
+        .catch(() => {
+          toast.error('Something went wrong, please try again.');
+        })
+        .finally(() => {
           setSubmittingComment(false);
         });
     }
