@@ -23,6 +23,7 @@ import {
   useDeletePost,
 } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
+import { defaultTransition } from '@/style';
 import { toast } from 'sonner';
 
 interface PostProps {
@@ -157,6 +158,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ ...defaultTransition, delay: 0.25 }}
             className="absolute inset-0 flex items-center justify-center rounded-md bg-neutral-200/50"
           >
             <div className="flex max-h-full flex-col items-center rounded-md bg-neutral-200/80 p-2 shadow-sm">
@@ -301,6 +303,7 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                transition={{ ...defaultTransition, delay: 0.25 }}
                 className="absolute inset-0 flex items-center justify-center rounded-md bg-neutral-200/30 p-1"
               >
                 <div className="flex max-h-full flex-col flex-wrap items-center justify-center gap-1 rounded-md bg-white p-1 shadow-sm">
