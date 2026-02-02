@@ -157,9 +157,9 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 flex items-center justify-center rounded-md bg-neutral-300/60"
+            className="absolute inset-0 flex items-center justify-center rounded-md bg-neutral-200/50"
           >
-            <div className="flex flex-col items-center">
+            <div className="flex max-h-full flex-col items-center rounded-md bg-neutral-200/80 p-2 shadow-sm">
               <Loading className="size-[40px] animate-spin" />
               <div>Deleting</div>
             </div>
@@ -195,6 +195,9 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
   const invalidateComments = useInvalidateComments();
   const [draftComment, setDraftComment] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(
+    null,
+  );
 
   const onCreateComment = () => {
     if (draftComment.trim()) {
@@ -226,9 +229,9 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <div className="flex grow flex-col gap-2 overflow-hidden overflow-y-scroll p-4">
+      <div className="flex grow flex-col overflow-hidden overflow-y-scroll p-3">
         {comments?.map((c) => (
-          <div key={c.id} className="flex justify-between">
+          <div key={c.id} className="relative flex justify-between p-1">
             <div className="flex grow gap-2">
               <Link href={`/profile/${c.data.userId}`}>
                 <DisplayPic imageUri={c.data.user.image} size={32} />
@@ -262,14 +265,29 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
                   >
                     <MenuItem>
                       <button
-                        onClick={() =>
+                        onClick={() => {
+                          setDeletingCommentId(c.id);
                           deleteComment({
                             headers: { authorization: token ?? '' },
                             id: c.id,
-                          }).then(() =>
-                            Promise.all([invalidateComments(postId)]),
-                          )
-                        }
+                          })
+                            .then((res) => {
+                              if (res.status === 401) {
+                                toast.error(
+                                  'Could not authenticate - refresh page or log back in.',
+                                );
+                                return;
+                              }
+
+                              return Promise.all([invalidateComments(postId)]);
+                            })
+                            .catch(() => {
+                              toast.error(
+                                'Something went wrong, please try again.',
+                              );
+                            })
+                            .finally(() => {});
+                        }}
                         className="cursor-pointer p-1 px-2 text-red-500 hover:bg-neutral-200"
                       >
                         Delete
@@ -279,11 +297,26 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
                 </Menu>
               </div>
             )}
+            {deletingCommentId === c.id && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute inset-0 flex items-center justify-center rounded-md bg-neutral-200/30 p-1"
+              >
+                <div className="flex max-h-full flex-col flex-wrap items-center justify-center gap-1 rounded-md bg-white p-1 shadow-sm">
+                  <Loading className="size-[20px] animate-spin" />
+                  <div>Deleting</div>
+                </div>
+              </motion.div>
+            )}
           </div>
         ))}
-        <div className="self-center text-sm text-neutral-400">
-          No more comments...
-        </div>
+
+        {comments?.length === 0 && (
+          <div className="self-center p-1 text-sm text-neutral-400">
+            No comments...
+          </div>
+        )}
       </div>
       <div className="flex justify-between border-t border-neutral-300 p-1">
         <textarea
