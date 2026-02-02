@@ -6,7 +6,11 @@ import { bulkWriter, collections } from '../db';
 import { embeddedUserCopies } from '../db/denorm';
 import { auth, storage } from '../firebase';
 import { authenticate } from '../middleware/auth';
-import { authHeaderSchema, errorSchema } from '../schemas/shared';
+import {
+  authHeaderSchema,
+  errorSchema,
+  unauthResponse,
+} from '../schemas/shared';
 import { createUserBody, updateUserImageBody } from '../schemas/users';
 import { uploadMedia } from '../storage';
 
@@ -101,6 +105,7 @@ const updateUserImageRoute = createRoute({
       description: 'Successfully updated user image',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
   },
 });
 
@@ -147,6 +152,7 @@ const clearNotifAlertRoute = createRoute({
       description: 'Successfully cleared notification alert',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
   },
 });
 

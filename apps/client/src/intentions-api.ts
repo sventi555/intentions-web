@@ -24,6 +24,11 @@ authorization: string;
  */
 export type FollowUser201 = unknown | null;
 
+/**
+ * @nullable
+ */
+export type FollowUser401 = unknown | null;
+
 export type FollowUser404 = {
   message: string;
 };
@@ -54,6 +59,11 @@ export type RemoveFollow400 = {
   message: string;
 };
 
+/**
+ * @nullable
+ */
+export type RemoveFollow401 = unknown | null;
+
 export type RespondToFollowHeaders = {
 authorization: string;
 };
@@ -75,6 +85,11 @@ export type RespondToFollowBody = {
  * @nullable
  */
 export type RespondToFollow200 = unknown | null;
+
+/**
+ * @nullable
+ */
+export type RespondToFollow401 = unknown | null;
 
 export type RespondToFollow404 = {
   message: string;
@@ -98,6 +113,11 @@ export type CreateIntentionBody = {
  */
 export type CreateIntention201 = unknown | null;
 
+/**
+ * @nullable
+ */
+export type CreateIntention401 = unknown | null;
+
 export type CreateIntention409 = {
   message: string;
 };
@@ -117,6 +137,11 @@ export type CreatePostBody = {
  */
 export type CreatePost201 = unknown | null;
 
+/**
+ * @nullable
+ */
+export type CreatePost401 = unknown | null;
+
 export type CreatePost404 = {
   message: string;
 };
@@ -134,6 +159,11 @@ export type UpdatePostBody = {
  */
 export type UpdatePost200 = unknown | null;
 
+/**
+ * @nullable
+ */
+export type UpdatePost401 = unknown | null;
+
 export type UpdatePost404 = {
   message: string;
 };
@@ -146,6 +176,11 @@ authorization: string;
  * @nullable
  */
 export type DeletePost200 = unknown | null;
+
+/**
+ * @nullable
+ */
+export type DeletePost401 = unknown | null;
 
 export type CreateUserBody = {
   username: string;
@@ -179,6 +214,11 @@ export type UpdateUserImageBody = {
  */
 export type UpdateUserImage200 = unknown | null;
 
+/**
+ * @nullable
+ */
+export type UpdateUserImage401 = unknown | null;
+
 export type ClearNotifAlertHeaders = {
 authorization: string;
 };
@@ -187,6 +227,11 @@ authorization: string;
  * @nullable
  */
 export type ClearNotifAlert200 = unknown | null;
+
+/**
+ * @nullable
+ */
+export type ClearNotifAlert401 = unknown | null;
 
 export type CreateCommentHeaders = {
 authorization: string;
@@ -202,6 +247,11 @@ export type CreateCommentBody = {
  */
 export type CreateComment201 = unknown | null;
 
+/**
+ * @nullable
+ */
+export type CreateComment401 = unknown | null;
+
 export type CreateComment404 = {
   message: string;
 };
@@ -215,6 +265,11 @@ authorization: string;
  */
 export type DeleteComment200 = unknown | null;
 
+/**
+ * @nullable
+ */
+export type DeleteComment401 = unknown | null;
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
@@ -222,6 +277,11 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 export type followUserResponse201 = {
   data: FollowUser201
   status: 201
+}
+
+export type followUserResponse401 = {
+  data: FollowUser401
+  status: 401
 }
 
 export type followUserResponse404 = {
@@ -232,7 +292,7 @@ export type followUserResponse404 = {
 export type followUserResponseSuccess = (followUserResponse201) & {
   headers: Headers;
 };
-export type followUserResponseError = (followUserResponse404) & {
+export type followUserResponseError = (followUserResponse401 | followUserResponse404) & {
   headers: Headers;
 };
 
@@ -261,7 +321,7 @@ export const followUser = async (userId: string,
 
 
 
-export const getFollowUserMutationOptions = <TError = FollowUser404,
+export const getFollowUserMutationOptions = <TError = FollowUser401 | FollowUser404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof followUser>>, TError,{userId: string;headers: FollowUserHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof followUser>>, TError,{userId: string;headers: FollowUserHeaders}, TContext> => {
 
@@ -288,9 +348,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type FollowUserMutationResult = NonNullable<Awaited<ReturnType<typeof followUser>>>
     
-    export type FollowUserMutationError = FollowUser404
+    export type FollowUserMutationError = FollowUser401 | FollowUser404
 
-    export const useFollowUser = <TError = FollowUser404,
+    export const useFollowUser = <TError = FollowUser401 | FollowUser404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof followUser>>, TError,{userId: string;headers: FollowUserHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof followUser>>,
@@ -313,11 +373,16 @@ export type removeFollowResponse400 = {
   data: RemoveFollow400
   status: 400
 }
+
+export type removeFollowResponse401 = {
+  data: RemoveFollow401
+  status: 401
+}
     
 export type removeFollowResponseSuccess = (removeFollowResponse200) & {
   headers: Headers;
 };
-export type removeFollowResponseError = (removeFollowResponse400) & {
+export type removeFollowResponseError = (removeFollowResponse400 | removeFollowResponse401) & {
   headers: Headers;
 };
 
@@ -348,7 +413,7 @@ export const removeFollow = async (userId: string,
 
 
 
-export const getRemoveFollowMutationOptions = <TError = RemoveFollow400,
+export const getRemoveFollowMutationOptions = <TError = RemoveFollow400 | RemoveFollow401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFollow>>, TError,{userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof removeFollow>>, TError,{userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}, TContext> => {
 
@@ -375,9 +440,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RemoveFollowMutationResult = NonNullable<Awaited<ReturnType<typeof removeFollow>>>
     export type RemoveFollowMutationBody = RemoveFollowBody
-    export type RemoveFollowMutationError = RemoveFollow400
+    export type RemoveFollowMutationError = RemoveFollow400 | RemoveFollow401
 
-    export const useRemoveFollow = <TError = RemoveFollow400,
+    export const useRemoveFollow = <TError = RemoveFollow400 | RemoveFollow401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeFollow>>, TError,{userId: string;data: RemoveFollowBody;headers: RemoveFollowHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof removeFollow>>,
@@ -396,6 +461,11 @@ export type respondToFollowResponse200 = {
   status: 200
 }
 
+export type respondToFollowResponse401 = {
+  data: RespondToFollow401
+  status: 401
+}
+
 export type respondToFollowResponse404 = {
   data: RespondToFollow404
   status: 404
@@ -409,7 +479,7 @@ export type respondToFollowResponse412 = {
 export type respondToFollowResponseSuccess = (respondToFollowResponse200) & {
   headers: Headers;
 };
-export type respondToFollowResponseError = (respondToFollowResponse404 | respondToFollowResponse412) & {
+export type respondToFollowResponseError = (respondToFollowResponse401 | respondToFollowResponse404 | respondToFollowResponse412) & {
   headers: Headers;
 };
 
@@ -440,7 +510,7 @@ export const respondToFollow = async (userId: string,
 
 
 
-export const getRespondToFollowMutationOptions = <TError = RespondToFollow404 | RespondToFollow412,
+export const getRespondToFollowMutationOptions = <TError = RespondToFollow401 | RespondToFollow404 | RespondToFollow412,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof respondToFollow>>, TError,{userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof respondToFollow>>, TError,{userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}, TContext> => {
 
@@ -467,9 +537,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RespondToFollowMutationResult = NonNullable<Awaited<ReturnType<typeof respondToFollow>>>
     export type RespondToFollowMutationBody = RespondToFollowBody
-    export type RespondToFollowMutationError = RespondToFollow404 | RespondToFollow412
+    export type RespondToFollowMutationError = RespondToFollow401 | RespondToFollow404 | RespondToFollow412
 
-    export const useRespondToFollow = <TError = RespondToFollow404 | RespondToFollow412,
+    export const useRespondToFollow = <TError = RespondToFollow401 | RespondToFollow404 | RespondToFollow412,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof respondToFollow>>, TError,{userId: string;data: RespondToFollowBody;headers: RespondToFollowHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof respondToFollow>>,
@@ -488,6 +558,11 @@ export type createIntentionResponse201 = {
   status: 201
 }
 
+export type createIntentionResponse401 = {
+  data: CreateIntention401
+  status: 401
+}
+
 export type createIntentionResponse409 = {
   data: CreateIntention409
   status: 409
@@ -496,7 +571,7 @@ export type createIntentionResponse409 = {
 export type createIntentionResponseSuccess = (createIntentionResponse201) & {
   headers: Headers;
 };
-export type createIntentionResponseError = (createIntentionResponse409) & {
+export type createIntentionResponseError = (createIntentionResponse401 | createIntentionResponse409) & {
   headers: Headers;
 };
 
@@ -526,7 +601,7 @@ export const createIntention = async (createIntentionBody: CreateIntentionBody,
 
 
 
-export const getCreateIntentionMutationOptions = <TError = CreateIntention409,
+export const getCreateIntentionMutationOptions = <TError = CreateIntention401 | CreateIntention409,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIntention>>, TError,{data: CreateIntentionBody;headers: CreateIntentionHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createIntention>>, TError,{data: CreateIntentionBody;headers: CreateIntentionHeaders}, TContext> => {
 
@@ -553,9 +628,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreateIntentionMutationResult = NonNullable<Awaited<ReturnType<typeof createIntention>>>
     export type CreateIntentionMutationBody = CreateIntentionBody
-    export type CreateIntentionMutationError = CreateIntention409
+    export type CreateIntentionMutationError = CreateIntention401 | CreateIntention409
 
-    export const useCreateIntention = <TError = CreateIntention409,
+    export const useCreateIntention = <TError = CreateIntention401 | CreateIntention409,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIntention>>, TError,{data: CreateIntentionBody;headers: CreateIntentionHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createIntention>>,
@@ -574,6 +649,11 @@ export type createPostResponse201 = {
   status: 201
 }
 
+export type createPostResponse401 = {
+  data: CreatePost401
+  status: 401
+}
+
 export type createPostResponse404 = {
   data: CreatePost404
   status: 404
@@ -582,7 +662,7 @@ export type createPostResponse404 = {
 export type createPostResponseSuccess = (createPostResponse201) & {
   headers: Headers;
 };
-export type createPostResponseError = (createPostResponse404) & {
+export type createPostResponseError = (createPostResponse401 | createPostResponse404) & {
   headers: Headers;
 };
 
@@ -612,7 +692,7 @@ export const createPost = async (createPostBody: CreatePostBody,
 
 
 
-export const getCreatePostMutationOptions = <TError = CreatePost404,
+export const getCreatePostMutationOptions = <TError = CreatePost401 | CreatePost404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPost>>, TError,{data: CreatePostBody;headers: CreatePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createPost>>, TError,{data: CreatePostBody;headers: CreatePostHeaders}, TContext> => {
 
@@ -639,9 +719,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreatePostMutationResult = NonNullable<Awaited<ReturnType<typeof createPost>>>
     export type CreatePostMutationBody = CreatePostBody
-    export type CreatePostMutationError = CreatePost404
+    export type CreatePostMutationError = CreatePost401 | CreatePost404
 
-    export const useCreatePost = <TError = CreatePost404,
+    export const useCreatePost = <TError = CreatePost401 | CreatePost404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPost>>, TError,{data: CreatePostBody;headers: CreatePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createPost>>,
@@ -660,6 +740,11 @@ export type updatePostResponse200 = {
   status: 200
 }
 
+export type updatePostResponse401 = {
+  data: UpdatePost401
+  status: 401
+}
+
 export type updatePostResponse404 = {
   data: UpdatePost404
   status: 404
@@ -668,7 +753,7 @@ export type updatePostResponse404 = {
 export type updatePostResponseSuccess = (updatePostResponse200) & {
   headers: Headers;
 };
-export type updatePostResponseError = (updatePostResponse404) & {
+export type updatePostResponseError = (updatePostResponse401 | updatePostResponse404) & {
   headers: Headers;
 };
 
@@ -699,7 +784,7 @@ export const updatePost = async (id: string,
 
 
 
-export const getUpdatePostMutationOptions = <TError = UpdatePost404,
+export const getUpdatePostMutationOptions = <TError = UpdatePost401 | UpdatePost404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePost>>, TError,{id: string;data: UpdatePostBody;headers: UpdatePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updatePost>>, TError,{id: string;data: UpdatePostBody;headers: UpdatePostHeaders}, TContext> => {
 
@@ -726,9 +811,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdatePostMutationResult = NonNullable<Awaited<ReturnType<typeof updatePost>>>
     export type UpdatePostMutationBody = UpdatePostBody
-    export type UpdatePostMutationError = UpdatePost404
+    export type UpdatePostMutationError = UpdatePost401 | UpdatePost404
 
-    export const useUpdatePost = <TError = UpdatePost404,
+    export const useUpdatePost = <TError = UpdatePost401 | UpdatePost404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePost>>, TError,{id: string;data: UpdatePostBody;headers: UpdatePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updatePost>>,
@@ -746,13 +831,20 @@ export type deletePostResponse200 = {
   data: DeletePost200
   status: 200
 }
+
+export type deletePostResponse401 = {
+  data: DeletePost401
+  status: 401
+}
     
 export type deletePostResponseSuccess = (deletePostResponse200) & {
   headers: Headers;
 };
-;
+export type deletePostResponseError = (deletePostResponse401) & {
+  headers: Headers;
+};
 
-export type deletePostResponse = (deletePostResponseSuccess)
+export type deletePostResponse = (deletePostResponseSuccess | deletePostResponseError)
 
 export const getDeletePostUrl = (id: string,) => {
 
@@ -777,7 +869,7 @@ export const deletePost = async (id: string,
 
 
 
-export const getDeletePostMutationOptions = <TError = unknown,
+export const getDeletePostMutationOptions = <TError = DeletePost401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePost>>, TError,{id: string;headers: DeletePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deletePost>>, TError,{id: string;headers: DeletePostHeaders}, TContext> => {
 
@@ -804,9 +896,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DeletePostMutationResult = NonNullable<Awaited<ReturnType<typeof deletePost>>>
     
-    export type DeletePostMutationError = unknown
+    export type DeletePostMutationError = DeletePost401
 
-    export const useDeletePost = <TError = unknown,
+    export const useDeletePost = <TError = DeletePost401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePost>>, TError,{id: string;headers: DeletePostHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deletePost>>,
@@ -914,13 +1006,20 @@ export type updateUserImageResponse200 = {
   data: UpdateUserImage200
   status: 200
 }
+
+export type updateUserImageResponse401 = {
+  data: UpdateUserImage401
+  status: 401
+}
     
 export type updateUserImageResponseSuccess = (updateUserImageResponse200) & {
   headers: Headers;
 };
-;
+export type updateUserImageResponseError = (updateUserImageResponse401) & {
+  headers: Headers;
+};
 
-export type updateUserImageResponse = (updateUserImageResponseSuccess)
+export type updateUserImageResponse = (updateUserImageResponseSuccess | updateUserImageResponseError)
 
 export const getUpdateUserImageUrl = () => {
 
@@ -946,7 +1045,7 @@ export const updateUserImage = async (updateUserImageBody: UpdateUserImageBody,
 
 
 
-export const getUpdateUserImageMutationOptions = <TError = unknown,
+export const getUpdateUserImageMutationOptions = <TError = UpdateUserImage401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext> => {
 
@@ -973,9 +1072,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateUserImageMutationResult = NonNullable<Awaited<ReturnType<typeof updateUserImage>>>
     export type UpdateUserImageMutationBody = UpdateUserImageBody
-    export type UpdateUserImageMutationError = unknown
+    export type UpdateUserImageMutationError = UpdateUserImage401
 
-    export const useUpdateUserImage = <TError = unknown,
+    export const useUpdateUserImage = <TError = UpdateUserImage401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserImage>>, TError,{data: UpdateUserImageBody;headers: UpdateUserImageHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateUserImage>>,
@@ -993,13 +1092,20 @@ export type clearNotifAlertResponse200 = {
   data: ClearNotifAlert200
   status: 200
 }
+
+export type clearNotifAlertResponse401 = {
+  data: ClearNotifAlert401
+  status: 401
+}
     
 export type clearNotifAlertResponseSuccess = (clearNotifAlertResponse200) & {
   headers: Headers;
 };
-;
+export type clearNotifAlertResponseError = (clearNotifAlertResponse401) & {
+  headers: Headers;
+};
 
-export type clearNotifAlertResponse = (clearNotifAlertResponseSuccess)
+export type clearNotifAlertResponse = (clearNotifAlertResponseSuccess | clearNotifAlertResponseError)
 
 export const getClearNotifAlertUrl = () => {
 
@@ -1023,7 +1129,7 @@ export const clearNotifAlert = async (headers: ClearNotifAlertHeaders, options?:
 
 
 
-export const getClearNotifAlertMutationOptions = <TError = unknown,
+export const getClearNotifAlertMutationOptions = <TError = ClearNotifAlert401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext> => {
 
@@ -1050,9 +1156,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type ClearNotifAlertMutationResult = NonNullable<Awaited<ReturnType<typeof clearNotifAlert>>>
     
-    export type ClearNotifAlertMutationError = unknown
+    export type ClearNotifAlertMutationError = ClearNotifAlert401
 
-    export const useClearNotifAlert = <TError = unknown,
+    export const useClearNotifAlert = <TError = ClearNotifAlert401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearNotifAlert>>, TError,{headers: ClearNotifAlertHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof clearNotifAlert>>,
@@ -1071,6 +1177,11 @@ export type createCommentResponse201 = {
   status: 201
 }
 
+export type createCommentResponse401 = {
+  data: CreateComment401
+  status: 401
+}
+
 export type createCommentResponse404 = {
   data: CreateComment404
   status: 404
@@ -1079,7 +1190,7 @@ export type createCommentResponse404 = {
 export type createCommentResponseSuccess = (createCommentResponse201) & {
   headers: Headers;
 };
-export type createCommentResponseError = (createCommentResponse404) & {
+export type createCommentResponseError = (createCommentResponse401 | createCommentResponse404) & {
   headers: Headers;
 };
 
@@ -1109,7 +1220,7 @@ export const createComment = async (createCommentBody: CreateCommentBody,
 
 
 
-export const getCreateCommentMutationOptions = <TError = CreateComment404,
+export const getCreateCommentMutationOptions = <TError = CreateComment401 | CreateComment404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{data: CreateCommentBody;headers: CreateCommentHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{data: CreateCommentBody;headers: CreateCommentHeaders}, TContext> => {
 
@@ -1136,9 +1247,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreateCommentMutationResult = NonNullable<Awaited<ReturnType<typeof createComment>>>
     export type CreateCommentMutationBody = CreateCommentBody
-    export type CreateCommentMutationError = CreateComment404
+    export type CreateCommentMutationError = CreateComment401 | CreateComment404
 
-    export const useCreateComment = <TError = CreateComment404,
+    export const useCreateComment = <TError = CreateComment401 | CreateComment404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{data: CreateCommentBody;headers: CreateCommentHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createComment>>,
@@ -1156,13 +1267,20 @@ export type deleteCommentResponse200 = {
   data: DeleteComment200
   status: 200
 }
+
+export type deleteCommentResponse401 = {
+  data: DeleteComment401
+  status: 401
+}
     
 export type deleteCommentResponseSuccess = (deleteCommentResponse200) & {
   headers: Headers;
 };
-;
+export type deleteCommentResponseError = (deleteCommentResponse401) & {
+  headers: Headers;
+};
 
-export type deleteCommentResponse = (deleteCommentResponseSuccess)
+export type deleteCommentResponse = (deleteCommentResponseSuccess | deleteCommentResponseError)
 
 export const getDeleteCommentUrl = (id: string,) => {
 
@@ -1187,7 +1305,7 @@ export const deleteComment = async (id: string,
 
 
 
-export const getDeleteCommentMutationOptions = <TError = unknown,
+export const getDeleteCommentMutationOptions = <TError = DeleteComment401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteComment>>, TError,{id: string;headers: DeleteCommentHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteComment>>, TError,{id: string;headers: DeleteCommentHeaders}, TContext> => {
 
@@ -1214,9 +1332,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DeleteCommentMutationResult = NonNullable<Awaited<ReturnType<typeof deleteComment>>>
     
-    export type DeleteCommentMutationError = unknown
+    export type DeleteCommentMutationError = DeleteComment401
 
-    export const useDeleteComment = <TError = unknown,
+    export const useDeleteComment = <TError = DeleteComment401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteComment>>, TError,{id: string;headers: DeleteCommentHeaders}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteComment>>,

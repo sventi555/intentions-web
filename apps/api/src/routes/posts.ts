@@ -11,7 +11,11 @@ import {
   updatePostBody,
   updatePostParams,
 } from '../schemas/posts';
-import { authHeaderSchema, errorSchema } from '../schemas/shared';
+import {
+  authHeaderSchema,
+  errorSchema,
+  unauthResponse,
+} from '../schemas/shared';
 import { uploadMedia } from '../storage';
 import { getImageDimensions } from '../utils/image';
 
@@ -31,6 +35,7 @@ const createPostRoute = createRoute({
       description: 'Successfully created post',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
     404: {
       description: 'Intention does not exist',
       content: { 'application/json': { schema: errorSchema } },
@@ -109,6 +114,7 @@ const updatePostRoute = createRoute({
       description: 'Successfully updated post',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
     404: {
       description: 'Post does not exist',
       content: { 'application/json': { schema: errorSchema } },
@@ -150,6 +156,7 @@ const deletePostRoute = createRoute({
       description: 'Successfully deleted post',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
   },
 });
 

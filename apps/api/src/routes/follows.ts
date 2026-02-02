@@ -10,7 +10,11 @@ import {
   respondToFollowBody,
   respondToFollowParams,
 } from '../schemas/follows';
-import { authHeaderSchema, errorSchema } from '../schemas/shared';
+import {
+  authHeaderSchema,
+  errorSchema,
+  unauthResponse,
+} from '../schemas/shared';
 
 const app = new OpenAPIHono();
 
@@ -28,6 +32,7 @@ const followUserRoute = createRoute({
       description: 'Successfully requested to follow user',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
     404: {
       description: 'User does not exist',
       content: { 'application/json': { schema: errorSchema } },
@@ -121,6 +126,7 @@ const respondToFollowRoute = createRoute({
       description: 'Successfully responded to user follow request',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
     404: {
       description: 'No follow request from user',
       content: { 'application/json': { schema: errorSchema } },
@@ -242,6 +248,7 @@ const removeFollowRoute = createRoute({
       description: 'Cannot unfollow yourself',
       content: { 'application/json': { schema: errorSchema } },
     },
+    401: unauthResponse,
   },
 });
 

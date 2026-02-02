@@ -4,7 +4,11 @@ import { type Comment } from 'lib';
 import { collections } from '../db';
 import { authenticate } from '../middleware/auth';
 import { createCommentBody, deleteCommentParams } from '../schemas/comments';
-import { authHeaderSchema, errorSchema } from '../schemas/shared';
+import {
+  authHeaderSchema,
+  errorSchema,
+  unauthResponse,
+} from '../schemas/shared';
 
 const app = new OpenAPIHono();
 
@@ -22,6 +26,7 @@ const createCommentRoute = createRoute({
       description: 'Successfully created comment',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
     404: {
       description: 'Post does not exist',
       content: { 'application/json': { schema: errorSchema } },
@@ -84,6 +89,7 @@ const deleteCommentRoute = createRoute({
       description: 'Successfully deleted comment',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
   },
 });
 

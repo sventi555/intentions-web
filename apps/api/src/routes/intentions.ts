@@ -3,7 +3,11 @@ import { HTTPException } from 'hono/http-exception';
 import { collections } from '../db';
 import { authenticate } from '../middleware/auth';
 import { createIntentionBody } from '../schemas/intentions';
-import { authHeaderSchema, errorSchema } from '../schemas/shared';
+import {
+  authHeaderSchema,
+  errorSchema,
+  unauthResponse,
+} from '../schemas/shared';
 
 const app = new OpenAPIHono();
 
@@ -21,6 +25,7 @@ const createIntentionRoute = createRoute({
       description: 'Successfully created intention',
       content: { 'application/json': { schema: z.null() } },
     },
+    401: unauthResponse,
     409: {
       description: 'Intention already exists',
       content: { 'application/json': { schema: errorSchema } },

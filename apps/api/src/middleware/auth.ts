@@ -1,5 +1,4 @@
 import { createMiddleware } from 'hono/factory';
-import { HTTPException } from 'hono/http-exception';
 import { auth } from '../firebase';
 
 export const authenticate = createMiddleware<{ Variables: { uid: string } }>(
@@ -12,7 +11,7 @@ export const authenticate = createMiddleware<{ Variables: { uid: string } }>(
 
       await next();
     } catch {
-      throw new HTTPException(401);
+      return c.json(null, 401);
     }
   },
 );
