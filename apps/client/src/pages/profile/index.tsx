@@ -14,6 +14,7 @@ import { format, intlFormatDistance } from 'date-fns';
 import { signOut } from 'firebase/auth';
 import React, { PropsWithChildren, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
+import { toast } from 'sonner';
 import { Link, useParams, useSearchParams } from 'wouter';
 
 import { Button } from '@/components/atoms/button';
@@ -136,8 +137,27 @@ export const Profile: React.FC = () => {
                     headers: { authorization: token ?? '' },
                     userId,
                   })
-                    .then(() => invalidateFollow(userId))
-                    .then(() => setSubmittingFollow(false));
+                    .then((res) => {
+                      if (res.status === 401) {
+                        toast.error(
+                          'Could not authenticate - refresh page or log back in.',
+                        );
+                        return;
+                      }
+
+                      if (res.status === 404) {
+                        toast.error(
+                          'Could not follow user - profile does not exist.',
+                        );
+                        return;
+                      }
+
+                      return invalidateFollow(userId);
+                    })
+                    .catch(() => {
+                      toast.error('Something went wrong, please try again.');
+                    })
+                    .finally(() => setSubmittingFollow(false));
                 }}
               >
                 Follow
@@ -155,8 +175,25 @@ export const Profile: React.FC = () => {
                     userId: userId,
                     data: { direction: 'to' },
                   })
-                    .then(() => invalidateFollow(userId))
-                    .then(() => setSubmittingFollow(false));
+                    .then((res) => {
+                      if (res.status === 400) {
+                        toast.error('Could not remove follow request.');
+                        return;
+                      }
+
+                      if (res.status === 401) {
+                        toast.error(
+                          'Could not authenticate - refresh page or log back in.',
+                        );
+                        return;
+                      }
+
+                      return invalidateFollow(userId);
+                    })
+                    .catch(() => {
+                      toast.error('Something went wrong, please try again.');
+                    })
+                    .finally(() => setSubmittingFollow(false));
                 }}
               >
                 Pending
@@ -192,14 +229,33 @@ export const Profile: React.FC = () => {
                         headers: { authorization: token ?? '' },
                         userId,
                         data: { direction: 'to' },
-                      }).then(() =>
-                        Promise.all([
-                          invalidateFollow(userId),
-                          invalidateUserPosts(userId),
-                          invalidateIntentions(userId),
-                          invalidateFeedPosts(authUser.uid),
-                        ]),
-                      )
+                      })
+                        .then((res) => {
+                          if (res.status === 400) {
+                            toast.error('Could not remove follow request.');
+                            return;
+                          }
+
+                          if (res.status === 401) {
+                            toast.error(
+                              'Could not authenticate - refresh page or log back in.',
+                            );
+                            return;
+                          }
+
+                          return Promise.all([
+                            invalidateFollow(userId),
+                            invalidateUserPosts(userId),
+                            invalidateIntentions(userId),
+                            invalidateFeedPosts(authUser.uid),
+                          ]);
+                        })
+                        .catch(() => {
+                          toast.error(
+                            'Something went wrong, please try again.',
+                          );
+                        })
+                        .finally(() => setSubmittingFollow(false))
                     }
                     className="cursor-pointer p-1 px-2 hover:bg-neutral-200"
                   >
