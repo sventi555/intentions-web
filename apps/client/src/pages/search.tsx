@@ -72,7 +72,7 @@ export const Search: React.FC = () => {
             <div className="flex flex-col self-stretch">
               {searchedUserFollow == null ? (
                 <Button
-                  disabled={followPending}
+                  loading={followPending}
                   type="primary"
                   onClick={() => {
                     setFollowPending(true);
@@ -91,7 +91,7 @@ export const Search: React.FC = () => {
               {searchedUserFollow != null &&
               searchedUserFollow.status === 'pending' ? (
                 <Button
-                  disabled={followPending}
+                  loading={followPending}
                   type="secondary"
                   onClick={() => {
                     setFollowPending(true);

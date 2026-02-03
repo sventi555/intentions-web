@@ -128,7 +128,7 @@ export const Profile: React.FC = () => {
 
             {follow == null ? (
               <Button
-                disabled={submittingFollow}
+                loading={submittingFollow}
                 type="primary"
                 onClick={() => {
                   setSubmittingFollow(true);
@@ -146,7 +146,7 @@ export const Profile: React.FC = () => {
 
             {follow?.status === 'pending' ? (
               <Button
-                disabled={submittingFollow}
+                loading={submittingFollow}
                 type="secondary"
                 onClick={() => {
                   setSubmittingFollow(true);

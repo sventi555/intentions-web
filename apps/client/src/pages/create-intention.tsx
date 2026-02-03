@@ -5,7 +5,6 @@ import { useLocation } from 'wouter';
 
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
-import { Submit } from '@/components/atoms/submit';
 import { useInvalidateIntentions } from '@/hooks/intentions';
 import { useCreateIntention } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
@@ -98,7 +97,9 @@ export const CreateIntention: React.FC = () => {
             </Button>
           </div>
           <div className="flex grow flex-col">
-            <Submit disabled={isSubmitting} label="Create" />
+            <Button type="submit" loading={isSubmitting}>
+              Create
+            </Button>
           </div>
         </div>
       </form>

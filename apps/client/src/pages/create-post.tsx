@@ -2,8 +2,8 @@ import { useRef, useState } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
 import { Link, Redirect, useLocation } from 'wouter';
 
+import { Button } from '@/components/atoms/button';
 import { ImagePicker } from '@/components/atoms/image-picker';
-import { Submit } from '@/components/atoms/submit';
 import { TextArea } from '@/components/atoms/text-area';
 import { Plus } from '@/components/icons';
 import { StickyHeader } from '@/components/sticky-header';
@@ -152,7 +152,9 @@ export const CreatePost: React.FC = () => {
           />
         </div>
 
-        <Submit disabled={isSubmitting} label="Create" />
+        <Button type="submit" loading={isSubmitting} loading={isSubmitting}>
+          Create
+        </Button>
       </form>
     </div>
   );

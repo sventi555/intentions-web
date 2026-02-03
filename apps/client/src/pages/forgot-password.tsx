@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, Redirect } from 'wouter';
 
+import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
 import { InputError } from '@/components/atoms/input-error';
-import { Submit } from '@/components/atoms/submit';
 import { auth } from '@/firebase';
 import { useAuthState } from '@/state/auth';
 
@@ -54,7 +54,9 @@ export const ForgotPassword: React.FC = () => {
           formRegister={register('email', { required: true })}
           errorMessage={errors.email && 'email is required'}
         />
-        <Submit disabled={isSubmitting} label="Send reset" />
+        <Button type="submit" loading={isSubmitting}>
+          Send reset
+        </Button>
         {sent && (
           <div className="text-sm">Sent! Check email for reset link</div>
         )}

@@ -1,34 +1,36 @@
+import { Loading } from '@/components/icons';
 import { clsx } from 'clsx';
 import { PropsWithChildren } from 'react';
 
 interface ButtonProps {
-  type: 'primary' | 'secondary';
-  onClick: () => void;
-  disabled?: boolean;
+  type: 'primary' | 'secondary' | 'submit';
+  onClick?: () => void;
+  loading?: boolean;
 }
 
-export const Button: React.FC<PropsWithChildren<ButtonProps>> = (props) => {
+export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
+  type,
+  onClick,
+  loading,
+  children,
+}) => {
   return (
     <button
-      type="button"
-      onClick={props.onClick}
-      disabled={props.disabled}
-      className={getButtonStyle(props)}
+      type={type === 'submit' ? 'submit' : 'button'}
+      onClick={onClick}
+      disabled={loading}
+      className={clsx(
+        'flex items-center justify-center gap-1 rounded-sm p-1',
+        (type === 'primary' || type === 'submit') &&
+          !loading &&
+          'bg-[#2C3B4E] text-white',
+        type === 'secondary' && !loading && 'bg-neutral-200',
+        !loading && 'cursor-pointer',
+        loading && 'bg-neutral-100 text-neutral-500',
+      )}
     >
-      {props.children}
+      {loading && <Loading className="size-[20px] animate-spin" />}
+      {children}
     </button>
-  );
-};
-
-export const getButtonStyle = ({
-  type,
-  disabled,
-}: Pick<ButtonProps, 'type' | 'disabled'>) => {
-  return clsx(
-    'rounded-sm p-1',
-    type === 'primary' && !disabled && 'bg-[#2C3B4E] text-white',
-    type === 'secondary' && !disabled && 'bg-neutral-200',
-    !disabled && 'cursor-pointer',
-    disabled && 'bg-neutral-100 text-neutral-500',
   );
 };

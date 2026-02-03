@@ -1,17 +1,19 @@
 import { getButtonStyle } from '@/components/atoms/button';
+import { PropsWithChildren } from 'react';
 
 interface SubmitProps {
-  label: string;
+  loading?: boolean;
   disabled?: boolean;
 }
 
-export const Submit: React.FC<SubmitProps> = (props) => {
+export const Submit: React.FC<PropsWithChildren<SubmitProps>> = (props) => {
   return (
-    <input
+    <button
       type="submit"
       disabled={props.disabled}
-      value={props.label}
       className={getButtonStyle({ type: 'primary', disabled: props.disabled })}
-    />
+    >
+      {props.children}
+    </button>
   );
 };
