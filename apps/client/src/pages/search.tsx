@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Link } from 'wouter';
 
 import { Button } from '@/components/atoms/button';
@@ -79,10 +80,28 @@ export const Search: React.FC = () => {
                     followUser({
                       headers: { authorization: token ?? '' },
                       userId: searchedUser.id,
-                    }).then(() => {
-                      setFollowPending(false);
-                      invalidateFollow(searchedUser.id);
-                    });
+                    })
+                      .then((res) => {
+                        if (res.status === 401) {
+                          toast.error(
+                            'Could not authenticate - refresh page or log back in.',
+                          );
+                          return;
+                        }
+
+                        if (res.status === 404) {
+                          toast.error(
+                            'Could not follow user - profile does not exist.',
+                          );
+                          return;
+                        }
+
+                        return invalidateFollow(searchedUser.id);
+                      })
+                      .catch(() => {
+                        toast.error('Something went wrong, please try again.');
+                      })
+                      .finally(() => setFollowPending(false));
                   }}
                 >
                   Follow
@@ -99,10 +118,26 @@ export const Search: React.FC = () => {
                       headers: { authorization: token ?? '' },
                       userId: searchedUser.id,
                       data: { direction: 'to' },
-                    }).then(() => {
-                      setFollowPending(false);
-                      invalidateFollow(searchedUser.id);
-                    });
+                    })
+                      .then((res) => {
+                        if (res.status === 400) {
+                          toast.error('Could not remove follow request.');
+                          return;
+                        }
+
+                        if (res.status === 401) {
+                          toast.error(
+                            'Could not authenticate - refresh page or log back in.',
+                          );
+                          return;
+                        }
+
+                        return invalidateFollow(searchedUser.id);
+                      })
+                      .catch(() => {
+                        toast.error('Something went wrong, please try again.');
+                      })
+                      .finally(() => setFollowPending(false));
                   }}
                 >
                   Pending
