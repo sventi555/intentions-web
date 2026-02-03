@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { useLocation } from 'wouter';
 
 import { Button } from '@/components/atoms/button';
@@ -28,24 +29,44 @@ export const CreateIntention: React.FC = () => {
   const { authUser, token } = useAuthState();
   const { mutateAsync: createIntention } = useCreateIntention();
   const invalidateIntentions = useInvalidateIntentions();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<Inputs>();
 
   if (authUser == null) {
     throw new Error('must be signed in to create intention');
   }
 
-  const onSubmit: SubmitHandler<Inputs> = (data) =>
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setIsSubmitting(true);
     createIntention({
       headers: { authorization: token ?? '' },
       data: { name: data.intention },
     })
-      .then(() => invalidateIntentions(authUser.uid))
-      .then(() => setLocation('/create'));
+      .then((res) => {
+        if (res.status === 401) {
+          toast.error('Could not authenticate - refresh page or log back in.');
+          return;
+        }
+
+        if (res.status === 409) {
+          toast.error('An intention with the same name already exists.');
+          return;
+        }
+
+        return invalidateIntentions(authUser.uid).then(() =>
+          setLocation('/create'),
+        );
+      })
+      .catch(() => {
+        toast.error('Something went wrong, please try again.');
+      })
+      .finally(() => setIsSubmitting(false));
+  };
 
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [suggestionChanging, setSuggestionChanging] = useState(false);
