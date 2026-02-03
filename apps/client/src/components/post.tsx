@@ -216,6 +216,11 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
             return;
           }
 
+          if (res.status === 404) {
+            toast.error('Could not create comment - post does not exist.');
+            return;
+          }
+
           return invalidateComments(postId).then(() => {
             setDraftComment('');
           });
