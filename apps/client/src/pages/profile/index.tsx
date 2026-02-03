@@ -14,9 +14,10 @@ import { format, intlFormatDistance } from 'date-fns';
 import { signOut } from 'firebase/auth';
 import React, { PropsWithChildren, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
-import { toast } from 'sonner';
 import { Link, useParams, useSearchParams } from 'wouter';
 
+import { performMutation } from '@/actions';
+import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { ImagePicker } from '@/components/atoms/image-picker';
 import { DisplayPic } from '@/components/display-pic';
@@ -132,32 +133,19 @@ export const Profile: React.FC = () => {
                 loading={submittingFollow}
                 type="primary"
                 onClick={() => {
-                  setSubmittingFollow(true);
-                  followUser({
-                    headers: { authorization: token ?? '' },
-                    userId,
-                  })
-                    .then((res) => {
-                      if (res.status === 401) {
-                        toast.error(
-                          'Could not authenticate - refresh page or log back in.',
-                        );
-                        return;
-                      }
-
-                      if (res.status === 404) {
-                        toast.error(
-                          'Could not follow user - profile does not exist.',
-                        );
-                        return;
-                      }
-
-                      return invalidateFollow(userId);
-                    })
-                    .catch(() => {
-                      toast.error('Something went wrong, please try again.');
-                    })
-                    .finally(() => setSubmittingFollow(false));
+                  performMutation({
+                    mutate: () =>
+                      followUser({
+                        headers: { authorization: token ?? '' },
+                        userId,
+                      }),
+                    setLoading: setSubmittingFollow,
+                    errorMessages: {
+                      401: authErrorMessage,
+                      404: 'Could not follow user - profile does not exist.',
+                    },
+                    onSuccess: () => invalidateFollow(userId),
+                  });
                 }}
               >
                 Follow
@@ -169,31 +157,20 @@ export const Profile: React.FC = () => {
                 loading={submittingFollow}
                 type="secondary"
                 onClick={() => {
-                  setSubmittingFollow(true);
-                  removeFollow({
-                    headers: { authorization: token ?? '' },
-                    userId: userId,
-                    data: { direction: 'to' },
-                  })
-                    .then((res) => {
-                      if (res.status === 400) {
-                        toast.error('Could not remove follow request.');
-                        return;
-                      }
-
-                      if (res.status === 401) {
-                        toast.error(
-                          'Could not authenticate - refresh page or log back in.',
-                        );
-                        return;
-                      }
-
-                      return invalidateFollow(userId);
-                    })
-                    .catch(() => {
-                      toast.error('Something went wrong, please try again.');
-                    })
-                    .finally(() => setSubmittingFollow(false));
+                  performMutation({
+                    mutate: () =>
+                      removeFollow({
+                        headers: { authorization: token ?? '' },
+                        userId: userId,
+                        data: { direction: 'to' },
+                      }),
+                    setLoading: setSubmittingFollow,
+                    errorMessages: {
+                      400: 'Could not remove follow request.',
+                      401: authErrorMessage,
+                    },
+                    onSuccess: () => invalidateFollow(userId),
+                  });
                 }}
               >
                 Pending
@@ -224,39 +201,28 @@ export const Profile: React.FC = () => {
               <MenuItems anchor="bottom end" className="rounded bg-neutral-100">
                 <MenuItem>
                   <button
-                    onClick={() =>
-                      removeFollow({
-                        headers: { authorization: token ?? '' },
-                        userId,
-                        data: { direction: 'to' },
-                      })
-                        .then((res) => {
-                          if (res.status === 400) {
-                            toast.error('Could not remove follow request.');
-                            return;
-                          }
-
-                          if (res.status === 401) {
-                            toast.error(
-                              'Could not authenticate - refresh page or log back in.',
-                            );
-                            return;
-                          }
-
-                          return Promise.all([
+                    onClick={() => {
+                      performMutation({
+                        mutate: () =>
+                          removeFollow({
+                            headers: { authorization: token ?? '' },
+                            userId,
+                            data: { direction: 'to' },
+                          }),
+                        setLoading: setSubmittingFollow,
+                        errorMessages: {
+                          400: 'Could not remove follow request.',
+                          401: authErrorMessage,
+                        },
+                        onSuccess: () =>
+                          Promise.all([
                             invalidateFollow(userId),
                             invalidateUserPosts(userId),
                             invalidateIntentions(userId),
                             invalidateFeedPosts(authUser.uid),
-                          ]);
-                        })
-                        .catch(() => {
-                          toast.error(
-                            'Something went wrong, please try again.',
-                          );
-                        })
-                        .finally(() => setSubmittingFollow(false))
-                    }
+                          ]),
+                      });
+                    }}
                     className="cursor-pointer p-1 px-2 hover:bg-neutral-200"
                   >
                     Unfollow

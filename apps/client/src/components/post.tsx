@@ -4,9 +4,10 @@ import { intlFormatDistance } from 'date-fns';
 import { Post as _Post } from 'lib';
 import { motion } from 'motion/react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { Link } from 'wouter';
 
+import { performMutation } from '@/actions';
+import { authErrorMessage } from '@/actions/errors';
 import { Dialog } from '@/components/atoms/dialog';
 import { DisplayPic } from '@/components/display-pic';
 import { EllipsesVert, Loading, Send } from '@/components/icons';
@@ -83,20 +84,18 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
                 <MenuItem>
                   <button
                     onClick={() => {
-                      setIsDeleting(true);
-                      deletePost({
-                        headers: { authorization: token ?? '' },
-                        id,
-                      })
-                        .then((res) => {
-                          if (res.status === 401) {
-                            toast.error(
-                              'Could not authenticate - refresh page or log back in.',
-                            );
-                            return;
-                          }
-
-                          return Promise.all([
+                      performMutation({
+                        mutate: () =>
+                          deletePost({
+                            headers: { authorization: token ?? '' },
+                            id,
+                          }),
+                        setLoading: setIsDeleting,
+                        errorMessages: {
+                          401: authErrorMessage,
+                        },
+                        onSuccess: () =>
+                          Promise.all([
                             invalidateUserPosts(data.userId),
                             invalidateIntentionPosts(
                               data.userId,
@@ -104,14 +103,8 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
                             ),
                             invalidateIntentions(data.userId),
                             invalidateFeedPosts(data.userId),
-                          ]);
-                        })
-                        .catch(() => {
-                          toast.error(
-                            'Something went wrong, please try again.',
-                          );
-                        })
-                        .finally(() => setIsDeleting(false));
+                          ]),
+                      });
                     }}
                     className="cursor-pointer p-1 px-2 text-red-500 hover:bg-neutral-200"
                   >
@@ -203,34 +196,22 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
 
   const onCreateComment = () => {
     if (draftComment.trim()) {
-      setSubmittingComment(true);
-      createComment({
-        headers: { authorization: token ?? '' },
-        data: { postId, body: draftComment },
-      })
-        .then((res) => {
-          if (res.status === 401) {
-            toast.error(
-              'Could not authenticate - refresh page or log back in.',
-            );
-            return;
-          }
-
-          if (res.status === 404) {
-            toast.error('Could not create comment - post does not exist.');
-            return;
-          }
-
-          return invalidateComments(postId).then(() => {
+      performMutation({
+        mutate: () =>
+          createComment({
+            headers: { authorization: token ?? '' },
+            data: { postId, body: draftComment },
+          }),
+        setLoading: setSubmittingComment,
+        errorMessages: {
+          401: authErrorMessage,
+          404: 'Could not create comment - post does not exist.',
+        },
+        onSuccess: () =>
+          invalidateComments(postId).then(() => {
             setDraftComment('');
-          });
-        })
-        .catch(() => {
-          toast.error('Something went wrong, please try again.');
-        })
-        .finally(() => {
-          setSubmittingComment(false);
-        });
+          }),
+      });
     }
   };
 
@@ -273,27 +254,19 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
                     <MenuItem>
                       <button
                         onClick={() => {
-                          setDeletingCommentId(c.id);
-                          deleteComment({
-                            headers: { authorization: token ?? '' },
-                            id: c.id,
-                          })
-                            .then((res) => {
-                              if (res.status === 401) {
-                                toast.error(
-                                  'Could not authenticate - refresh page or log back in.',
-                                );
-                                return;
-                              }
-
-                              return Promise.all([invalidateComments(postId)]);
-                            })
-                            .catch(() => {
-                              toast.error(
-                                'Something went wrong, please try again.',
-                              );
-                            })
-                            .finally(() => {});
+                          performMutation({
+                            mutate: () =>
+                              deleteComment({
+                                headers: { authorization: token ?? '' },
+                                id: c.id,
+                              }),
+                            setLoading: (loading) =>
+                              setDeletingCommentId(loading ? c.id : null),
+                            errorMessages: {
+                              401: authErrorMessage,
+                            },
+                            onSuccess: () => invalidateComments(postId),
+                          });
                         }}
                         className="cursor-pointer p-1 px-2 text-red-500 hover:bg-neutral-200"
                       >

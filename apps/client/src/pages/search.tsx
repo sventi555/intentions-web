@@ -1,8 +1,9 @@
 import { clsx } from 'clsx';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { Link } from 'wouter';
 
+import { performMutation } from '@/actions';
+import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
 import { DisplayPic } from '@/components/display-pic';
@@ -76,32 +77,19 @@ export const Search: React.FC = () => {
                   loading={followPending}
                   type="primary"
                   onClick={() => {
-                    setFollowPending(true);
-                    followUser({
-                      headers: { authorization: token ?? '' },
-                      userId: searchedUser.id,
-                    })
-                      .then((res) => {
-                        if (res.status === 401) {
-                          toast.error(
-                            'Could not authenticate - refresh page or log back in.',
-                          );
-                          return;
-                        }
-
-                        if (res.status === 404) {
-                          toast.error(
-                            'Could not follow user - profile does not exist.',
-                          );
-                          return;
-                        }
-
-                        return invalidateFollow(searchedUser.id);
-                      })
-                      .catch(() => {
-                        toast.error('Something went wrong, please try again.');
-                      })
-                      .finally(() => setFollowPending(false));
+                    performMutation({
+                      mutate: () =>
+                        followUser({
+                          headers: { authorization: token ?? '' },
+                          userId: searchedUser.id,
+                        }),
+                      setLoading: setFollowPending,
+                      errorMessages: {
+                        401: authErrorMessage,
+                        404: 'Could not follow user - profile does not exist.',
+                      },
+                      onSuccess: () => invalidateFollow(searchedUser.id),
+                    });
                   }}
                 >
                   Follow
@@ -113,31 +101,20 @@ export const Search: React.FC = () => {
                   loading={followPending}
                   type="secondary"
                   onClick={() => {
-                    setFollowPending(true);
-                    removeFollow({
-                      headers: { authorization: token ?? '' },
-                      userId: searchedUser.id,
-                      data: { direction: 'to' },
-                    })
-                      .then((res) => {
-                        if (res.status === 400) {
-                          toast.error('Could not remove follow request.');
-                          return;
-                        }
-
-                        if (res.status === 401) {
-                          toast.error(
-                            'Could not authenticate - refresh page or log back in.',
-                          );
-                          return;
-                        }
-
-                        return invalidateFollow(searchedUser.id);
-                      })
-                      .catch(() => {
-                        toast.error('Something went wrong, please try again.');
-                      })
-                      .finally(() => setFollowPending(false));
+                    performMutation({
+                      mutate: () =>
+                        removeFollow({
+                          headers: { authorization: token ?? '' },
+                          userId: searchedUser.id,
+                          data: { direction: 'to' },
+                        }),
+                      setLoading: setFollowPending,
+                      errorMessages: {
+                        400: 'Could not remove follow request.',
+                        401: authErrorMessage,
+                      },
+                      onSuccess: () => invalidateFollow(searchedUser.id),
+                    });
                   }}
                 >
                   Pending

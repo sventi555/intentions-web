@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { Link, Redirect, useLocation } from 'wouter';
 
+import { performMutation } from '@/actions';
+import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { ImagePicker } from '@/components/atoms/image-picker';
 import { TextArea } from '@/components/atoms/text-area';
@@ -67,37 +68,29 @@ export const CreatePost: React.FC = () => {
   const computedIntentionId = selectedIntentionId || intentions[0].id;
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    setIsSubmitting(true);
-    createPost({
-      headers: { authorization: token ?? '' },
-      data: {
-        intentionId: computedIntentionId,
-        description: data.description,
-        ...(imageField.value ? { image: imageField.value } : {}),
+    performMutation({
+      mutate: () =>
+        createPost({
+          headers: { authorization: token ?? '' },
+          data: {
+            intentionId: computedIntentionId,
+            description: data.description,
+            ...(imageField.value ? { image: imageField.value } : {}),
+          },
+        }),
+      setLoading: setIsSubmitting,
+      errorMessages: {
+        401: authErrorMessage,
+        404: 'Could not create post - intention does not exist.',
       },
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          toast.error('Could not authenticate - refresh page or log back in.');
-          return;
-        }
-
-        if (res.status === 404) {
-          toast.error('Could not create post - intention does not exist.');
-          return;
-        }
-
-        return Promise.all([
+      onSuccess: () =>
+        Promise.all([
           invalidateUserPosts(authUser.uid),
           invalidateFeedPosts(authUser.uid),
           invalidateIntentionPosts(authUser.uid, computedIntentionId),
           invalidateIntentions(authUser.uid),
-        ]).then(() => setLocation('/'));
-      })
-      .catch(() => {
-        toast.error('Something went wrong, please try again.');
-      })
-      .finally(() => setIsSubmitting(false));
+        ]).then(() => setLocation('/')),
+    });
   };
 
   return (

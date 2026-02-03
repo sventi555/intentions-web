@@ -1,9 +1,10 @@
 import { clsx } from 'clsx';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { useLocation } from 'wouter';
 
+import { performMutation } from '@/actions';
+import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
 import { useInvalidateIntentions } from '@/hooks/intentions';
@@ -42,30 +43,20 @@ export const CreateIntention: React.FC = () => {
   }
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    setIsSubmitting(true);
-    createIntention({
-      headers: { authorization: token ?? '' },
-      data: { name: data.intention },
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          toast.error('Could not authenticate - refresh page or log back in.');
-          return;
-        }
-
-        if (res.status === 409) {
-          toast.error('An intention with the same name already exists.');
-          return;
-        }
-
-        return invalidateIntentions(authUser.uid).then(() =>
-          setLocation('/create'),
-        );
-      })
-      .catch(() => {
-        toast.error('Something went wrong, please try again.');
-      })
-      .finally(() => setIsSubmitting(false));
+    performMutation({
+      mutate: () =>
+        createIntention({
+          headers: { authorization: token ?? '' },
+          data: { name: data.intention },
+        }),
+      setLoading: setIsSubmitting,
+      errorMessages: {
+        401: authErrorMessage,
+        409: 'An intention with the same name already exists.',
+      },
+      onSuccess: () =>
+        invalidateIntentions(authUser.uid).then(() => setLocation('/create')),
+    });
   };
 
   const [showSuggestions, setShowSuggestions] = useState(true);
