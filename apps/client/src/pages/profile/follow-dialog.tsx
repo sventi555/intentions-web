@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'wouter';
 
+import { performMutation } from '@/actions';
+import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { Dialog } from '@/components/atoms/dialog';
 import { Input } from '@/components/atoms/input';
@@ -31,6 +33,7 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
 }) => {
   const { token } = useAuthState();
   const { mutateAsync: removeFollow } = useRemoveFollow();
+  const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
   const [searchedUsername, setSearchedUsername] = useState('');
 
@@ -70,14 +73,27 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
                   {user.data.username}
                 </Link>
                 <Button
+                  loading={removingUserId === user.id}
                   type="secondary"
-                  onClick={() =>
-                    removeFollow({
-                      headers: { authorization: token ?? '' },
-                      userId: user.id,
-                      data: { direction: kind === 'following' ? 'to' : 'from' },
-                    }).then(onRemove)
-                  }
+                  onClick={() => {
+                    performMutation({
+                      mutate: () =>
+                        removeFollow({
+                          headers: { authorization: token ?? '' },
+                          userId: user.id,
+                          data: {
+                            direction: kind === 'following' ? 'to' : 'from',
+                          },
+                        }),
+                      setLoading: (loading) =>
+                        setRemovingUserId(loading ? user.id : null),
+                      errorMessages: {
+                        400: 'Could not remove follow.',
+                        401: authErrorMessage,
+                      },
+                      onSuccess: onRemove,
+                    });
+                  }}
                 >
                   {kind === 'following' ? 'Unfollow' : 'Remove'}
                 </Button>
