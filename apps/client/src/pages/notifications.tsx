@@ -2,6 +2,8 @@ import clsx from 'clsx';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { Link } from 'wouter';
 
+import { performMutation } from '@/actions';
+import { authErrorMessage } from '@/actions/errors';
 import { DisplayPic } from '@/components/display-pic';
 import { Check, Close } from '@/components/icons';
 import { StickyHeader } from '@/components/sticky-header';
@@ -141,14 +143,22 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
             <button
               disabled={!!submittingResponse}
               onClick={() => {
-                setSubmittingResponse('decline');
-                respondToFollow({
-                  headers: { authorization: token ?? '' },
-                  userId: props.sender.id,
-                  data: { action: 'decline' },
-                })
-                  .then(() => invalidateNotifications(authUser.uid))
-                  .then(() => setSubmittingResponse(null));
+                performMutation({
+                  mutate: () =>
+                    respondToFollow({
+                      headers: { authorization: token ?? '' },
+                      userId: props.sender.id,
+                      data: { action: 'decline' },
+                    }),
+                  setLoading: (loading) =>
+                    setSubmittingResponse(loading ? 'decline' : null),
+                  errorMessages: {
+                    401: authErrorMessage,
+                    404: 'Could not decline - follow request does not exist.',
+                    412: 'Could not decline - request already accepted.',
+                  },
+                  onSuccess: () => invalidateNotifications(authUser.uid),
+                });
               }}
               className={clsx(
                 'rounded-sm p-1 px-2',
@@ -164,14 +174,22 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
             <button
               disabled={!!submittingResponse}
               onClick={() => {
-                setSubmittingResponse('accept');
-                respondToFollow({
-                  headers: { authorization: token ?? '' },
-                  userId: props.sender.id,
-                  data: { action: 'accept' },
-                })
-                  .then(() => invalidateNotifications(authUser.uid))
-                  .then(() => setSubmittingResponse(null));
+                performMutation({
+                  mutate: () =>
+                    respondToFollow({
+                      headers: { authorization: token ?? '' },
+                      userId: props.sender.id,
+                      data: { action: 'accept' },
+                    }),
+                  setLoading: (loading) =>
+                    setSubmittingResponse(loading ? 'accept' : null),
+                  errorMessages: {
+                    401: authErrorMessage,
+                    404: 'Could not accept - follow request does not exist.',
+                    412: 'Something went wrong, please try again.',
+                  },
+                  onSuccess: () => invalidateNotifications(authUser.uid),
+                });
               }}
               className={clsx(
                 'rounded-sm p-1 px-2',
