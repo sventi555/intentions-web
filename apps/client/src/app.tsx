@@ -1,3 +1,4 @@
+import { Toaster } from 'sonner';
 import { Route } from 'wouter';
 
 import { AuthProtected } from '@/components/auth-protected';
@@ -12,7 +13,6 @@ import { Profile } from '@/pages/profile';
 import { Search } from '@/pages/search';
 import { SignIn } from '@/pages/sign-in';
 import { SignUp } from '@/pages/sign-up';
-import { Toaster } from 'sonner';
 
 const App: React.FC = () => {
   return (

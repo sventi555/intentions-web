@@ -4,6 +4,7 @@ import { intlFormatDistance } from 'date-fns';
 import { Post as _Post } from 'lib';
 import { motion } from 'motion/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Link } from 'wouter';
 
 import { Dialog } from '@/components/atoms/dialog';
@@ -24,7 +25,6 @@ import {
 } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
 import { defaultTransition } from '@/style';
-import { toast } from 'sonner';
 
 interface PostProps {
   id: string;
