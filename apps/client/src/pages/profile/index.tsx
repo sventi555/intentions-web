@@ -211,7 +211,7 @@ export const Profile: React.FC = () => {
                           }),
                         setLoading: setSubmittingFollow,
                         errorMessages: {
-                          400: 'Could not remove follow request.',
+                          400: 'Could not remove follow.',
                           401: authErrorMessage,
                         },
                         onSuccess: () =>
