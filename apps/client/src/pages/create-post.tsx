@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { SubmitHandler, useController, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Link, Redirect, useLocation } from 'wouter';
 
 import { Button } from '@/components/atoms/button';
@@ -41,12 +42,13 @@ export const CreatePost: React.FC = () => {
   const invalidateUserPosts = useInvalidateUserPosts();
   const invalidateIntentionPosts = useInvalidateIntentionPosts();
   const invalidateIntentions = useInvalidateIntentions();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<Inputs>();
   const { field: imageField } = useController<Inputs>({
     name: 'image',
@@ -64,7 +66,8 @@ export const CreatePost: React.FC = () => {
 
   const computedIntentionId = selectedIntentionId || intentions[0].id;
 
-  const onSubmit: SubmitHandler<Inputs> = (data) =>
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setIsSubmitting(true);
     createPost({
       headers: { authorization: token ?? '' },
       data: {
@@ -73,15 +76,29 @@ export const CreatePost: React.FC = () => {
         ...(imageField.value ? { image: imageField.value } : {}),
       },
     })
-      .then(() =>
-        Promise.all([
+      .then((res) => {
+        if (res.status === 401) {
+          toast.error('Could not authenticate - refresh page or log back in.');
+          return;
+        }
+
+        if (res.status === 404) {
+          toast.error('Could not create post - intention does not exist.');
+          return;
+        }
+
+        return Promise.all([
           invalidateUserPosts(authUser.uid),
           invalidateFeedPosts(authUser.uid),
           invalidateIntentionPosts(authUser.uid, computedIntentionId),
           invalidateIntentions(authUser.uid),
-        ]),
-      )
-      .then(() => setLocation('/'));
+        ]).then(() => setLocation('/'));
+      })
+      .catch(() => {
+        toast.error('Something went wrong, please try again.');
+      })
+      .finally(() => setIsSubmitting(false));
+  };
 
   return (
     <div>
@@ -152,7 +169,7 @@ export const CreatePost: React.FC = () => {
           />
         </div>
 
-        <Button type="submit" loading={isSubmitting} loading={isSubmitting}>
+        <Button type="submit" loading={isSubmitting}>
           Create
         </Button>
       </form>
