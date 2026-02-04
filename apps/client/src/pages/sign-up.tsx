@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, Redirect } from 'wouter';
 
+import { performMutation } from '@/actions';
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
-import { InputError } from '@/components/atoms/input-error';
 import { auth } from '@/firebase';
 import { useCreateUser } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
@@ -18,34 +18,27 @@ type Inputs = {
 
 export const SignUp: React.FC = () => {
   const { authUser } = useAuthState();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<Inputs>();
 
   const { mutateAsync: createUser } = useCreateUser();
-  const [error, setError] = useState('');
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setError('');
-
-    return createUser({ data })
-      .then((res) => {
-        if (res.status !== 201) {
-          throw new Error(res.data.message);
-        }
-
-        signInWithEmailAndPassword(auth, data.email, data.password).catch(
-          () => {
-            throw new Error(
-              'something went wrong - please try signing in manually',
-            );
-          },
-        );
-      })
-      .catch((err: Error) => setError(err.message));
+    performMutation({
+      mutate: () => createUser({ data }),
+      setLoading: setIsSubmitting,
+      errorMessages: {
+        400: 'Invalid email or password.',
+        409: 'Email or username is already taken.',
+      },
+      onSuccess: () =>
+        signInWithEmailAndPassword(auth, data.email, data.password),
+    });
   };
 
   if (authUser) {
@@ -80,10 +73,9 @@ export const SignUp: React.FC = () => {
           formRegister={register('password', { required: true })}
           errorMessage={errors.password && 'password is required'}
         />
-        <Button loading={isSubmitting} submit={true}>
+        <Button loading={isSubmitting} type="submit">
           Sign up
         </Button>
-        {error && <InputError>{error}</InputError>}
       </form>
       <div>
         Already a user?{' '}
