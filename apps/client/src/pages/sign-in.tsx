@@ -1,13 +1,13 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useState } from 'react';
+import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Link, Redirect } from 'wouter';
 
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
-import { InputError } from '@/components/atoms/input-error';
 import { auth } from '@/firebase';
 import { useAuthState } from '@/state/auth';
+import { useState } from 'react';
 
 type Inputs = {
   email: string;
@@ -16,23 +16,30 @@ type Inputs = {
 
 export const SignIn: React.FC = () => {
   const { authUser } = useAuthState();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<Inputs>();
 
-  const [error, setError] = useState('');
-
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setError('');
-
-    return signInWithEmailAndPassword(auth, data.email, data.password).catch(
-      () => {
-        setError('unable to log in - please try again');
-      },
-    );
+    setIsSubmitting(true);
+    return signInWithEmailAndPassword(auth, data.email, data.password)
+      .catch((e: AuthError) => {
+        const invalidCredsErrors = [
+          'auth/invalid-credential',
+          'auth/invalid-email',
+          'auth/wrong-password',
+        ];
+        toast.error(
+          invalidCredsErrors.includes(e.code)
+            ? 'Invalid credentials - check email and password.'
+            : 'Something went wrong - please try again.',
+        );
+      })
+      .finally(() => setIsSubmitting(false));
   };
 
   if (authUser) {
@@ -65,7 +72,6 @@ export const SignIn: React.FC = () => {
         <Button type="submit" loading={isSubmitting}>
           Sign in
         </Button>
-        {error && <InputError>{error}</InputError>}
         <Link href="/forgot-password" className="underline">
           Forgot password
         </Link>
