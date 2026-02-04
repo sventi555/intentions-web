@@ -1,7 +1,6 @@
 Fixes:
 
 Features:
-- error UI for failed fetching and actions
 - edit post UI
 - create post progressive disclosure (or at least don't lose image when making intentions)
 - intention pie chart breakdown (colour coding!)?
