@@ -1,11 +1,11 @@
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Link, Redirect } from 'wouter';
 
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
-import { InputError } from '@/components/atoms/input-error';
 import { auth } from '@/firebase';
 import { useAuthState } from '@/state/auth';
 
@@ -15,26 +15,22 @@ type Inputs = {
 
 export const ForgotPassword: React.FC = () => {
   const { authUser } = useAuthState();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<Inputs>();
 
-  const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setError('');
-
+    setIsSubmitting(true);
     return sendPasswordResetEmail(auth, data.email)
-      .then(() => {
-        setSent(true);
-      })
-      .catch(() => {
-        setError('failed to send - please try again');
-      });
+      .then(() => setSent(true))
+      .catch(() => toast.error('Failed to send - please try again.'))
+      .finally(() => setIsSubmitting(false));
   };
 
   if (authUser) {
@@ -60,7 +56,6 @@ export const ForgotPassword: React.FC = () => {
         {sent && (
           <div className="text-sm">Sent! Check email for reset link</div>
         )}
-        {error && <InputError>{error}</InputError>}
       </form>
       <Link href="/sign-in" className="underline">
         Sign in
