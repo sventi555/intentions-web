@@ -12,6 +12,7 @@ import {
 import clsx from 'clsx';
 import { format, intlFormatDistance } from 'date-fns';
 import { signOut } from 'firebase/auth';
+import { motion } from 'motion/react';
 import React, { PropsWithChildren, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Link, useParams, useSearchParams } from 'wouter';
@@ -21,7 +22,7 @@ import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { ImagePicker } from '@/components/atoms/image-picker';
 import { DisplayPic } from '@/components/display-pic';
-import { EllipsesVert } from '@/components/icons';
+import { EllipsesVert, Loading } from '@/components/icons';
 import { PostsList } from '@/components/posts-list';
 import { auth } from '@/firebase';
 import { useFollow, useInvalidateFollow } from '@/hooks/follows';
@@ -42,6 +43,7 @@ import {
   useUpdateUserImage,
 } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
+import { defaultTransition } from '@/style';
 import { FollowersDialog, FollowingDialog } from './follow-dialog';
 
 export const Profile: React.FC = () => {
@@ -77,6 +79,7 @@ export const Profile: React.FC = () => {
 
   const filePickerRef = useRef<HTMLInputElement | null>(null);
   const { mutateAsync: updateUserImage } = useUpdateUserImage();
+  const [submittingUserImage, setSubmittingUserImage] = useState(false);
 
   const { mutateAsync: followUser } = useFollowUser();
   const { mutateAsync: removeFollow } = useRemoveFollow();
@@ -105,22 +108,39 @@ export const Profile: React.FC = () => {
           <button
             disabled={!isAuthUser}
             onClick={() => filePickerRef.current?.click()}
-            className={clsx(isAuthUser && 'cursor-pointer')}
+            className={clsx('relative', isAuthUser && 'cursor-pointer')}
           >
             <DisplayPic imageUri={user?.image} size={80} />
+            {submittingUserImage && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ ...defaultTransition, delay: 0.25 }}
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-neutral-200/50"
+              >
+                <Loading className="size-[20px] animate-spin" />
+              </motion.div>
+            )}
             <ImagePicker
-              onPick={(dataUrl) =>
-                updateUserImage({
-                  headers: { authorization: token ?? '' },
-                  data: { image: dataUrl },
-                }).then(() =>
-                  Promise.all([
-                    invalidateUser(userId),
-                    invalidateUserPosts(userId),
-                    invalidateFeedPosts(userId),
-                  ]),
-                )
-              }
+              onPick={(dataUrl) => {
+                performMutation({
+                  mutate: () =>
+                    updateUserImage({
+                      headers: { authorization: token ?? '' },
+                      data: { image: dataUrl },
+                    }),
+                  setLoading: setSubmittingUserImage,
+                  errorMessages: {
+                    401: authErrorMessage,
+                  },
+                  onSuccess: () =>
+                    Promise.all([
+                      invalidateUser(userId),
+                      invalidateUserPosts(userId),
+                      invalidateFeedPosts(userId),
+                    ]),
+                });
+              }}
               ref={filePickerRef}
             />
           </button>
