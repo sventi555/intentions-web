@@ -7,7 +7,7 @@ import { Post } from '@/components/post';
 
 interface PostsListProps {
   posts: { id: string; data: _Post }[];
-  fetchNextPage: () => Promise<any>;
+  fetchNextPage: () => Promise<unknown>;
   fetchingPage: boolean;
   hasNextPage: boolean;
 }

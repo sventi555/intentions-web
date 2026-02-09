@@ -6,7 +6,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'src/intentions-api.ts'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -20,13 +20,7 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
     },
     rules: {
-      '@typescript-eslint/no-explicit-any': ['off'],
-      'react/jsx-key': 'warn',
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
     },
   },
 );

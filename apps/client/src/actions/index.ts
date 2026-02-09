@@ -18,7 +18,7 @@ type PerformMutationArgs<T extends { status: number }> = {
   mutate: () => Promise<T>;
   setLoading: (loading: boolean) => void;
   errorMessages: Record<ErrorStatuses<T['status']>, string>;
-  onSuccess: () => Promise<any>;
+  onSuccess: () => Promise<unknown>;
 };
 
 export const performMutation = async <
