@@ -425,7 +425,7 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
               >
                 <div>{data.name}</div>
                 {stat ? (
-                  <div className="text-sm text-neutral-600">{stat}</div>
+                  <div className="text-sm text-neutral-500">{stat}</div>
                 ) : null}
               </Link>
               {index !== intentions.length - 1 ? (
