@@ -13,6 +13,7 @@ import { DisplayPic } from '@/components/display-pic';
 import { EllipsesVert, Loading, Send } from '@/components/icons';
 import { useComments, useInvalidateComments } from '@/hooks/comments';
 import { useDownloadUrl } from '@/hooks/download-url';
+import { useInfiniteScroll } from '@/hooks/infinite-scroll';
 import { useInvalidateIntentions } from '@/hooks/intentions';
 import {
   useInvalidateFeedPosts,
@@ -183,8 +184,10 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
   onClose,
 }) => {
   const { authUser, token } = useAuthState();
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
-  const { comments } = useComments(postId);
+  const { comments, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useComments(postId);
   const { mutateAsync: createComment } = useCreateComment();
   const { mutateAsync: deleteComment } = useDeleteComment();
   const invalidateComments = useInvalidateComments();
@@ -215,9 +218,19 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
     }
   };
 
+  useInfiniteScroll({
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+    container,
+  });
+
   return (
     <Dialog open={open} onClose={onClose}>
-      <div className="flex grow flex-col overflow-hidden overflow-y-scroll p-3">
+      <div
+        ref={(e) => setContainer(e)}
+        className="flex grow flex-col overflow-hidden overflow-y-scroll p-3"
+      >
         {comments?.map((c) => (
           <div key={c.id} className="relative flex justify-between p-1">
             <div className="flex grow gap-2">

@@ -6,33 +6,45 @@ export const useInfiniteScroll = ({
   isFetchingNextPage,
   hasNextPage,
   triggerDistance = 400,
+  container,
 }: {
   fetchNextPage: () => void;
   isFetchingNextPage: boolean;
   hasNextPage: boolean;
   triggerDistance?: number;
+  container?: HTMLElement | null;
 }) => {
   const throttledFetchPage = useThrottledCallback(fetchNextPage, 500);
 
   useEffect(() => {
-    if (isFetchingNextPage || !hasNextPage) {
+    if (isFetchingNextPage || !hasNextPage || container === null) {
       return;
     }
 
-    // in case page is too tall to scroll but still more pages to load
-    if (distToBottom() < triggerDistance) {
-      throttledFetchPage();
-    }
-
     const onScroll = () => {
-      if (distToBottom() < triggerDistance) throttledFetchPage();
+      if (distToBottom(container) < triggerDistance) throttledFetchPage();
     };
 
-    document.addEventListener('scroll', onScroll);
+    // in case element is too tall to scroll but still more pages to load
+    onScroll();
 
-    return () => document.removeEventListener('scroll', onScroll);
-  }, [throttledFetchPage, isFetchingNextPage, hasNextPage, triggerDistance]);
+    (container || document).addEventListener('scroll', onScroll);
+
+    return () =>
+      (container || document).removeEventListener('scroll', onScroll);
+  }, [
+    throttledFetchPage,
+    isFetchingNextPage,
+    hasNextPage,
+    triggerDistance,
+    container,
+  ]);
 };
 
-const distToBottom = () =>
-  document.body.scrollHeight - window.scrollY - window.innerHeight;
+const distToBottom = (e: HTMLElement | undefined) => {
+  if (e) {
+    return e.scrollHeight - e.scrollTop - e.clientHeight;
+  }
+
+  return document.body.scrollHeight - window.scrollY - window.innerHeight;
+};
