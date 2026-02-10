@@ -67,7 +67,7 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
               <div className="flex items-center gap-4">
                 <Link
                   className="grow"
-                  href={`/profile/${user.id}`}
+                  href={`~/profile/${user.id}`}
                   onClick={onClose}
                 >
                   {user.data.username}

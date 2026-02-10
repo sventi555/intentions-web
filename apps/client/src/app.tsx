@@ -13,6 +13,7 @@ import { Profile } from '@/pages/profile';
 import { Search } from '@/pages/search';
 import { SignIn } from '@/pages/sign-in';
 import { SignUp } from '@/pages/sign-up';
+import { DraftPostProvider } from './state/draft';
 
 const App: React.FC = () => {
   return (
@@ -31,20 +32,25 @@ const App: React.FC = () => {
           </PageWrapper>
         </AuthProtected>
       </Route>
-      <Route path="/create">
+
+      <Route path="/create" nest>
         <AuthProtected>
-          <PageWrapper>
-            <CreatePost />
-          </PageWrapper>
+          <DraftPostProvider>
+            <Route path="/">
+              <PageWrapper>
+                <CreatePost />
+              </PageWrapper>
+            </Route>
+
+            <Route path="/intention">
+              <PageWrapper>
+                <CreateIntention />
+              </PageWrapper>
+            </Route>
+          </DraftPostProvider>
         </AuthProtected>
       </Route>
-      <Route path="/create/intention">
-        <AuthProtected>
-          <PageWrapper>
-            <CreateIntention />
-          </PageWrapper>
-        </AuthProtected>
-      </Route>
+
       <Route path="/notifications">
         <AuthProtected>
           <PageWrapper>

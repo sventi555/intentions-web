@@ -101,7 +101,7 @@ const FollowNotificationWrapper: React.FC<
 > = (props) => {
   return (
     <div className="flex items-center gap-2 p-2">
-      <Link href={`/profile/${props.user.id}`}>
+      <Link href={`~/profile/${props.user.id}`}>
         <DisplayPic imageUri={props.user.dpUri} size={40} />
       </Link>
       {props.children}
@@ -133,7 +133,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
     <FollowNotificationWrapper user={props.sender}>
       <div className="flex grow items-center justify-between">
         <div>
-          <Link href={`/profile/${props.sender.id}`}>
+          <Link href={`~/profile/${props.sender.id}`}>
             {props.sender.username}{' '}
             {props.isPending ? 'requested to follow you' : 'followed you'}
           </Link>
@@ -219,7 +219,7 @@ const FollowApprovedNotification: React.FC<FollowApprovalNotificationProps> = (
   return (
     <FollowNotificationWrapper user={props.recipient}>
       <div>
-        <Link href={`/profile/${props.recipient.id}`}>
+        <Link href={`~/profile/${props.recipient.id}`}>
           {props.recipient.username}
         </Link>{' '}
         approved your follow request

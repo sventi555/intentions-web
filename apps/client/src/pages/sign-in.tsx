@@ -43,7 +43,7 @@ export const SignIn: React.FC = () => {
   };
 
   if (authUser) {
-    return <Redirect to="/" />;
+    return <Redirect to="~/" />;
   }
 
   return (
@@ -72,13 +72,13 @@ export const SignIn: React.FC = () => {
         <Button type="submit" loading={isSubmitting}>
           Sign in
         </Button>
-        <Link href="/forgot-password" className="underline">
+        <Link href="~/forgot-password" className="underline">
           Forgot password
         </Link>
       </form>
       <div>
         New user?{' '}
-        <Link href="/sign-up" className="underline">
+        <Link href="~/sign-up" className="underline">
           Sign up
         </Link>
       </div>

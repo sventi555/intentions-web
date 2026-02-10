@@ -34,7 +34,7 @@ export const ForgotPassword: React.FC = () => {
   };
 
   if (authUser) {
-    return <Redirect to="/" />;
+    return <Redirect to="~/" />;
   }
 
   return (
@@ -57,7 +57,7 @@ export const ForgotPassword: React.FC = () => {
           <div className="text-sm">Sent! Check email for reset link</div>
         )}
       </form>
-      <Link href="/sign-in" className="underline">
+      <Link href="~/sign-in" className="underline">
         Sign in
       </Link>
     </div>

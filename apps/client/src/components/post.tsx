@@ -58,7 +58,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
             )}
           >
             <Link
-              href={`/profile/${data.userId}`}
+              href={`~/profile/${data.userId}`}
               className="flex items-center gap-2"
             >
               <DisplayPic size={36} imageUri={data.user.image} />
@@ -66,7 +66,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
             </Link>
 
             <Link
-              href={`/profile/${data.userId}/intention/${data.intentionId}`}
+              href={`~/profile/${data.userId}/intention/${data.intentionId}`}
               className="self-center rounded-[32px] border border-neutral-300 p-1 px-2 whitespace-nowrap"
             >
               {data.intention.name}
@@ -221,13 +221,13 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
         {comments?.map((c) => (
           <div key={c.id} className="relative flex justify-between p-1">
             <div className="flex grow gap-2">
-              <Link href={`/profile/${c.data.userId}`}>
+              <Link href={`~/profile/${c.data.userId}`}>
                 <DisplayPic imageUri={c.data.user.image} size={32} />
               </Link>
               <div className="text-sm">
                 <div>
                   <Link
-                    href={`/profile/${c.data.userId}`}
+                    href={`~/profile/${c.data.userId}`}
                     className="font-semibold"
                   >
                     {c.data.user.username}

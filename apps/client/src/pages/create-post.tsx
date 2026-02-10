@@ -1,97 +1,45 @@
-import { useRef, useState } from 'react';
-import { SubmitHandler, useController, useForm } from 'react-hook-form';
-import { Link, Redirect, useLocation } from 'wouter';
+import { useRef } from 'react';
+import { Link, Redirect } from 'wouter';
 
-import { performMutation } from '@/actions';
-import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { ImagePicker } from '@/components/atoms/image-picker';
 import { TextArea } from '@/components/atoms/text-area';
 import { Plus } from '@/components/icons';
 import { StickyHeader } from '@/components/sticky-header';
-import { useIntentions, useInvalidateIntentions } from '@/hooks/intentions';
-import {
-  useInvalidateFeedPosts,
-  useInvalidateIntentionPosts,
-  useInvalidateUserPosts,
-} from '@/hooks/posts';
-import { useCreatePost } from '@/intentions-api';
+import { useIntentions } from '@/hooks/intentions';
 import { useAuthState } from '@/state/auth';
-
-// no need to control intentionId since it's always set
-type Inputs = {
-  image: string;
-  description: string;
-};
+import { useDraftPostContext } from '@/state/draft';
 
 export const CreatePost: React.FC = () => {
-  const { authUser, token } = useAuthState();
+  const {
+    intentionId,
+    setIntentionId,
+    base64Img,
+    setBase64Img,
+    getOnSubmit,
+    formErrors,
+    registerDescription,
+    isSubmitting,
+  } = useDraftPostContext();
+
+  const { authUser } = useAuthState();
 
   if (authUser == null) {
     throw new Error('Must be logged in to view create post page');
   }
 
   const { intentions } = useIntentions(authUser.uid);
-  const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
-    null,
-  );
   const filePickerRef = useRef<HTMLInputElement | null>(null);
-
-  const { mutateAsync: createPost } = useCreatePost();
-  const [, setLocation] = useLocation();
-  const invalidateFeedPosts = useInvalidateFeedPosts();
-  const invalidateUserPosts = useInvalidateUserPosts();
-  const invalidateIntentionPosts = useInvalidateIntentionPosts();
-  const invalidateIntentions = useInvalidateIntentions();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
-  const { field: imageField } = useController<Inputs>({
-    name: 'image',
-    control,
-    rules: { deps: ['description'] },
-  });
 
   if (intentions == null) {
     return null;
   }
 
   if (intentions.length === 0) {
-    return <Redirect to="/create/intention" replace={true} />;
+    return <Redirect to="~/create/intention" replace={true} />;
   }
 
-  const computedIntentionId = selectedIntentionId || intentions[0].id;
-
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    performMutation({
-      mutate: () =>
-        createPost({
-          headers: { authorization: token ?? '' },
-          data: {
-            intentionId: computedIntentionId,
-            description: data.description,
-            ...(imageField.value ? { image: imageField.value } : {}),
-          },
-        }),
-      setLoading: setIsSubmitting,
-      errorMessages: {
-        401: authErrorMessage,
-        404: 'Could not create post - intention does not exist.',
-      },
-      onSuccess: () =>
-        Promise.all([
-          invalidateUserPosts(authUser.uid),
-          invalidateFeedPosts(authUser.uid),
-          invalidateIntentionPosts(authUser.uid, computedIntentionId),
-          invalidateIntentions(authUser.uid),
-        ]).then(() => setLocation('/')),
-    });
-  };
+  const computedIntentionId = intentionId || intentions[0].id;
 
   return (
     <div>
@@ -101,14 +49,14 @@ export const CreatePost: React.FC = () => {
       </StickyHeader>
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={getOnSubmit(computedIntentionId)}
         className="flex flex-col gap-2 p-2"
       >
         <div className="flex flex-col">
           <label>Pick an intention:</label>
           <div className="flex items-center gap-1">
             <select
-              onChange={(e) => setSelectedIntentionId(e.target.value)}
+              onChange={(e) => setIntentionId(e.target.value)}
               value={computedIntentionId}
               className="grow cursor-pointer rounded-sm border border-neutral-300 p-1"
             >
@@ -119,7 +67,7 @@ export const CreatePost: React.FC = () => {
               ))}
             </select>
             <Link
-              href="/create/intention"
+              href="~/create/intention"
               className="rounded-full border border-neutral-300 p-1"
             >
               <Plus className="size-[20px] text-neutral-800" />
@@ -127,9 +75,9 @@ export const CreatePost: React.FC = () => {
           </div>
         </div>
 
-        <ImagePicker onPick={imageField.onChange} ref={filePickerRef} />
+        <ImagePicker onPick={setBase64Img} ref={filePickerRef} />
 
-        {!imageField.value ? (
+        {!base64Img ? (
           <button
             type="button"
             onClick={() => filePickerRef.current?.click()}
@@ -139,7 +87,7 @@ export const CreatePost: React.FC = () => {
           </button>
         ) : (
           <div className="relative">
-            <img src={imageField.value} className="w-full" />
+            <img src={base64Img} className="w-full" />
             <button
               type="button"
               onClick={() => filePickerRef.current?.click()}
@@ -154,11 +102,9 @@ export const CreatePost: React.FC = () => {
           <TextArea
             placeholder="description"
             errorMessage={
-              errors.description && 'description or image is required'
+              formErrors.description && 'description or image is required'
             }
-            formRegister={register('description', {
-              validate: (value, formState) => !!(value || formState.image),
-            })}
+            formRegister={registerDescription}
           />
         </div>
 

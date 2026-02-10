@@ -420,7 +420,7 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
           return (
             <Fragment key={id}>
               <Link
-                href={`/profile/${props.userId}/intention/${id}`}
+                href={`~/profile/${props.userId}/intention/${id}`}
                 className="p-1"
               >
                 <div>{data.name}</div>

@@ -13,18 +13,20 @@ export const NavSidebar: React.FC = () => {
 
   return (
     <nav className="flex grow flex-col gap-[40px] border-r border-neutral-300 p-[16px]">
-      <SidebarButton Icon={Home} onClick={() => navigate('/')} />
-      <SidebarButton Icon={Pencil} onClick={() => navigate('/create')} />
-      <SidebarButton Icon={AddUser} onClick={() => navigate('/search')} />
+      <SidebarButton Icon={Home} onClick={() => navigate('~/')} />
+      <SidebarButton Icon={Pencil} onClick={() => navigate('~/create')} />
+      <SidebarButton Icon={AddUser} onClick={() => navigate('~/search')} />
       <SidebarButton
         badge={user?.unreadNotifs}
         Icon={Bell}
-        onClick={() => navigate('/notifications')}
+        onClick={() => navigate('~/notifications')}
       />
       <SidebarButton
         Icon={Profile}
         onClick={() =>
-          navigate(authUser != null ? `/profile/${authUser?.uid}` : '/sign-in')
+          navigate(
+            authUser != null ? `~/profile/${authUser?.uid}` : '~/sign-in',
+          )
         }
       />
     </nav>

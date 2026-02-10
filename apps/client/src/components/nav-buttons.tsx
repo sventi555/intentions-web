@@ -30,7 +30,7 @@ export const NavButtons: React.FC = () => {
             <TabButton
               onClick={() =>
                 navigate(
-                  authUser != null ? `/profile/${authUser?.uid}` : '/sign-in',
+                  authUser != null ? `~/profile/${authUser?.uid}` : '~/sign-in',
                 )
               }
               Icon={Profile}
@@ -38,21 +38,21 @@ export const NavButtons: React.FC = () => {
             />
             <TabButton
               badge={user?.unreadNotifs}
-              onClick={() => navigate('/notifications')}
+              onClick={() => navigate('~/notifications')}
               Icon={Bell}
               animate
             />
             <TabButton
-              onClick={() => navigate('/search')}
+              onClick={() => navigate('~/search')}
               Icon={AddUser}
               animate
             />
             <TabButton
-              onClick={() => navigate('/create')}
+              onClick={() => navigate('~/create')}
               Icon={Pencil}
               animate
             />
-            <TabButton onClick={() => navigate('/')} Icon={Home} animate />
+            <TabButton onClick={() => navigate('~/')} Icon={Home} animate />
           </div>
         ) : null}
       </AnimatePresence>

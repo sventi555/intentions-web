@@ -27,7 +27,7 @@ export const PageWrapper: React.FC<PropsWithChildren<PageWrapperProps>> = ({
         onClick={onClickHeader}
       >
         <Link
-          href="/"
+          href="~/"
           className="flex font-[courier] text-2xl tracking-widest text-[#f6f2e3]"
           onClick={(e) => {
             e.stopPropagation();
