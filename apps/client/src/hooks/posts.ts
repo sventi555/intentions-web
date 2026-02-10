@@ -8,14 +8,7 @@ import { useAuthState } from '@/state/auth';
 const PAGE_SIZE = 8;
 
 export const useUserPosts = (userId: string) => {
-  const {
-    data: posts,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-    isLoading,
-    isError,
-  } = useInfiniteDocQuery({
+  const { data: posts, ...rest } = useInfiniteDocQuery({
     queryKey: ['posts', userId],
     pageSize: PAGE_SIZE,
     unpagedQuery: query(
@@ -25,14 +18,7 @@ export const useUserPosts = (userId: string) => {
     ),
   });
 
-  return {
-    posts,
-    isLoading,
-    hasNextPage,
-    isError,
-    fetchNextPage,
-    isFetchingNextPage,
-  };
+  return { posts, ...rest };
 };
 
 export const useInvalidateUserPosts = () => {
@@ -43,27 +29,13 @@ export const useInvalidateUserPosts = () => {
 };
 
 export const useFeedPosts = (userId: string) => {
-  const {
-    data: posts,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-    isLoading,
-    isError,
-  } = useInfiniteDocQuery({
+  const { data: posts, ...rest } = useInfiniteDocQuery({
     queryKey: ['feed', userId],
     pageSize: PAGE_SIZE,
     unpagedQuery: query(collections.feed(userId), orderBy('createdAt', 'desc')),
   });
 
-  return {
-    posts,
-    isLoading,
-    hasNextPage,
-    isError,
-    fetchNextPage,
-    isFetchingNextPage,
-  };
+  return { posts, ...rest };
 };
 
 export const useInvalidateFeedPosts = () => {
@@ -74,14 +46,7 @@ export const useInvalidateFeedPosts = () => {
 };
 
 export const useIntentionPosts = (userId: string, intentionId: string) => {
-  const {
-    data: posts,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-    isLoading,
-    isError,
-  } = useInfiniteDocQuery({
+  const { data: posts, ...rest } = useInfiniteDocQuery({
     queryKey: ['posts', userId, { intentionId }],
     pageSize: PAGE_SIZE,
     unpagedQuery: query(
@@ -92,14 +57,7 @@ export const useIntentionPosts = (userId: string, intentionId: string) => {
     ),
   });
 
-  return {
-    posts,
-    isLoading,
-    hasNextPage,
-    isError,
-    fetchNextPage,
-    isFetchingNextPage,
-  };
+  return { posts, ...rest };
 };
 
 export const useInvalidateIntentionPosts = () => {

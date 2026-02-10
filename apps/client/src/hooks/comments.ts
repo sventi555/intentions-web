@@ -1,31 +1,21 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getDocs, orderBy, query, where } from 'firebase/firestore';
+import { useQueryClient } from '@tanstack/react-query';
+import { orderBy, query, where } from 'firebase/firestore';
 
 import { collections } from '@/data/db';
+import { useInfiniteDocQuery } from './infinite-doc-query';
 
 export const useComments = (postId: string) => {
-  const {
-    data: comments,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: comments, ...rest } = useInfiniteDocQuery({
     queryKey: ['comments', postId],
-    queryFn: async () => {
-      const commentDocs = (
-        await getDocs(
-          query(
-            collections.comments(),
-            where('postId', '==', postId),
-            orderBy('createdAt', 'desc'),
-          ),
-        )
-      ).docs;
-
-      return commentDocs.map((doc) => ({ id: doc.id, data: doc.data() }));
-    },
+    pageSize: 16,
+    unpagedQuery: query(
+      collections.comments(),
+      where('postId', '==', postId),
+      orderBy('createdAt', 'desc'),
+    ),
   });
 
-  return { comments, isLoading, isError };
+  return { comments, ...rest };
 };
 
 export const useInvalidateComments = () => {

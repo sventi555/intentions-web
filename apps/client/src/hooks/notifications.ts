@@ -5,14 +5,7 @@ import { collections } from '@/data/db';
 import { useInfiniteDocQuery } from './infinite-doc-query';
 
 export const useNotifications = (userId: string) => {
-  const {
-    data: notifications,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-    isLoading,
-    isError,
-  } = useInfiniteDocQuery({
+  const { data: notifications, ...rest } = useInfiniteDocQuery({
     queryKey: ['notifications', userId],
     pageSize: 16,
     unpagedQuery: query(
@@ -21,14 +14,7 @@ export const useNotifications = (userId: string) => {
     ),
   });
 
-  return {
-    notifications,
-    isLoading,
-    hasNextPage,
-    isError,
-    fetchNextPage,
-    isFetchingNextPage,
-  };
+  return { notifications, ...rest };
 };
 
 export const useInvalidateNotifications = () => {
