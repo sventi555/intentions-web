@@ -63,7 +63,7 @@ export const Search: React.FC = () => {
       <div className="flex grow flex-col items-center justify-center">
         {searchedUser != null && !searchedFollowLoading ? (
           <Link
-            href={searchedUserAccepted ? `/profile/${searchedUser.id}` : ''}
+            href={searchedUserAccepted ? `~/profile/${searchedUser.id}` : ''}
             className={clsx(
               'flex flex-col items-center gap-1 rounded-2xl p-4',
               searchedUserAccepted ? 'border' : 'cursor-default',

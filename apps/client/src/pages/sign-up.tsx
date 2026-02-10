@@ -42,7 +42,7 @@ export const SignUp: React.FC = () => {
   };
 
   if (authUser) {
-    return <Redirect to="/" />;
+    return <Redirect to="~/" />;
   }
 
   return (
@@ -79,7 +79,7 @@ export const SignUp: React.FC = () => {
       </form>
       <div>
         Already a user?{' '}
-        <Link href="/sign-in" className="underline">
+        <Link href="~/sign-in" className="underline">
           Sign in
         </Link>
       </div>

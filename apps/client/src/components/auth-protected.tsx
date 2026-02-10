@@ -11,7 +11,7 @@ export const AuthProtected: React.FC<PropsWithChildren> = (props) => {
   }
 
   if (authUser == null) {
-    return <Redirect to="/sign-in" />;
+    return <Redirect to="~/sign-in" />;
   }
 
   return props.children;

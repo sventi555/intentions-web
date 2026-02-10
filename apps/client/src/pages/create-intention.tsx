@@ -10,6 +10,7 @@ import { Input } from '@/components/atoms/input';
 import { useInvalidateIntentions } from '@/hooks/intentions';
 import { useCreateIntention } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
+import { useDraftPostContext } from '@/state/draft';
 
 const suggestions = [
   'be more adventurous',
@@ -31,6 +32,9 @@ export const CreateIntention: React.FC = () => {
   const { mutateAsync: createIntention } = useCreateIntention();
   const invalidateIntentions = useInvalidateIntentions();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { setIntentionId } = useDraftPostContext();
+  const clearDraftIntention = () => setIntentionId(null);
 
   const {
     register,
@@ -55,7 +59,10 @@ export const CreateIntention: React.FC = () => {
         409: 'An intention with the same name already exists.',
       },
       onSuccess: () =>
-        invalidateIntentions(authUser.uid).then(() => setLocation('/create')),
+        invalidateIntentions(authUser.uid).then(() => {
+          clearDraftIntention();
+          setLocation('~/create');
+        }),
     });
   };
 

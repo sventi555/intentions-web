@@ -20,11 +20,11 @@ export const Feed: React.FC = () => {
     return (
       <div className="flex grow flex-col items-center justify-center">
         <div>Nothing to show...</div>
-        <Link href="/search" className="underline">
+        <Link href="~/search" className="underline">
           Follow someone
         </Link>{' '}
         <div>or</div>
-        <Link href="/create" className="underline">
+        <Link href="~/create" className="underline">
           Post about an intention
         </Link>
       </div>
