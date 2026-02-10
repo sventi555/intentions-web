@@ -7,6 +7,7 @@ import { authErrorMessage } from '@/actions/errors';
 import { DisplayPic } from '@/components/display-pic';
 import { Check, Close } from '@/components/icons';
 import { StickyHeader } from '@/components/sticky-header';
+import { useInfiniteScroll } from '@/hooks/infinite-scroll';
 import {
   useInvalidateNotifications,
   useNotifications,
@@ -25,7 +26,14 @@ export const Notifications: React.FC = () => {
   const invalidateUser = useInvalidateUser();
   const { mutateAsync: clearNotifAlert } = useClearNotifAlert();
 
-  const { notifications } = useNotifications(authUser.uid);
+  const { notifications, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useNotifications(authUser.uid);
+
+  useInfiniteScroll({
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  });
 
   useEffect(() => {
     if (user?.unreadNotifs) {

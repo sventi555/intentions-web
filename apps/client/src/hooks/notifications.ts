@@ -1,30 +1,34 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getDocs, orderBy, query } from 'firebase/firestore';
+import { useQueryClient } from '@tanstack/react-query';
+import { orderBy, query } from 'firebase/firestore';
 
 import { collections } from '@/data/db';
+import { useInfiniteDocQuery } from './infinite-doc-query';
 
 export const useNotifications = (userId: string) => {
   const {
     data: notifications,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
     isLoading,
     isError,
-  } = useQuery({
+  } = useInfiniteDocQuery({
     queryKey: ['notifications', userId],
-    queryFn: async () => {
-      const notificationDocs = (
-        await getDocs(
-          query(
-            collections.notifications(userId),
-            orderBy('createdAt', 'desc'),
-          ),
-        )
-      ).docs;
-
-      return notificationDocs.map((doc) => ({ id: doc.id, data: doc.data() }));
-    },
+    pageSize: 16,
+    unpagedQuery: query(
+      collections.notifications(userId),
+      orderBy('createdAt', 'desc'),
+    ),
   });
 
-  return { notifications, isLoading, isError };
+  return {
+    notifications,
+    isLoading,
+    hasNextPage,
+    isError,
+    fetchNextPage,
+    isFetchingNextPage,
+  };
 };
 
 export const useInvalidateNotifications = () => {

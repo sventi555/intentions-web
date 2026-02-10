@@ -8,6 +8,6 @@ Features:
 
 Tech debt:
 - wait on invalidating fewest possible queries on each mutate action
-- paginate notifications and comments
+- paginate comments
 - invalidate everything on sign out
     - less rigorous invalidation otherwise (only navigable things)
