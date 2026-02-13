@@ -19,7 +19,7 @@ export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
       onClick={onClick}
       disabled={loading}
       className={clsx(
-        'flex items-center justify-center gap-1 rounded-sm p-1 transition-colors duration-100',
+        'flex items-center justify-center gap-1 rounded-sm p-1 px-2 transition-colors duration-100',
         (type === 'primary' || type === 'submit') &&
           !loading &&
           'bg-[#2C3B4E] text-white',

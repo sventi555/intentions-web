@@ -48,7 +48,7 @@ export const NavButtons: React.FC = () => {
               animate
             />
             <TabButton
-              onClick={() => navigate('~/create')}
+              onClick={() => navigate('~/draft')}
               Icon={Pencil}
               animate
             />

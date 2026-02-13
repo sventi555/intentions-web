@@ -61,7 +61,7 @@ export const CreateIntention: React.FC = () => {
       onSuccess: () =>
         invalidateIntentions(authUser.uid).then(() => {
           clearDraftIntention();
-          setLocation('~/create');
+          setLocation('~/draft/select-image');
         }),
     });
   };
