@@ -12,6 +12,7 @@ import { Profile } from '@/pages/profile';
 import { Search } from '@/pages/search';
 import { SignIn } from '@/pages/sign-in';
 import { SignUp } from '@/pages/sign-up';
+import { CreateIntention } from './pages/draft/create-intention';
 import { SelectImage } from './pages/draft/select-image';
 import { SelectIntention } from './pages/draft/select-intention';
 import { DraftPostProvider } from './state/draft';
@@ -44,7 +45,7 @@ const App: React.FC = () => {
             </Route>
             <Route path="/create-intention">
               <PageWrapper>
-                <SelectIntention />
+                <CreateIntention />
               </PageWrapper>
             </Route>
             <Route path="/select-image">

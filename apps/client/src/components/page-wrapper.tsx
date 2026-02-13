@@ -1,10 +1,12 @@
 import { clsx } from 'clsx';
-import { PropsWithChildren } from 'react';
+import { CSSProperties, PropsWithChildren } from 'react';
 import { Link } from 'wouter';
 
 import LogoUrl from '@/assets/images/why.svg';
 import { NavButtons } from '@/components/nav-buttons';
 import { NavSidebar } from '@/components/nav-sidebar';
+
+export const pageHeaderHeight = '56px';
 
 interface PageWrapperProps {
   showNav?: boolean;
@@ -21,9 +23,12 @@ export const PageWrapper: React.FC<PropsWithChildren<PageWrapperProps>> = ({
   };
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div
+      className="flex min-h-dvh flex-col"
+      style={{ '--page-header-height': pageHeaderHeight } as CSSProperties}
+    >
       <div
-        className="fixed top-0 right-0 left-0 z-20 flex h-[56px] items-center justify-center bg-[#2C3B4E]"
+        className="fixed top-0 right-0 left-0 z-20 flex h-[var(--page-header-height)] items-center justify-center bg-[#2C3B4E]"
         onClick={onClickHeader}
       >
         <Link
@@ -38,9 +43,9 @@ export const PageWrapper: React.FC<PropsWithChildren<PageWrapperProps>> = ({
         </Link>
       </div>
 
-      <div className="mt-[56px] flex grow justify-center">
+      <div className="mt-[var(--page-header-height)] flex grow justify-center">
         {showNav && (
-          <div className="hidden sm:fixed sm:top-[56px] sm:bottom-0 sm:left-0 sm:flex sm:flex-col">
+          <div className="hidden sm:fixed sm:top-[var(--page-header-height)] sm:bottom-0 sm:left-0 sm:flex sm:flex-col">
             <NavSidebar />
           </div>
         )}
@@ -48,7 +53,7 @@ export const PageWrapper: React.FC<PropsWithChildren<PageWrapperProps>> = ({
         <div
           className={clsx(
             'flex w-full max-w-[540px] flex-col sm:max-w-[540px]',
-            showNav && 'sm:ml-[56px]',
+            showNav && 'sm:ml-[var(--page-header-height)]',
           )}
         >
           {children}
