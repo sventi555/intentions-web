@@ -12,5 +12,6 @@ export { Plus } from './plus';
 export { Profile } from './profile';
 export { Search } from './search';
 export { Send } from './send';
+export { Swap } from './swap';
 export { Visibility } from './visibility';
 export { VisibilityOff } from './visibility-off';

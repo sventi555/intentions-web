@@ -1,17 +1,17 @@
-import { Button } from '@/components/atoms/button';
 import { ImagePicker } from '@/components/atoms/image-picker';
-import { Image } from '@/components/icons';
+import { Close, Image, Swap } from '@/components/icons';
 import { StickyHeader } from '@/components/sticky-header';
 import { useDraftPostContext } from '@/state/draft';
 import { useRef } from 'react';
 import { Redirect, useLocation } from 'wouter';
+import { ProgressButtons } from './progress-buttons';
 
 export const SelectImage: React.FC = () => {
   const [, navigate] = useLocation();
   const filePickerRef = useRef<HTMLInputElement | null>(null);
-  const { intentionId, base64Img, setBase64Img } = useDraftPostContext();
+  const { intention, base64Img, setBase64Img } = useDraftPostContext();
 
-  if (!intentionId) {
+  if (!intention) {
     return <Redirect to="~/draft/select-intention" />;
   }
 
@@ -20,7 +20,7 @@ export const SelectImage: React.FC = () => {
       <StickyHeader>
         <div className="text-center">Select an image (optional)</div>
       </StickyHeader>
-      <div className="flex flex-col items-stretch gap-4 p-4">
+      <div className="flex flex-col gap-[40px] p-4">
         <ImagePicker onPick={setBase64Img} ref={filePickerRef} />
 
         {!base64Img ? (
@@ -32,35 +32,39 @@ export const SelectImage: React.FC = () => {
             <Image className="size-[80px] stroke-1 text-neutral-600" />
           </button>
         ) : (
-          <div className="relative">
+          <div className="flex flex-col gap-2">
             <img src={base64Img} className="w-full" />
-            <button
-              type="button"
-              onClick={() => filePickerRef.current?.click()}
-              className="absolute right-2 bottom-2 left-2 cursor-pointer rounded-sm bg-black/40 p-1 text-white"
-            >
-              Change image
-            </button>
+            <div className="flex justify-center gap-2 px-20">
+              <button
+                type="button"
+                onClick={() => filePickerRef.current?.click()}
+                className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-xl border p-1"
+              >
+                <Swap className="size-[16px]" />
+                Change
+              </button>
+              <button
+                className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-xl border p-1"
+                onClick={() => {
+                  setBase64Img('');
+                }}
+              >
+                <Close className="size-[16px]" />
+                Remove
+              </button>
+            </div>
           </div>
         )}
-        <div className="flex gap-2">
-          <div className="flex grow flex-col">
-            <Button
-              type="secondary"
-              onClick={() => navigate('~/draft/select-intention')}
-            >
-              Back
-            </Button>
-          </div>
-          <div className="flex grow flex-col">
-            <Button
-              type="primary"
-              onClick={() => navigate('~/draft/create-post')}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <ProgressButtons
+          primary={{
+            label: 'Next',
+            onClick: () => navigate('~/draft/create-post'),
+          }}
+          secondary={{
+            label: 'Back',
+            onClick: () => navigate('~/draft/select-intention'),
+          }}
+        />
       </div>
     </div>
   );

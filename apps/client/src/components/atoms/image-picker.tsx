@@ -20,6 +20,9 @@ export const ImagePicker = forwardRef<HTMLInputElement, ImagePickerProps>(
 
           reader.readAsDataURL(file);
           reader.onload = (ev) => props.onPick(ev.target?.result as string);
+
+          // Reset input value to support selecting same image repeatedly
+          e.target.value = '';
         }}
         ref={ref}
       />

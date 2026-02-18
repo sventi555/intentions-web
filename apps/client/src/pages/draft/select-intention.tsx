@@ -56,27 +56,24 @@ export const SelectIntention: React.FC = () => {
         }
         className="flex h-[calc(100dvh-var(--header-heights))] flex-col gap-4 p-4"
       >
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <div className="font-medium">Select intention</div>
-            <Button
-              type="primary"
-              onClick={() => navigate('~/draft/create-intention')}
-            >
-              + New intention
-            </Button>
-          </div>
-          <Input
-            placeholder="Search..."
-            onChange={setSearchVal}
-            value={searchVal}
-          />
+        <div className="self-center">
+          <Button
+            type="primary"
+            onClick={() => navigate('~/draft/create-intention')}
+          >
+            + New intention
+          </Button>
         </div>
+        <Input
+          placeholder="Search..."
+          onChange={setSearchVal}
+          value={searchVal}
+        />
         <div className="flex grow flex-col gap-3 overflow-y-auto px-4">
           {filteredIntentions?.map((intention) => (
             <button
               key={intention.id}
-              className="flex cursor-pointer items-center justify-center rounded-2xl border border-[#2C3B4E] p-2 shadow"
+              className="flex cursor-pointer items-center justify-center rounded-2xl border border-[#2C3B4E] p-2 font-medium shadow"
               onClick={() => {
                 setIntention({ id: intention.id, name: intention.data.name });
                 navigate('~/draft/select-image');
