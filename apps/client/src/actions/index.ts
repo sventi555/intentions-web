@@ -12,32 +12,37 @@ type FilterGreaterThan<Union, Threshold extends number> = Exclude<
   NumericRange<Threshold>
 >;
 
+type Res = { status: number };
 type ErrorStatuses<Statuses> = FilterGreaterThan<Statuses, 400>;
-
-type PerformMutationArgs<T extends { status: number }> = {
-  mutate: () => Promise<T>;
-  setLoading: (loading: boolean) => void;
-  errorMessages: Record<ErrorStatuses<T['status']>, string>;
-  onSuccess: () => Promise<unknown>;
-};
+type ErrorMessages<R extends Res> = Record<ErrorStatuses<R['status']>, string>;
+type SuccessRes<R extends Res> = Extract<
+  R,
+  { status: Exclude<R['status'], ErrorStatuses<R['status']>> }
+>;
 
 export const performMutation = async <
-  ResponseError extends { status: number },
+  R extends { status: number },
+  E extends ErrorMessages<R>,
 >({
   mutate,
   setLoading,
   errorMessages,
   onSuccess,
-}: PerformMutationArgs<ResponseError>) => {
+}: {
+  mutate: () => Promise<R>;
+  setLoading: (loading: boolean) => void;
+  errorMessages: E;
+  onSuccess: (res: SuccessRes<R>) => Promise<unknown>;
+}) => {
   setLoading(true);
   mutate()
-    .then(({ status }) => {
-      if (keyOf(status, errorMessages)) {
-        toast.error(errorMessages[status]);
+    .then((res) => {
+      if (keyOf(res.status, errorMessages)) {
+        toast.error(errorMessages[res.status]);
         return;
       }
 
-      return onSuccess();
+      return onSuccess(res as SuccessRes<R>);
     })
     .catch(() => toast.error('Something went wrong, please try again.'))
     .finally(() => setLoading(false));

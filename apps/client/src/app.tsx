@@ -3,7 +3,7 @@ import { Route } from 'wouter';
 
 import { AuthProtected } from '@/components/auth-protected';
 import { PageWrapper } from '@/components/page-wrapper';
-import { CreatePost } from '@/pages/draft/create-post-old';
+import { CreatePost } from '@/pages/draft/create-post';
 import { Feed } from '@/pages/feed';
 import { ForgotPassword } from '@/pages/forgot-password';
 import { Intention } from '@/pages/intention';

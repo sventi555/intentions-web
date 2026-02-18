@@ -1,8 +1,11 @@
-import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
+import { createRoute, OpenAPIHono } from '@hono/zod-openapi';
 import { HTTPException } from 'hono/http-exception';
 import { collections } from '../db';
 import { authenticate } from '../middleware/auth';
-import { createIntentionBody } from '../schemas/intentions';
+import {
+  createIntentionBody,
+  createIntentionResponse,
+} from '../schemas/intentions';
 import {
   authHeaderSchema,
   errorSchema,
@@ -23,7 +26,7 @@ const createIntentionRoute = createRoute({
   responses: {
     201: {
       description: 'Successfully created intention',
-      content: { 'application/json': { schema: z.null() } },
+      content: { 'application/json': { schema: createIntentionResponse } },
     },
     401: unauthResponse,
     409: {
@@ -57,7 +60,7 @@ app.openapi(createIntentionRoute, async (c) => {
   }
 
   const now = Date.now();
-  await collections.intentions().add({
+  const intention = await collections.intentions().add({
     userId: requesterId,
     user: { username: userData.username },
     name,
@@ -66,7 +69,7 @@ app.openapi(createIntentionRoute, async (c) => {
     postCount: 0,
   });
 
-  return c.json(null, 201);
+  return c.json({ id: intention.id }, 201);
 });
 
 export default app;

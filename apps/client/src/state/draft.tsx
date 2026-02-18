@@ -24,8 +24,8 @@ type PostInputs = {
 };
 
 interface DraftPostState {
-  intentionId: string | null;
-  setIntentionId: (intentionId: string | null) => void;
+  intention: { id: string; name: string } | null;
+  setIntention: (intention: { id: string; name: string } | null) => void;
   base64Img: string;
   setBase64Img: (img: string) => void;
   registerDescription: UseFormRegisterReturn;
@@ -43,9 +43,10 @@ export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
     throw new Error('Must be logged in to use draft post provider');
   }
 
-  const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
-    null,
-  );
+  const [selectedIntention, setSelectedIntention] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const {
     register,
     control,
@@ -97,8 +98,8 @@ export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
   return (
     <DraftPostContext.Provider
       value={{
-        intentionId: selectedIntentionId,
-        setIntentionId: setSelectedIntentionId,
+        intention: selectedIntention,
+        setIntention: setSelectedIntention,
         base64Img: imageField.value,
         setBase64Img: imageField.onChange,
         registerDescription: register('description', {

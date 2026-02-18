@@ -4,8 +4,9 @@ import { pageHeaderHeight } from '@/components/page-wrapper';
 import { StickyHeader, stickyHeaderHeight } from '@/components/sticky-header';
 import { useIntentions } from '@/hooks/intentions';
 import { useAuthState } from '@/state/auth';
+import { useDraftPostContext } from '@/state/draft';
 import { CSSProperties, useEffect, useState } from 'react';
-import { useLocation } from 'wouter';
+import { Redirect, useLocation } from 'wouter';
 
 export const SelectIntention: React.FC = () => {
   const { authUser } = useAuthState();
@@ -18,6 +19,8 @@ export const SelectIntention: React.FC = () => {
 
   const [searchVal, setSearchVal] = useState('');
   const [filteredIntentions, setFilteredIntentions] = useState(intentions);
+
+  const { setIntention } = useDraftPostContext();
 
   useEffect(() => {
     if (searchVal === '') {
@@ -32,10 +35,18 @@ export const SelectIntention: React.FC = () => {
     );
   }, [searchVal, intentions]);
 
+  if (intentions == null) {
+    return null;
+  }
+
+  if (intentions.length === 0) {
+    return <Redirect to="~/draft/create-intention" />;
+  }
+
   return (
     <div>
       <StickyHeader>
-        <div className="text-center">Create post</div>
+        <div className="text-center">Select intention</div>
       </StickyHeader>
       <div
         style={
@@ -43,9 +54,9 @@ export const SelectIntention: React.FC = () => {
             '--header-heights': `calc(${pageHeaderHeight} + ${stickyHeaderHeight})`,
           } as CSSProperties
         }
-        className="flex h-[calc(100dvh-var(--header-heights))] flex-col"
+        className="flex h-[calc(100dvh-var(--header-heights))] flex-col gap-4 p-4"
       >
-        <div className="flex flex-col gap-2 p-2">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="font-medium">Select intention</div>
             <Button
@@ -61,11 +72,15 @@ export const SelectIntention: React.FC = () => {
             value={searchVal}
           />
         </div>
-        <div className="flex grow flex-col gap-3 overflow-y-auto p-2 px-8">
+        <div className="flex grow flex-col gap-3 overflow-y-auto px-4">
           {filteredIntentions?.map((intention) => (
             <button
-              className="flex items-center justify-center rounded-2xl border border-[#2C3B4E] p-2"
-              onClick={() => {}}
+              key={intention.id}
+              className="flex cursor-pointer items-center justify-center rounded-2xl border border-[#2C3B4E] p-2 shadow"
+              onClick={() => {
+                setIntention({ id: intention.id, name: intention.data.name });
+                navigate('~/draft/select-image');
+              }}
             >
               {intention.data.name}
             </button>

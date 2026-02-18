@@ -10,12 +10,13 @@ export const customFetch = <T>(
   const normalizedUrl = url.startsWith('/') ? url : `/${url}`;
   const fullUrl = `${baseUrl}${normalizedUrl}`;
 
-  return fetch(fullUrl, options).then((res) => {
+  return fetch(fullUrl, options).then(async (res) => {
     if (res.status >= 500) {
       throw new Error();
     }
 
-    return res;
+    const data = await (!res.body ? Promise.resolve(null) : res.json());
+    return { status: res.status, data };
   }) as Promise<T>;
 };
 

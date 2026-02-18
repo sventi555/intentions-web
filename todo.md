@@ -5,6 +5,7 @@ Features:
 - post progressive disclosure
 - intention pie chart breakdown (colour coding!)?
 - comment notifications?
+- make nav button movable?? Allow user to drag it around, and store the results in browser??
 
 Tech debt:
 - use debounce for searching followers and intentions

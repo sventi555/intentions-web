@@ -33,8 +33,7 @@ export const CreateIntention: React.FC = () => {
   const invalidateIntentions = useInvalidateIntentions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { setIntentionId } = useDraftPostContext();
-  const clearDraftIntention = () => setIntentionId(null);
+  const { setIntention } = useDraftPostContext();
 
   const {
     register,
@@ -58,10 +57,12 @@ export const CreateIntention: React.FC = () => {
         401: authErrorMessage,
         409: 'An intention with the same name already exists.',
       },
-      onSuccess: () =>
+      onSuccess: (res) =>
         invalidateIntentions(authUser.uid).then(() => {
-          clearDraftIntention();
-          setLocation('~/draft/select-image');
+          setIntention({ id: res.data.id, name: data.intention });
+
+          // make sure intention id is set before next step to avoid redirect
+          requestAnimationFrame(() => setLocation('~/draft/select-image'));
         }),
     });
   };
