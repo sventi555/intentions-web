@@ -26,21 +26,21 @@ export class ImageObj {
     }
   }
 
-  constructor(dataUrl: string) {
+  constructor(dataUrl: string, size?: number) {
     ImageObj.validate(dataUrl);
 
     const [, image] = splitDataUrl(dataUrl);
 
     // bake in exif rotation with call to `.rotate()`
     this._sharp = sharp(Buffer.from(image, 'base64')).rotate();
+
+    if (size != null) {
+      this._sharp.resize(size);
+    }
   }
 
   async toBuffer() {
     return this._sharp.webp().toBuffer();
-  }
-
-  resize(size: number) {
-    this._sharp.resize(size);
   }
 
   async dimensions() {

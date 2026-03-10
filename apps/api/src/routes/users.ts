@@ -116,14 +116,12 @@ app.openapi(updateUserImageRoute, async (c) => {
 
   let imgObj: ImageObj;
   try {
-    imgObj = new ImageObj(image);
+    imgObj = new ImageObj(image, 128);
   } catch {
     throw new HTTPException(400, { message: 'invalid image data' });
   }
 
-  const imageFileName = await uploadImage(`dps/${requesterId}`, imgObj, {
-    size: 128,
-  });
+  const imageFileName = await uploadImage(`dps/${requesterId}`, imgObj);
 
   const writeBatch = bulkWriter();
 
