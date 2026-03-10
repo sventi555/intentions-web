@@ -16,8 +16,8 @@ import {
   errorSchema,
   unauthResponse,
 } from '../schemas/shared';
-import { uploadMedia } from '../storage';
-import { getImageDimensions } from '../utils/image';
+import { uploadImage } from '../storage';
+import { ImageObj } from '../utils/image';
 
 const app = new OpenAPIHono();
 
@@ -62,11 +62,18 @@ app.openapi(createPostRoute, async (c) => {
 
   let image: Post['image'] = undefined;
   if (data.image) {
+    let imgObj: ImageObj;
+    try {
+      imgObj = new ImageObj(data.image);
+    } catch {
+      throw new HTTPException(400, { message: 'invalid image data' });
+    }
+
     image = {
-      src: await uploadMedia(`posts/${requesterId}`, data.image, {
+      src: await uploadImage(`posts/${requesterId}`, imgObj, {
         size: 640,
       }),
-      ...(await getImageDimensions(data.image)),
+      ...(await imgObj.dimensions()),
     };
   }
 
