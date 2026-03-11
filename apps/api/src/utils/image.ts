@@ -1,54 +1,43 @@
 import mime from 'mime-types';
-import sharp, { type Sharp } from 'sharp';
+import sharp from 'sharp';
 
-export class ImageObj {
-  private _sharp: Sharp;
+export const toBuffer = async (imageDataUrl: string, size?: number) => {
+  validate(imageDataUrl);
 
-  private static validate(dataUrl: string) {
-    const [imageMeta] = splitDataUrl(dataUrl);
+  const [, image] = splitDataUrl(imageDataUrl);
 
-    // i.e. 'image/jpeg'
-    const contentType = imageMeta.match(/data:(.*);base64/)?.[1];
-    if (!contentType) {
-      throw new Error('missing mime type');
-    }
+  // bake in exif rotation with call to `.rotate()`
+  const s = sharp(Buffer.from(image, 'base64')).rotate();
 
-    // i.e. 'jpeg'
-    const extension = mime.extension(contentType);
-    if (!extension) {
-      throw new Error('invalid mime type');
-    }
-
-    // i.e. 'image'
-    const [mimeType] = contentType.split('/');
-    if (mimeType !== 'image') {
-      throw new Error(`must be an image`);
-    }
+  if (size != null) {
+    s.resize(size);
   }
 
-  constructor(dataUrl: string, size?: number) {
-    ImageObj.validate(dataUrl);
+  const res = await s.webp().toBuffer({ resolveWithObject: true });
+  return { buffer: res.data, info: res.info };
+};
 
-    const [, image] = splitDataUrl(dataUrl);
+const validate = (dataUrl: string) => {
+  const [imageMeta] = splitDataUrl(dataUrl);
 
-    // bake in exif rotation with call to `.rotate()`
-    this._sharp = sharp(Buffer.from(image, 'base64')).rotate();
-
-    if (size != null) {
-      this._sharp.resize(size);
-    }
+  // i.e. 'image/jpeg'
+  const contentType = imageMeta.match(/data:(.*);base64/)?.[1];
+  if (!contentType) {
+    throw new Error('missing mime type');
   }
 
-  async toBuffer() {
-    return this._sharp.webp().toBuffer();
+  // i.e. 'jpeg'
+  const extension = mime.extension(contentType);
+  if (!extension) {
+    throw new Error('invalid mime type');
   }
 
-  async dimensions() {
-    const metadata = await this._sharp.metadata();
-
-    return { width: metadata.width, height: metadata.height };
+  // i.e. 'image'
+  const [mimeType] = contentType.split('/');
+  if (mimeType !== 'image') {
+    throw new Error(`must be an image`);
   }
-}
+};
 
 const splitDataUrl = (dataUrl: string) => {
   const commaIndex = dataUrl.indexOf(',');

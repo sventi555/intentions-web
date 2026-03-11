@@ -12,8 +12,8 @@ import {
   unauthResponse,
 } from '../schemas/shared';
 import { createUserBody, updateUserImageBody } from '../schemas/users';
-import { uploadImage } from '../storage';
-import { ImageObj } from '../utils/image';
+import { uploadBuffer } from '../storage';
+import { toBuffer } from '../utils/image';
 
 const app = new OpenAPIHono();
 
@@ -114,14 +114,18 @@ app.openapi(updateUserImageRoute, async (c) => {
   const { image } = c.req.valid('json');
   const requesterId = c.var.uid;
 
-  let imgObj: ImageObj;
+  let imgBuffer: Buffer;
   try {
-    imgObj = new ImageObj(image, 128);
+    imgBuffer = (await toBuffer(image, 128)).buffer;
   } catch {
     throw new HTTPException(400, { message: 'invalid image data' });
   }
 
-  const imageFileName = await uploadImage(`dps/${requesterId}`, imgObj);
+  const imageFileName = await uploadBuffer(
+    `dps/${requesterId}`,
+    imgBuffer,
+    'webp',
+  );
 
   const writeBatch = bulkWriter();
 

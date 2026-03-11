@@ -1,16 +1,17 @@
 import path from 'path';
 import { storage } from './firebase';
-import { ImageObj } from './utils/image';
 
-export const uploadImage = async (storageDirName: string, img: ImageObj) => {
+export const uploadBuffer = async (
+  storageDirName: string,
+  buffer: Buffer,
+  ext: string,
+) => {
   const bucket = storage.bucket();
 
-  const imageId = crypto.randomUUID();
-  const imageFilePath = path.join(storageDirName, `${imageId}.webp`);
+  const fileId = crypto.randomUUID();
+  const filePath = path.join(storageDirName, `${fileId}.${ext}`);
 
-  const imgBuffer = await img.toBuffer();
+  await bucket.file(filePath).save(buffer);
 
-  await bucket.file(imageFilePath).save(imgBuffer);
-
-  return imageFilePath;
+  return filePath;
 };
