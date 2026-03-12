@@ -81,13 +81,14 @@ export const CreatePost: React.FC = () => {
           <button
             type="button"
             onClick={() => filePickerRef.current?.click()}
-            className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-sm border border-neutral-300"
+            className="flex aspect-square w-3/4 cursor-pointer flex-col items-center justify-center self-center rounded-2xl border border-neutral-300"
           >
             <div className="text-neutral-600">Select an image</div>
+            <div className="text-sm text-neutral-600">(Optional)</div>
           </button>
         ) : (
-          <div className="relative">
-            <img src={base64Img} className="w-full" />
+          <div className="relative w-3/4 self-center">
+            <img src={base64Img} className="w-full rounded-2xl" />
             <button
               type="button"
               onClick={() => filePickerRef.current?.click()}
