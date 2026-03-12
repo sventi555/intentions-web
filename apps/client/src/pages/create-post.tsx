@@ -89,13 +89,22 @@ export const CreatePost: React.FC = () => {
         ) : (
           <div className="relative w-3/4 self-center">
             <img src={base64Img} className="w-full rounded-2xl" />
-            <button
-              type="button"
-              onClick={() => filePickerRef.current?.click()}
-              className="absolute right-2 bottom-2 left-2 cursor-pointer rounded-sm bg-black/40 p-1 text-white"
-            >
-              Change image
-            </button>
+            <div className="absolute right-2 bottom-2 left-2 flex gap-1">
+              <button
+                type="button"
+                onClick={() => setBase64Img('')}
+                className="grow cursor-pointer rounded-sm bg-red-600/60 p-1 text-white text-shadow-sm"
+              >
+                Remove
+              </button>
+              <button
+                type="button"
+                onClick={() => filePickerRef.current?.click()}
+                className="grow cursor-pointer rounded-sm bg-black/60 p-1 text-white text-shadow-sm"
+              >
+                Change
+              </button>
+            </div>
           </div>
         )}
 
