@@ -133,12 +133,14 @@ export const Profile: React.FC = () => {
                   errorMessages: {
                     401: authErrorMessage,
                   },
-                  onSuccess: () =>
-                    Promise.all([
+                  onSuccess: () => {
+                    invalidateFeedPosts(userId);
+
+                    return Promise.all([
                       invalidateUser(userId),
                       invalidateUserPosts(userId),
-                      invalidateFeedPosts(userId),
-                    ]),
+                    ]);
+                  },
                 });
               }}
               ref={filePickerRef}
@@ -234,13 +236,13 @@ export const Profile: React.FC = () => {
                           400: 'Could not remove follow.',
                           401: authErrorMessage,
                         },
-                        onSuccess: () =>
-                          Promise.all([
-                            invalidateFollow(userId),
-                            invalidateUserPosts(userId),
-                            invalidateIntentions(userId),
-                            invalidateFeedPosts(authUser.uid),
-                          ]),
+                        onSuccess: () => {
+                          invalidateUserPosts(userId);
+                          invalidateIntentions(userId);
+                          invalidateFeedPosts(authUser.uid);
+
+                          return invalidateFollow(userId);
+                        },
                       });
                     }}
                     className="cursor-pointer p-1 px-2 hover:bg-neutral-200"

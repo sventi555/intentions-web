@@ -84,13 +84,15 @@ export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
           401: authErrorMessage,
           404: 'Could not create post - intention does not exist.',
         },
-        onSuccess: () =>
-          Promise.all([
-            invalidateUserPosts(authUser.uid),
-            invalidateFeedPosts(authUser.uid),
-            invalidateIntentionPosts(authUser.uid, intentionId),
-            invalidateIntentions(authUser.uid),
-          ]).then(() => setLocation('~/')),
+        onSuccess: () => {
+          invalidateUserPosts(authUser.uid);
+          invalidateIntentionPosts(authUser.uid, intentionId);
+          invalidateIntentions(authUser.uid);
+
+          return invalidateFeedPosts(authUser.uid).then(() =>
+            setLocation('~/'),
+          );
+        },
       });
     };
 
