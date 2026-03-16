@@ -95,16 +95,20 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
                         errorMessages: {
                           401: authErrorMessage,
                         },
-                        onSuccess: () =>
-                          Promise.all([
+                        onSuccess: () => {
+                          invalidateIntentions(data.userId);
+
+                          // don't know where post is being deleted from.
+                          // must invalidate all possible locations
+                          return Promise.all([
                             invalidateUserPosts(data.userId),
                             invalidateIntentionPosts(
                               data.userId,
                               data.intentionId,
                             ),
-                            invalidateIntentions(data.userId),
                             invalidateFeedPosts(data.userId),
-                          ]),
+                          ]);
+                        },
                       });
                     }}
                     className="cursor-pointer p-1 px-2 text-red-500 hover:bg-neutral-200"
