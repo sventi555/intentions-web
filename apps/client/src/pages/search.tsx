@@ -14,7 +14,7 @@ import { useFollowUser, useRemoveFollow } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
 
 export const Search: React.FC = () => {
-  const { token } = useAuthState();
+  const { authUser } = useAuthState();
 
   const [username, setUsername] = useState('');
   const [searchedUsername, setSearchedUsername] = useState('');
@@ -31,6 +31,10 @@ export const Search: React.FC = () => {
   const invalidateFollow = useInvalidateFollow();
 
   const [followPending, setFollowPending] = useState(false);
+
+  if (authUser == null) {
+    return null;
+  }
 
   return (
     <div className="flex grow flex-col items-center gap-2 p-4">
@@ -79,10 +83,12 @@ export const Search: React.FC = () => {
                   onClick={() => {
                     performMutation({
                       mutate: () =>
-                        followUser({
-                          headers: { authorization: token ?? '' },
-                          userId: searchedUser.id,
-                        }),
+                        authUser.getIdToken().then((token) =>
+                          followUser({
+                            headers: { authorization: token ?? '' },
+                            userId: searchedUser.id,
+                          }),
+                        ),
                       setLoading: setFollowPending,
                       errorMessages: {
                         401: authErrorMessage,
@@ -103,11 +109,13 @@ export const Search: React.FC = () => {
                   onClick={() => {
                     performMutation({
                       mutate: () =>
-                        removeFollow({
-                          headers: { authorization: token ?? '' },
-                          userId: searchedUser.id,
-                          data: { direction: 'to' },
-                        }),
+                        authUser.getIdToken().then((token) =>
+                          removeFollow({
+                            headers: { authorization: token ?? '' },
+                            userId: searchedUser.id,
+                            data: { direction: 'to' },
+                          }),
+                        ),
                       setLoading: setFollowPending,
                       errorMessages: {
                         400: 'Could not remove follow request.',

@@ -1,12 +1,6 @@
 import { User } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth/cordova';
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, PropsWithChildren, useContext, useState } from 'react';
 
 import { auth } from '@/firebase';
 
@@ -25,21 +19,15 @@ const useAuthUser = () => {
 interface AuthState {
   authUser: User | null;
   loading: boolean;
-  token: string | null;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
 
 export const AuthProvider: React.FC<PropsWithChildren> = (props) => {
   const { authUser, loading } = useAuthUser();
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    authUser?.getIdToken().then((token) => setToken(token));
-  }, [authUser]);
 
   return (
-    <AuthContext.Provider value={{ authUser, loading, token }}>
+    <AuthContext.Provider value={{ authUser, loading }}>
       {props.children}
     </AuthContext.Provider>
   );

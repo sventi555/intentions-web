@@ -31,7 +31,7 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
   users,
   onRemove,
 }) => {
-  const { token } = useAuthState();
+  const { authUser } = useAuthState();
   const { mutateAsync: removeFollow } = useRemoveFollow();
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
@@ -42,6 +42,10 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
       .toLowerCase()
       .includes(searchedUsername.toLowerCase()),
   );
+
+  if (authUser == null) {
+    return null;
+  }
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -78,13 +82,15 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
                   onClick={() => {
                     performMutation({
                       mutate: () =>
-                        removeFollow({
-                          headers: { authorization: token ?? '' },
-                          userId: user.id,
-                          data: {
-                            direction: kind === 'following' ? 'to' : 'from',
-                          },
-                        }),
+                        authUser.getIdToken().then((token) =>
+                          removeFollow({
+                            headers: { authorization: token ?? '' },
+                            userId: user.id,
+                            data: {
+                              direction: kind === 'following' ? 'to' : 'from',
+                            },
+                          }),
+                        ),
                       setLoading: (loading) =>
                         setRemovingUserId(loading ? user.id : null),
                       errorMessages: {

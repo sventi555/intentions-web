@@ -37,7 +37,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
   const { downloadUrl: imageUrl } = useDownloadUrl(data.image?.src);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const { authUser, token } = useAuthState();
+  const { authUser } = useAuthState();
 
   const { mutateAsync: deletePost } = useDeletePost();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -87,10 +87,12 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
                     onClick={() => {
                       performMutation({
                         mutate: () =>
-                          deletePost({
-                            headers: { authorization: token ?? '' },
-                            id,
-                          }),
+                          authUser.getIdToken().then((token) =>
+                            deletePost({
+                              headers: { authorization: token ?? '' },
+                              id,
+                            }),
+                          ),
                         setLoading: setIsDeleting,
                         errorMessages: {
                           401: authErrorMessage,
@@ -187,7 +189,7 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
   open,
   onClose,
 }) => {
-  const { authUser, token } = useAuthState();
+  const { authUser } = useAuthState();
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
   const { comments, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -201,14 +203,27 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
     null,
   );
 
+  useInfiniteScroll({
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+    container,
+  });
+
+  if (authUser == null) {
+    return null;
+  }
+
   const onCreateComment = () => {
     if (draftComment.trim()) {
       performMutation({
         mutate: () =>
-          createComment({
-            headers: { authorization: token ?? '' },
-            data: { postId, body: draftComment },
-          }),
+          authUser.getIdToken().then((token) =>
+            createComment({
+              headers: { authorization: token ?? '' },
+              data: { postId, body: draftComment },
+            }),
+          ),
         setLoading: setSubmittingComment,
         errorMessages: {
           401: authErrorMessage,
@@ -221,13 +236,6 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
       });
     }
   };
-
-  useInfiniteScroll({
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-    container,
-  });
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -273,10 +281,12 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
                         onClick={() => {
                           performMutation({
                             mutate: () =>
-                              deleteComment({
-                                headers: { authorization: token ?? '' },
-                                id: c.id,
-                              }),
+                              authUser.getIdToken().then((token) =>
+                                deleteComment({
+                                  headers: { authorization: token ?? '' },
+                                  id: c.id,
+                                }),
+                              ),
                             setLoading: (loading) =>
                               setDeletingCommentId(loading ? c.id : null),
                             errorMessages: {

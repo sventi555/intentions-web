@@ -17,7 +17,7 @@ import { useClearNotifAlert, useRespondToFollow } from '@/intentions-api';
 import { useAuthState } from '@/state/auth';
 
 export const Notifications: React.FC = () => {
-  const { authUser, token } = useAuthState();
+  const { authUser } = useAuthState();
   if (authUser == null) {
     throw new Error('must be signed in to view notifications');
   }
@@ -37,11 +37,15 @@ export const Notifications: React.FC = () => {
 
   useEffect(() => {
     if (user?.unreadNotifs) {
-      clearNotifAlert({ headers: { authorization: token ?? '' } }).then(() =>
-        invalidateUser(authUser.uid),
-      );
+      authUser
+        .getIdToken()
+        .then((token) =>
+          clearNotifAlert({ headers: { authorization: token ?? '' } }).then(
+            () => invalidateUser(authUser.uid),
+          ),
+        );
     }
-  }, [user, authUser, token, clearNotifAlert, invalidateUser]);
+  }, [user, authUser, clearNotifAlert, invalidateUser]);
 
   if (notifications == null) {
     return null;
@@ -125,7 +129,7 @@ interface FollowRequestNotificationProps {
 const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
   props,
 ) => {
-  const { authUser, token } = useAuthState();
+  const { authUser } = useAuthState();
   if (authUser == null) {
     throw new Error('must be signed in to view notification');
   }
@@ -153,11 +157,13 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
               onClick={() => {
                 performMutation({
                   mutate: () =>
-                    respondToFollow({
-                      headers: { authorization: token ?? '' },
-                      userId: props.sender.id,
-                      data: { action: 'decline' },
-                    }),
+                    authUser.getIdToken().then((token) =>
+                      respondToFollow({
+                        headers: { authorization: token ?? '' },
+                        userId: props.sender.id,
+                        data: { action: 'decline' },
+                      }),
+                    ),
                   setLoading: (loading) =>
                     setSubmittingResponse(loading ? 'decline' : null),
                   errorMessages: {
@@ -184,11 +190,13 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
               onClick={() => {
                 performMutation({
                   mutate: () =>
-                    respondToFollow({
-                      headers: { authorization: token ?? '' },
-                      userId: props.sender.id,
-                      data: { action: 'accept' },
-                    }),
+                    authUser.getIdToken().then((token) =>
+                      respondToFollow({
+                        headers: { authorization: token ?? '' },
+                        userId: props.sender.id,
+                        data: { action: 'accept' },
+                      }),
+                    ),
                   setLoading: (loading) =>
                     setSubmittingResponse(loading ? 'accept' : null),
                   errorMessages: {

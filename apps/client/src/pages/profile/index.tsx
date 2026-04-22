@@ -49,7 +49,7 @@ import { FollowersDialog, FollowingDialog } from './follow-dialog';
 export const Profile: React.FC = () => {
   const { userId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { authUser, token } = useAuthState();
+  const { authUser } = useAuthState();
 
   if (userId == null) {
     throw new Error('Profile rendered without userId');
@@ -125,10 +125,12 @@ export const Profile: React.FC = () => {
               onPick={(dataUrl) => {
                 performMutation({
                   mutate: () =>
-                    updateUserImage({
-                      headers: { authorization: token ?? '' },
-                      data: { image: dataUrl },
-                    }),
+                    authUser.getIdToken().then((token) =>
+                      updateUserImage({
+                        headers: { authorization: token ?? '' },
+                        data: { image: dataUrl },
+                      }),
+                    ),
                   setLoading: setSubmittingUserImage,
                   errorMessages: {
                     401: authErrorMessage,
@@ -157,10 +159,12 @@ export const Profile: React.FC = () => {
                 onClick={() => {
                   performMutation({
                     mutate: () =>
-                      followUser({
-                        headers: { authorization: token ?? '' },
-                        userId,
-                      }),
+                      authUser.getIdToken().then((token) =>
+                        followUser({
+                          headers: { authorization: token ?? '' },
+                          userId,
+                        }),
+                      ),
                     setLoading: setSubmittingFollow,
                     errorMessages: {
                       401: authErrorMessage,
@@ -181,11 +185,13 @@ export const Profile: React.FC = () => {
                 onClick={() => {
                   performMutation({
                     mutate: () =>
-                      removeFollow({
-                        headers: { authorization: token ?? '' },
-                        userId: userId,
-                        data: { direction: 'to' },
-                      }),
+                      authUser.getIdToken().then((token) =>
+                        removeFollow({
+                          headers: { authorization: token ?? '' },
+                          userId: userId,
+                          data: { direction: 'to' },
+                        }),
+                      ),
                     setLoading: setSubmittingFollow,
                     errorMessages: {
                       400: 'Could not remove follow request.',
@@ -226,11 +232,13 @@ export const Profile: React.FC = () => {
                     onClick={() => {
                       performMutation({
                         mutate: () =>
-                          removeFollow({
-                            headers: { authorization: token ?? '' },
-                            userId,
-                            data: { direction: 'to' },
-                          }),
+                          authUser.getIdToken().then((token) =>
+                            removeFollow({
+                              headers: { authorization: token ?? '' },
+                              userId,
+                              data: { direction: 'to' },
+                            }),
+                          ),
                         setLoading: setSubmittingFollow,
                         errorMessages: {
                           400: 'Could not remove follow.',

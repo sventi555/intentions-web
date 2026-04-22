@@ -37,7 +37,7 @@ interface DraftPostState {
 const DraftPostContext = createContext<DraftPostState | null>(null);
 
 export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
-  const { authUser, token } = useAuthState();
+  const { authUser } = useAuthState();
 
   if (authUser == null) {
     throw new Error('Must be logged in to use draft post provider');
@@ -71,14 +71,16 @@ export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
     (data) => {
       performMutation({
         mutate: () =>
-          createPost({
-            headers: { authorization: token ?? '' },
-            data: {
-              intentionId,
-              description: data.description,
-              ...(imageField.value ? { image: imageField.value } : {}),
-            },
-          }),
+          authUser.getIdToken().then((token) =>
+            createPost({
+              headers: { authorization: token ?? '' },
+              data: {
+                intentionId,
+                description: data.description,
+                ...(imageField.value ? { image: imageField.value } : {}),
+              },
+            }),
+          ),
         setLoading: setIsSubmitting,
         errorMessages: {
           401: authErrorMessage,

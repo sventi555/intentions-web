@@ -28,7 +28,7 @@ type Inputs = {
 export const CreateIntention: React.FC = () => {
   const [, setLocation] = useLocation();
 
-  const { authUser, token } = useAuthState();
+  const { authUser } = useAuthState();
   const { mutateAsync: createIntention } = useCreateIntention();
   const invalidateIntentions = useInvalidateIntentions();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,10 +49,12 @@ export const CreateIntention: React.FC = () => {
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     performMutation({
       mutate: () =>
-        createIntention({
-          headers: { authorization: token ?? '' },
-          data: { name: data.intention },
-        }),
+        authUser.getIdToken().then((token) =>
+          createIntention({
+            headers: { authorization: token ?? '' },
+            data: { name: data.intention },
+          }),
+        ),
       setLoading: setIsSubmitting,
       errorMessages: {
         401: authErrorMessage,
