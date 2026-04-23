@@ -10,14 +10,9 @@ export const useUser = (userId: string | undefined) => {
     isError,
   } = useQuery({
     queryKey: ['user', userId],
-    enabled: !!userId,
+    enabled: userId != null,
     queryFn: async () => {
-      if (userId == null) {
-        // should not be reached
-        return;
-      }
-
-      const user = await getDoc(docs.user(userId));
+      const user = await getDoc(docs.user(userId!));
 
       const data = user.data();
       if (data == null) {
@@ -38,25 +33,22 @@ export const useInvalidateUser = () => {
     queryClient.refetchQueries({ queryKey: ['user', userId] });
 };
 
-export const useSearchUser = (username?: string) => {
+export const useSearchUser = (username: string | undefined) => {
+  const lowerUsername = username?.toLowerCase();
+
   const {
     data: user,
     isLoading,
     isError,
   } = useQuery({
-    enabled: !!username,
-    queryKey: ['user', { username: username?.toLowerCase() }],
+    enabled: lowerUsername != null,
+    queryKey: ['user', { username: lowerUsername }],
     queryFn: async () => {
-      if (username == null) {
-        // should not be reached
-        return;
-      }
-
       const userDocs = (
         await getDocs(
           query(
             collections.users(),
-            where('usernameLower', '==', username.toLowerCase()),
+            where('usernameLower', '==', lowerUsername),
           ),
         )
       ).docs;

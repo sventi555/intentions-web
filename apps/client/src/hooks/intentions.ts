@@ -3,15 +3,16 @@ import { getDoc, getDocs, orderBy, query, where } from 'firebase/firestore';
 
 import { collections, CollectionSort, docs } from '@/data/db';
 
-export const useIntention = (intentionId: string) => {
+export const useIntention = (intentionId: string | undefined) => {
   const {
     data: intention,
     isLoading,
     isError,
   } = useQuery({
+    enabled: intentionId != null,
     queryKey: ['intention', intentionId],
     queryFn: async () => {
-      const intentionDoc = await getDoc(docs.intention(intentionId));
+      const intentionDoc = await getDoc(docs.intention(intentionId!));
 
       const data = intentionDoc.data();
       if (data == null) {
