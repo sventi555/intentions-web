@@ -34,7 +34,7 @@ export const Search: React.FC = () => {
   return (
     <div className="flex grow flex-col items-center gap-2 p-4">
       <div className="text-neutral-600">
-        Enter an <b>exact</b> username to follow someone
+        Enter an <b>exact</b> username to find someone
       </div>
 
       <div className="flex items-center gap-1 self-stretch">

@@ -1,6 +1,6 @@
 import { useLocation } from 'wouter';
 
-import { AddUser, Bell, Home, Pencil, Profile } from '@/components/icons';
+import { Bell, Home, Pencil, Profile, Search } from '@/components/icons';
 import { Icon } from '@/components/icons/icon';
 import { useUser } from '@/hooks/users';
 import { useAuthState } from '@/state/auth';
@@ -15,7 +15,7 @@ export const NavSidebar: React.FC = () => {
     <nav className="flex grow flex-col gap-[40px] border-r border-neutral-300 p-[16px]">
       <SidebarButton Icon={Home} onClick={() => navigate('~/')} />
       <SidebarButton Icon={Pencil} onClick={() => navigate('~/create')} />
-      <SidebarButton Icon={AddUser} onClick={() => navigate('~/search')} />
+      <SidebarButton Icon={Search} onClick={() => navigate('~/search')} />
       <SidebarButton
         badge={user?.unreadNotifs}
         Icon={Bell}

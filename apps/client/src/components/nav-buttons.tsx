@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 
 import {
-  AddUser,
   Bell,
   Close,
   Home,
   Logo,
   Pencil,
   Profile,
+  Search,
 } from '@/components/icons';
 import { Icon } from '@/components/icons/icon';
 import { useUser } from '@/hooks/users';
@@ -44,7 +44,7 @@ export const NavButtons: React.FC = () => {
             />
             <TabButton
               onClick={() => navigate('~/search')}
-              Icon={AddUser}
+              Icon={Search}
               animate
             />
             <TabButton
