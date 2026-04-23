@@ -14,21 +14,19 @@ type FilterGreaterThan<Union, Threshold extends number> = Exclude<
 
 type ErrorStatuses<Statuses> = FilterGreaterThan<Statuses, 400>;
 
-type PerformMutationArgs<T extends { status: number }> = {
-  mutate: () => Promise<T>;
+type PerformMutationArgs<Res extends { status: number }> = {
+  mutate: () => Promise<Res>;
   setLoading: (loading: boolean) => void;
-  errorMessages: Record<ErrorStatuses<T['status']>, string>;
+  errorMessages: Record<ErrorStatuses<Res['status']>, string>;
   onSuccess: () => Promise<unknown>;
 };
 
-export const performMutation = async <
-  ResponseError extends { status: number },
->({
+export const performMutation = async <Res extends { status: number }>({
   mutate,
   setLoading,
   errorMessages,
   onSuccess,
-}: PerformMutationArgs<ResponseError>) => {
+}: PerformMutationArgs<Res>) => {
   setLoading(true);
   mutate()
     .then(({ status }) => {
