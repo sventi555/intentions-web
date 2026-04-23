@@ -14,7 +14,7 @@ import {
   useInvalidateFollowers,
 } from '@/hooks/follows';
 import { useRemoveFollow } from '@/intentions-api';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 
 interface FollowDialogProps {
   open: boolean;
@@ -31,7 +31,7 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
   users,
   onRemove,
 }) => {
-  const { authUser } = useAuthState();
+  const { authUser } = useSignedInAuthState();
   const { mutateAsync: removeFollow } = useRemoveFollow();
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
@@ -42,10 +42,6 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
       .toLowerCase()
       .includes(searchedUsername.toLowerCase()),
   );
-
-  if (authUser == null) {
-    return null;
-  }
 
   return (
     <Dialog open={open} onClose={onClose}>

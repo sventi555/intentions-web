@@ -7,7 +7,7 @@ import { TextArea } from '@/components/atoms/text-area';
 import { Plus } from '@/components/icons';
 import { StickyHeader } from '@/components/sticky-header';
 import { useIntentions } from '@/hooks/intentions';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 import { useDraftPostContext } from '@/state/draft';
 
 export const CreatePost: React.FC = () => {
@@ -22,12 +22,7 @@ export const CreatePost: React.FC = () => {
     isSubmitting,
   } = useDraftPostContext();
 
-  const { authUser } = useAuthState();
-
-  if (authUser == null) {
-    throw new Error('Must be logged in to view create post page');
-  }
-
+  const { authUser } = useSignedInAuthState();
   const { intentions } = useIntentions(authUser.uid);
   const filePickerRef = useRef<HTMLInputElement | null>(null);
 

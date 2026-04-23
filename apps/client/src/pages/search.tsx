@@ -11,11 +11,10 @@ import { Close, Search as SearchIcon } from '@/components/icons';
 import { useFollow, useInvalidateFollow } from '@/hooks/follows';
 import { useSearchUser } from '@/hooks/users';
 import { useFollowUser, useRemoveFollow } from '@/intentions-api';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 
 export const Search: React.FC = () => {
-  const { authUser } = useAuthState();
-
+  const { authUser } = useSignedInAuthState();
   const [username, setUsername] = useState('');
   const [searchedUsername, setSearchedUsername] = useState('');
 
@@ -31,10 +30,6 @@ export const Search: React.FC = () => {
   const invalidateFollow = useInvalidateFollow();
 
   const [followPending, setFollowPending] = useState(false);
-
-  if (authUser == null) {
-    return null;
-  }
 
   return (
     <div className="flex grow flex-col items-center gap-2 p-4">

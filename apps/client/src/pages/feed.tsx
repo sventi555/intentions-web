@@ -2,13 +2,10 @@ import { Link } from 'wouter';
 
 import { PostsList } from '@/components/posts-list';
 import { useFeedPosts } from '@/hooks/posts';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 
 export const Feed: React.FC = () => {
-  const authUser = useAuthState().authUser;
-  if (authUser == null) {
-    throw new Error('Must be logged in to view feed');
-  }
+  const { authUser } = useSignedInAuthState();
   const { posts, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useFeedPosts(authUser.uid);
 

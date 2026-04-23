@@ -2,10 +2,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc, getDocs, query, where } from 'firebase/firestore';
 
 import { collections, docs } from '@/data/db';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 
 export const useFollowedUsers = () => {
-  const authUser = useAuthState().authUser;
+  const { authUser } = useSignedInAuthState();
 
   const {
     data: followedUsers,
@@ -14,10 +14,6 @@ export const useFollowedUsers = () => {
   } = useQuery({
     queryKey: ['followedUsers'],
     queryFn: async () => {
-      if (authUser == null) {
-        throw new Error('must be signed in to get followed users');
-      }
-
       const followDocs = (
         await getDocs(
           query(
@@ -43,7 +39,7 @@ export const useInvalidateFollowedUsers = () => {
 };
 
 export const useFollowers = () => {
-  const authUser = useAuthState().authUser;
+  const { authUser } = useSignedInAuthState();
 
   const {
     data: followers,
@@ -52,10 +48,6 @@ export const useFollowers = () => {
   } = useQuery({
     queryKey: ['followers'],
     queryFn: async () => {
-      if (authUser == null) {
-        throw new Error('must be signed in to get followers');
-      }
-
       const followDocs = (
         await getDocs(
           query(
@@ -81,7 +73,7 @@ export const useInvalidateFollowers = () => {
 };
 
 export const useFollow = (toUserId?: string) => {
-  const authUser = useAuthState().authUser;
+  const { authUser } = useSignedInAuthState();
 
   const {
     data: follow,
@@ -94,10 +86,6 @@ export const useFollow = (toUserId?: string) => {
       if (toUserId == null) {
         // should not be reached
         return;
-      }
-
-      if (authUser == null) {
-        throw new Error('must be signed in to read follow');
       }
 
       const follow = await getDoc(docs.follow(authUser.uid, toUserId));

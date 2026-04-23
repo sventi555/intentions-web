@@ -25,7 +25,7 @@ import {
   useDeleteComment,
   useDeletePost,
 } from '@/intentions-api';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 import { defaultTransition } from '@/style';
 
 interface PostProps {
@@ -37,7 +37,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
   const { downloadUrl: imageUrl } = useDownloadUrl(data.image?.src);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const { authUser } = useAuthState();
+  const { authUser } = useSignedInAuthState();
 
   const { mutateAsync: deletePost } = useDeletePost();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -55,7 +55,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
           <div
             className={clsx(
               'flex flex-wrap items-center gap-2',
-              data.userId === authUser?.uid && 'pr-4',
+              data.userId === authUser.uid && 'pr-4',
             )}
           >
             <Link
@@ -73,7 +73,7 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
               {data.intention.name}
             </Link>
           </div>
-          {data.userId === authUser?.uid ? (
+          {data.userId === authUser.uid ? (
             <Menu>
               <MenuButton className="absolute top-[14px] right-0 cursor-pointer">
                 <EllipsesVert className="text-neutral-600" />
@@ -189,7 +189,7 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
   open,
   onClose,
 }) => {
-  const { authUser } = useAuthState();
+  const { authUser } = useSignedInAuthState();
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
   const { comments, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -209,10 +209,6 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
     hasNextPage,
     container,
   });
-
-  if (authUser == null) {
-    return null;
-  }
 
   const onCreateComment = () => {
     if (draftComment.trim()) {
@@ -266,7 +262,7 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
                 </div>
               </div>
             </div>
-            {authUser?.uid === c.data.userId && (
+            {authUser.uid === c.data.userId && (
               <div className="pt-1.5">
                 <Menu>
                   <MenuButton className="cursor-pointer">

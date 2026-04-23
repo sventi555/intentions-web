@@ -42,3 +42,21 @@ export const useAuthState = () => {
 
   return authState;
 };
+
+interface SignedInAuthState extends AuthState {
+  authUser: User;
+}
+
+const isSignedIn = (authState: AuthState): authState is SignedInAuthState => {
+  return authState.authUser != null;
+};
+
+export const useSignedInAuthState = () => {
+  const authState = useAuthState();
+
+  if (!isSignedIn(authState)) {
+    throw new Error('Not signed in');
+  }
+
+  return authState;
+};

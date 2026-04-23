@@ -3,7 +3,6 @@ import { orderBy, query, where } from 'firebase/firestore';
 
 import { collections } from '@/data/db';
 import { useInfiniteDocQuery } from '@/hooks/infinite-doc-query';
-import { useAuthState } from '@/state/auth';
 
 const PAGE_SIZE = 8;
 
@@ -62,11 +61,6 @@ export const useIntentionPosts = (userId: string, intentionId: string) => {
 
 export const useInvalidateIntentionPosts = () => {
   const queryClient = useQueryClient();
-  const authUser = useAuthState().authUser;
-
-  if (authUser == null) {
-    throw new Error('');
-  }
 
   return (userId: string, intentionId: string) =>
     queryClient.refetchQueries({

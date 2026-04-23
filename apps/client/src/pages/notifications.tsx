@@ -14,14 +14,10 @@ import {
 } from '@/hooks/notifications';
 import { useInvalidateUser, useUser } from '@/hooks/users';
 import { useClearNotifAlert, useRespondToFollow } from '@/intentions-api';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 
 export const Notifications: React.FC = () => {
-  const { authUser } = useAuthState();
-  if (authUser == null) {
-    throw new Error('must be signed in to view notifications');
-  }
-
+  const { authUser } = useSignedInAuthState();
   const { user } = useUser(authUser.uid);
   const invalidateUser = useInvalidateUser();
   const { mutateAsync: clearNotifAlert } = useClearNotifAlert();
@@ -129,11 +125,7 @@ interface FollowRequestNotificationProps {
 const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
   props,
 ) => {
-  const { authUser } = useAuthState();
-  if (authUser == null) {
-    throw new Error('must be signed in to view notification');
-  }
-
+  const { authUser } = useSignedInAuthState();
   const { mutateAsync: respondToFollow } = useRespondToFollow();
   const invalidateNotifications = useInvalidateNotifications();
 

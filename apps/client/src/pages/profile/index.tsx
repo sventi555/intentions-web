@@ -42,21 +42,17 @@ import {
   useRemoveFollow,
   useUpdateUserImage,
 } from '@/intentions-api';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 import { defaultTransition } from '@/style';
 import { FollowersDialog, FollowingDialog } from './follow-dialog';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { authUser } = useAuthState();
+  const { authUser } = useSignedInAuthState();
 
   if (userId == null) {
     throw new Error('Profile rendered without userId');
-  }
-
-  if (authUser == null) {
-    throw new Error('must be signed in to view profile');
   }
 
   const [selectedTab, setSelectedTab] = useState(
@@ -99,7 +95,7 @@ export const Profile: React.FC = () => {
     return null;
   }
 
-  const isAuthUser = userId === authUser?.uid;
+  const isAuthUser = userId === authUser.uid;
 
   return (
     <>

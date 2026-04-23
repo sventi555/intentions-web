@@ -9,7 +9,7 @@ import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
 import { useInvalidateIntentions } from '@/hooks/intentions';
 import { useCreateIntention } from '@/intentions-api';
-import { useAuthState } from '@/state/auth';
+import { useSignedInAuthState } from '@/state/auth';
 import { useDraftPostContext } from '@/state/draft';
 
 const suggestions = [
@@ -28,7 +28,7 @@ type Inputs = {
 export const CreateIntention: React.FC = () => {
   const [, setLocation] = useLocation();
 
-  const { authUser } = useAuthState();
+  const { authUser } = useSignedInAuthState();
   const { mutateAsync: createIntention } = useCreateIntention();
   const invalidateIntentions = useInvalidateIntentions();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,10 +41,6 @@ export const CreateIntention: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
-
-  if (authUser == null) {
-    throw new Error('must be signed in to create intention');
-  }
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     performMutation({

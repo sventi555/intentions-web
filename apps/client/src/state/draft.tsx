@@ -16,7 +16,7 @@ import {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 import { useLocation } from 'wouter';
-import { useAuthState } from './auth';
+import { useSignedInAuthState } from './auth';
 
 type PostInputs = {
   image: string;
@@ -37,12 +37,7 @@ interface DraftPostState {
 const DraftPostContext = createContext<DraftPostState | null>(null);
 
 export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
-  const { authUser } = useAuthState();
-
-  if (authUser == null) {
-    throw new Error('Must be logged in to use draft post provider');
-  }
-
+  const { authUser } = useSignedInAuthState();
   const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
     null,
   );
