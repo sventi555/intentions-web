@@ -3,8 +3,7 @@ import { Route } from 'wouter';
 
 import { AuthProtected } from '@/components/auth-protected';
 import { PageWrapper } from '@/components/page-wrapper';
-import { CreateIntention } from '@/pages/create-intention';
-import { CreatePost } from '@/pages/create-post';
+import { CreateIntention } from '@/pages/draft/create-intention';
 import { Feed } from '@/pages/feed';
 import { ForgotPassword } from '@/pages/forgot-password';
 import { Intention } from '@/pages/intention';
@@ -13,6 +12,9 @@ import { Profile } from '@/pages/profile';
 import { Search } from '@/pages/search';
 import { SignIn } from '@/pages/sign-in';
 import { SignUp } from '@/pages/sign-up';
+import { CreatePost } from './pages/draft/create-post';
+import { SelectImage } from './pages/draft/select-image';
+import { SelectIntention } from './pages/draft/select-intention';
 import { DraftPostProvider } from './state/draft';
 
 const App: React.FC = () => {
@@ -33,18 +35,30 @@ const App: React.FC = () => {
         </AuthProtected>
       </Route>
 
-      <Route path="/create" nest>
+      <Route path="/draft" nest>
         <AuthProtected>
           <DraftPostProvider>
-            <Route path="/">
+            <Route path="/(intention)?">
               <PageWrapper>
-                <CreatePost />
+                <SelectIntention />
               </PageWrapper>
             </Route>
 
-            <Route path="/intention">
+            <Route path="/intention/create">
               <PageWrapper>
                 <CreateIntention />
+              </PageWrapper>
+            </Route>
+
+            <Route path="/image">
+              <PageWrapper>
+                <SelectImage />
+              </PageWrapper>
+            </Route>
+
+            <Route path="/review">
+              <PageWrapper>
+                <CreatePost />
               </PageWrapper>
             </Route>
           </DraftPostProvider>

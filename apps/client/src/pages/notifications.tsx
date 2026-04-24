@@ -6,7 +6,7 @@ import { performMutation } from '@/actions';
 import { authErrorMessage } from '@/actions/errors';
 import { DisplayPic } from '@/components/display-pic';
 import { Check, Close } from '@/components/icons';
-import { StickyHeader } from '@/components/sticky-header';
+import { PageHeader } from '@/components/page-header';
 import { useInfiniteScroll } from '@/hooks/infinite-scroll';
 import {
   useInvalidateNotifications,
@@ -60,9 +60,8 @@ export const Notifications: React.FC = () => {
 
   return (
     <div className="flex flex-col">
-      <StickyHeader>
-        <div className="text-lg">Notifications</div>
-      </StickyHeader>
+      <PageHeader title="Notifications" />
+
       {notifications.map((notification) => {
         const { data } = notification;
 

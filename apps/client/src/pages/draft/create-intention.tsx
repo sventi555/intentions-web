@@ -26,7 +26,7 @@ type Inputs = {
 };
 
 export const CreateIntention: React.FC = () => {
-  const [, setLocation] = useLocation();
+  const [, navigate] = useLocation();
 
   const { authUser } = useSignedInAuthState();
   const { mutateAsync: createIntention } = useCreateIntention();
@@ -34,7 +34,6 @@ export const CreateIntention: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { setIntentionId } = useDraftPostContext();
-  const clearDraftIntention = () => setIntentionId(null);
 
   const {
     register,
@@ -56,10 +55,12 @@ export const CreateIntention: React.FC = () => {
         401: authErrorMessage,
         409: 'An intention with the same name already exists.',
       },
-      onSuccess: () =>
+      onSuccess: (res) =>
         invalidateIntentions(authUser.uid).then(() => {
-          clearDraftIntention();
-          setLocation('~/create');
+          setIntentionId(res.data.id);
+          requestAnimationFrame(() =>
+            navigate('~/draft/image', { replace: true }),
+          );
         }),
     });
   };
@@ -109,7 +110,10 @@ export const CreateIntention: React.FC = () => {
         />
         <div className="flex gap-2">
           <div className="flex grow flex-col">
-            <Button type="secondary" onClick={() => history.back()}>
+            <Button
+              type="secondary"
+              onClick={() => navigate('~/draft/intention', { replace: true })}
+            >
               Cancel
             </Button>
           </div>

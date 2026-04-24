@@ -29,7 +29,7 @@ interface DraftPostState {
   base64Img: string;
   setBase64Img: (img: string) => void;
   registerDescription: UseFormRegisterReturn;
-  getOnSubmit: (intentionId: string) => () => void;
+  onSubmit: () => void;
   formErrors: FieldErrors<PostInputs>;
   isSubmitting: boolean;
 }
@@ -38,9 +38,7 @@ const DraftPostContext = createContext<DraftPostState | null>(null);
 
 export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
   const { authUser } = useSignedInAuthState();
-  const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
-    null,
-  );
+  const [intentionId, setIntentionId] = useState<string | null>(null);
   const {
     register,
     control,
@@ -61,49 +59,49 @@ export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
   const invalidateIntentions = useInvalidateIntentions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit =
-    (intentionId: string): SubmitHandler<PostInputs> =>
-    (data) => {
-      performMutation({
-        mutate: () =>
-          authUser.getIdToken().then((token) =>
-            createPost({
-              headers: { authorization: token ?? '' },
-              data: {
-                intentionId,
-                description: data.description,
-                ...(imageField.value ? { image: imageField.value } : {}),
-              },
-            }),
-          ),
-        setLoading: setIsSubmitting,
-        errorMessages: {
-          401: authErrorMessage,
-          404: 'Could not create post - intention does not exist.',
-        },
-        onSuccess: () => {
-          invalidateUserPosts(authUser.uid);
-          invalidateIntentionPosts(authUser.uid, intentionId);
-          invalidateIntentions(authUser.uid);
+  const onSubmit: SubmitHandler<PostInputs> = (data) => {
+    if (intentionId == null) {
+      throw new Error('Intention id is not set');
+    }
 
-          return invalidateFeedPosts(authUser.uid).then(() =>
-            setLocation('~/'),
-          );
-        },
-      });
-    };
+    performMutation({
+      mutate: () =>
+        authUser.getIdToken().then((token) =>
+          createPost({
+            headers: { authorization: token ?? '' },
+            data: {
+              intentionId,
+              description: data.description,
+              ...(imageField.value ? { image: imageField.value } : {}),
+            },
+          }),
+        ),
+      setLoading: setIsSubmitting,
+      errorMessages: {
+        401: authErrorMessage,
+        404: 'Could not create post - intention does not exist.',
+      },
+      onSuccess: () => {
+        invalidateUserPosts(authUser.uid);
+        invalidateIntentionPosts(authUser.uid, intentionId);
+        invalidateIntentions(authUser.uid);
+
+        return invalidateFeedPosts(authUser.uid).then(() => setLocation('~/'));
+      },
+    });
+  };
 
   return (
     <DraftPostContext.Provider
       value={{
-        intentionId: selectedIntentionId,
-        setIntentionId: setSelectedIntentionId,
+        intentionId: intentionId,
+        setIntentionId: setIntentionId,
         base64Img: imageField.value,
         setBase64Img: imageField.onChange,
         registerDescription: register('description', {
           validate: (value, formState) => !!(value || formState.image),
         }),
-        getOnSubmit: (intentionId) => handleSubmit(onSubmit(intentionId)),
+        onSubmit: handleSubmit(onSubmit),
         formErrors: errors,
         isSubmitting,
       }}

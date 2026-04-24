@@ -23,7 +23,7 @@ export const NavButtons: React.FC = () => {
   const { user } = useUser(authUser?.uid);
 
   return (
-    <nav className="fixed right-[28px] bottom-[28px] flex flex-col gap-[24px]">
+    <nav className="fixed right-[24px] bottom-[24px] flex flex-col gap-[24px]">
       <AnimatePresence>
         {isOpen ? (
           <div className="flex flex-col gap-[8px]">
@@ -48,7 +48,7 @@ export const NavButtons: React.FC = () => {
               animate
             />
             <TabButton
-              onClick={() => navigate('~/create')}
+              onClick={() => navigate('~/draft')}
               Icon={Pencil}
               animate
             />
