@@ -1,22 +1,3 @@
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Tab,
-  TabGroup,
-  TabList,
-  TabPanel,
-  TabPanels,
-} from '@headlessui/react';
-import clsx from 'clsx';
-import { format, intlFormatDistance } from 'date-fns';
-import { signOut } from 'firebase/auth';
-import { motion } from 'motion/react';
-import React, { PropsWithChildren, useRef, useState } from 'react';
-import { Fragment } from 'react/jsx-runtime';
-import { Link, useParams, useSearchParams } from 'wouter';
-
 import { performMutation } from '@/actions';
 import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
@@ -41,33 +22,47 @@ import {
   useFollowUser,
   useRemoveFollow,
   useUpdateUserImage,
-} from '@/intentions-api';
+} from '@/intentions-api.gen';
+import { Route as intentionRoute } from '@/routes/_app/profile/$userId/intention/$intentionId';
 import { useSignedInAuthState } from '@/state/auth';
 import { defaultTransition } from '@/style';
-import { FollowersDialog, FollowingDialog } from './follow-dialog';
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from '@headlessui/react';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import clsx from 'clsx';
+import { format, intlFormatDistance } from 'date-fns';
+import { signOut } from 'firebase/auth';
+import { motion } from 'motion/react';
+import React, { PropsWithChildren, useRef, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
+import { z } from 'zod';
+import { FollowersDialog, FollowingDialog } from './-follow-dialog';
 
-export const Profile: React.FC = () => {
-  const { userId } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
+const Profile: React.FC = () => {
+  const { userId } = Route.useParams();
+  const { tab } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
   const { authUser } = useSignedInAuthState();
 
-  if (userId == null) {
-    throw new Error('Profile rendered without userId');
-  }
-
-  const [selectedTab, setSelectedTab] = useState(
-    searchParams.get('tab') === 'intentions' ? 1 : 0,
-  );
+  const [selectedTab, setSelectedTab] = useState(tab === 'intentions' ? 1 : 0);
 
   const onTabChange = (tabIndex: number) => {
     setSelectedTab(tabIndex);
-    setSearchParams(
-      (prev) => {
-        prev.set('tab', tabIndex === 1 ? 'intentions' : 'posts');
-        return prev;
-      },
-      { replace: true },
-    );
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        tab: tabIndex === 1 ? 'intentions' : 'posts',
+      }),
+    });
   };
 
   const { user } = useUser(userId);
@@ -426,7 +421,8 @@ const ProfileIntentions: React.FC<ProfileIntentionsProps> = (props) => {
           return (
             <Fragment key={id}>
               <Link
-                href={`~/profile/${props.userId}/intention/${id}`}
+                to={intentionRoute.to}
+                params={{ userId: props.userId, intentionId: id }}
                 className="p-1"
               >
                 <div>{data.name}</div>
@@ -463,3 +459,10 @@ const TabFallbackText: React.FC<PropsWithChildren> = (props) => {
     </div>
   );
 };
+
+export const Route = createFileRoute('/_app/profile/$userId/')({
+  component: Profile,
+  validateSearch: z.object({
+    tab: z.enum(['intentions', 'posts']).default('posts'),
+  }),
+});

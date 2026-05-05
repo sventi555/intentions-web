@@ -1,10 +1,11 @@
-import { Link } from 'wouter';
-
 import { PostsList } from '@/components/posts-list';
 import { useFeedPosts } from '@/hooks/posts';
+import { Route as draftRoute } from '@/routes/_app/draft';
+import { Route as searchRoute } from '@/routes/_app/search';
 import { useSignedInAuthState } from '@/state/auth';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
-export const Feed: React.FC = () => {
+const Feed: React.FC = () => {
   const { authUser } = useSignedInAuthState();
   const { posts, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useFeedPosts(authUser.uid);
@@ -17,11 +18,11 @@ export const Feed: React.FC = () => {
     return (
       <div className="flex grow flex-col items-center justify-center">
         <div>Nothing to show...</div>
-        <Link href="~/search" className="underline">
+        <Link to={searchRoute.to} className="underline">
           Follow someone
         </Link>{' '}
         <div>or</div>
-        <Link href="~/create" className="underline">
+        <Link to={draftRoute.to} className="underline">
           Post about an intention
         </Link>
       </div>
@@ -37,3 +38,5 @@ export const Feed: React.FC = () => {
     />
   );
 };
+
+export const Route = createFileRoute('/_app/_feed')({ component: Feed });

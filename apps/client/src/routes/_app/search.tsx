@@ -1,7 +1,3 @@
-import { clsx } from 'clsx';
-import { useState } from 'react';
-import { Link } from 'wouter';
-
 import { performMutation } from '@/actions';
 import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
@@ -10,10 +6,14 @@ import { DisplayPic } from '@/components/display-pic';
 import { Close, Search as SearchIcon } from '@/components/icons';
 import { useFollow, useInvalidateFollow } from '@/hooks/follows';
 import { useSearchUser } from '@/hooks/users';
-import { useFollowUser, useRemoveFollow } from '@/intentions-api';
+import { useFollowUser, useRemoveFollow } from '@/intentions-api.gen';
+import { Route as profileRoute } from '@/routes/_app/profile/$userId';
 import { useSignedInAuthState } from '@/state/auth';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { clsx } from 'clsx';
+import { useState } from 'react';
 
-export const Search: React.FC = () => {
+const Search: React.FC = () => {
   const { authUser } = useSignedInAuthState();
   const [username, setUsername] = useState('');
   const [searchedUsername, setSearchedUsername] = useState('');
@@ -62,7 +62,9 @@ export const Search: React.FC = () => {
       <div className="flex grow flex-col items-center justify-center">
         {searchedUser != null && !searchedFollowLoading ? (
           <Link
-            href={searchedUserAccepted ? `~/profile/${searchedUser.id}` : ''}
+            to={profileRoute.to}
+            disabled={searchedUserFollow?.status !== 'accepted'}
+            params={{ userId: searchedUser.id }}
             className={clsx(
               'flex flex-col items-center gap-1 rounded-2xl p-4',
               searchedUserAccepted ? 'border' : 'cursor-default',
@@ -134,3 +136,5 @@ export const Search: React.FC = () => {
     </div>
   );
 };
+
+export const Route = createFileRoute('/_app/search')({ component: Search });

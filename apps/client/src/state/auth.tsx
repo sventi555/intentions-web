@@ -1,14 +1,12 @@
-import { User } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth/cordova';
-import { createContext, PropsWithChildren, useContext, useState } from 'react';
-
 import { auth } from '@/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { createContext, PropsWithChildren, useContext, useState } from 'react';
 
 const useAuthUser = () => {
   const [loading, setLoading] = useState(true);
   const [authUser, setAuthUser] = useState<User | null>(null);
 
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     setAuthUser(user);
     setLoading(false);
   });
@@ -16,7 +14,7 @@ const useAuthUser = () => {
   return { authUser, loading };
 };
 
-interface AuthState {
+export interface AuthState {
   authUser: User | null;
   loading: boolean;
 }

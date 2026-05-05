@@ -1,16 +1,14 @@
-import { clsx } from 'clsx';
-import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useLocation } from 'wouter';
-
 import { performMutation } from '@/actions';
 import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
 import { useInvalidateIntentions } from '@/hooks/intentions';
-import { useCreateIntention } from '@/intentions-api';
+import { useCreateIntention } from '@/intentions-api.gen';
 import { useSignedInAuthState } from '@/state/auth';
 import { useDraftPostContext } from '@/state/draft';
+import { clsx } from 'clsx';
+import { useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 const suggestions = [
   'be more adventurous',
@@ -26,15 +24,12 @@ type Inputs = {
 };
 
 export const CreateIntention: React.FC = () => {
-  const [, setLocation] = useLocation();
-
   const { authUser } = useSignedInAuthState();
   const { mutateAsync: createIntention } = useCreateIntention();
   const invalidateIntentions = useInvalidateIntentions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { setIntentionId } = useDraftPostContext();
-  const clearDraftIntention = () => setIntentionId(null);
+  const { setIntentionId, setStage } = useDraftPostContext();
 
   const {
     register,
@@ -56,10 +51,10 @@ export const CreateIntention: React.FC = () => {
         401: authErrorMessage,
         409: 'An intention with the same name already exists.',
       },
-      onSuccess: () =>
+      onSuccess: (res) =>
         invalidateIntentions(authUser.uid).then(() => {
-          clearDraftIntention();
-          setLocation('~/create');
+          setIntentionId(res.data.id);
+          setStage('image');
         }),
     });
   };
@@ -109,7 +104,10 @@ export const CreateIntention: React.FC = () => {
         />
         <div className="flex gap-2">
           <div className="flex grow flex-col">
-            <Button type="secondary" onClick={() => history.back()}>
+            <Button
+              type="secondary"
+              onClick={() => setStage('intention-select')}
+            >
               Cancel
             </Button>
           </div>

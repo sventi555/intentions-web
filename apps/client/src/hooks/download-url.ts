@@ -1,9 +1,8 @@
+import { storage } from '@/firebase';
 import { useQuery } from '@tanstack/react-query';
 import { getDownloadURL, ref } from 'firebase/storage';
 
-import { storage } from '@/firebase';
-
-export const useDownloadUrl = (storagePath?: string) => {
+export const useDownloadUrl = (storagePath: string | undefined) => {
   const {
     data: downloadUrl,
     isLoading,

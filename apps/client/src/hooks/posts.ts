@@ -1,8 +1,7 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { orderBy, query, where } from 'firebase/firestore';
-
 import { collections } from '@/data/db';
 import { useInfiniteDocQuery } from '@/hooks/infinite-doc-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { orderBy, query, where } from 'firebase/firestore';
 
 const PAGE_SIZE = 8;
 

@@ -1,16 +1,11 @@
-import { useParams } from 'wouter';
-
+import { PageHeader } from '@/components/page-header';
 import { PostsList } from '@/components/posts-list';
-import { StickyHeader } from '@/components/sticky-header';
 import { useIntention } from '@/hooks/intentions';
 import { useIntentionPosts } from '@/hooks/posts';
+import { createFileRoute } from '@tanstack/react-router';
 
-export const Intention: React.FC = () => {
-  const { userId, intentionId } = useParams();
-
-  if (userId == null || intentionId == null) {
-    throw new Error('Intention page rendered without correct params');
-  }
+const Intention: React.FC = () => {
+  const { userId, intentionId } = Route.useParams();
 
   const { intention } = useIntention(intentionId);
   const { posts, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -22,9 +17,8 @@ export const Intention: React.FC = () => {
 
   return (
     <div>
-      <StickyHeader>
-        {intention.user.username}&apos;s intention: <b>{intention.name}</b>
-      </StickyHeader>
+      <PageHeader title={intention.name} />
+
       <PostsList
         posts={posts}
         fetchNextPage={fetchNextPage}
@@ -34,3 +28,7 @@ export const Intention: React.FC = () => {
     </div>
   );
 };
+
+export const Route = createFileRoute(
+  '/_app/profile/$userId/intention/$intentionId',
+)({ component: Intention });

@@ -108,10 +108,9 @@ export type CreateIntentionBody = {
   name: string;
 };
 
-/**
- * @nullable
- */
-export type CreateIntention201 = unknown | null;
+export type CreateIntention201 = {
+  id: string;
+};
 
 /**
  * @nullable

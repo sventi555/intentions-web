@@ -2,7 +2,6 @@ Fixes:
 
 Features:
 - edit post UI
-- post progressive disclosure
 - intention pie chart breakdown (colour coding!)?
 - comment notifications?
 

@@ -6,7 +6,9 @@ import {
   useInvalidateIntentionPosts,
   useInvalidateUserPosts,
 } from '@/hooks/posts';
-import { useCreatePost } from '@/intentions-api';
+import { useCreatePost } from '@/intentions-api.gen';
+import { Route as feedRoute } from '@/routes/_app/_feed';
+import { useNavigate } from '@tanstack/react-router';
 import { createContext, PropsWithChildren, useContext, useState } from 'react';
 import {
   FieldErrors,
@@ -15,21 +17,25 @@ import {
   useForm,
   UseFormRegisterReturn,
 } from 'react-hook-form';
-import { useLocation } from 'wouter';
 import { useSignedInAuthState } from './auth';
 
 type PostInputs = {
+  intentionId: string;
   image: string;
   description: string;
 };
 
+type DraftStage = 'intention-select' | 'intention-create' | 'image' | 'review';
+
 interface DraftPostState {
-  intentionId: string | null;
-  setIntentionId: (intentionId: string | null) => void;
+  stage: DraftStage;
+  setStage: (stage: DraftStage) => void;
+  intentionId: string;
+  setIntentionId: (intentionId: string) => void;
   base64Img: string;
   setBase64Img: (img: string) => void;
   registerDescription: UseFormRegisterReturn;
-  getOnSubmit: (intentionId: string) => () => void;
+  onSubmit: () => void;
   formErrors: FieldErrors<PostInputs>;
   isSubmitting: boolean;
 }
@@ -38,72 +44,75 @@ const DraftPostContext = createContext<DraftPostState | null>(null);
 
 export const DraftPostProvider: React.FC<PropsWithChildren> = (props) => {
   const { authUser } = useSignedInAuthState();
-  const [selectedIntentionId, setSelectedIntentionId] = useState<string | null>(
-    null,
-  );
+  const [stage, setStage] = useState<DraftStage>('intention-select');
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<PostInputs>();
-  const { field: imageField } = useController<PostInputs>({
+  const { field: intentionId } = useController<PostInputs>({
+    name: 'intentionId',
+    control,
+    rules: { required: true },
+  });
+  const { field: image } = useController<PostInputs>({
     name: 'image',
     control,
     rules: { deps: ['description'] },
   });
 
   const { mutateAsync: createPost } = useCreatePost();
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
   const invalidateFeedPosts = useInvalidateFeedPosts();
   const invalidateUserPosts = useInvalidateUserPosts();
   const invalidateIntentionPosts = useInvalidateIntentionPosts();
   const invalidateIntentions = useInvalidateIntentions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit =
-    (intentionId: string): SubmitHandler<PostInputs> =>
-    (data) => {
-      performMutation({
-        mutate: () =>
-          authUser.getIdToken().then((token) =>
-            createPost({
-              headers: { authorization: token ?? '' },
-              data: {
-                intentionId,
-                description: data.description,
-                ...(imageField.value ? { image: imageField.value } : {}),
-              },
-            }),
-          ),
-        setLoading: setIsSubmitting,
-        errorMessages: {
-          401: authErrorMessage,
-          404: 'Could not create post - intention does not exist.',
-        },
-        onSuccess: () => {
-          invalidateUserPosts(authUser.uid);
-          invalidateIntentionPosts(authUser.uid, intentionId);
-          invalidateIntentions(authUser.uid);
+  const onSubmit: SubmitHandler<PostInputs> = (data) => {
+    performMutation({
+      mutate: () =>
+        authUser.getIdToken().then((token) =>
+          createPost({
+            headers: { authorization: token ?? '' },
+            data: {
+              intentionId: intentionId.value,
+              description: data.description,
+              ...(image.value ? { image: image.value } : {}),
+            },
+          }),
+        ),
+      setLoading: setIsSubmitting,
+      errorMessages: {
+        401: authErrorMessage,
+        404: 'Could not create post - intention does not exist.',
+      },
+      onSuccess: () => {
+        invalidateUserPosts(authUser.uid);
+        invalidateIntentionPosts(authUser.uid, intentionId.value);
+        invalidateIntentions(authUser.uid);
 
-          return invalidateFeedPosts(authUser.uid).then(() =>
-            setLocation('~/'),
-          );
-        },
-      });
-    };
+        return invalidateFeedPosts(authUser.uid).then(() =>
+          navigate({ to: feedRoute.to }),
+        );
+      },
+    });
+  };
 
   return (
     <DraftPostContext.Provider
       value={{
-        intentionId: selectedIntentionId,
-        setIntentionId: setSelectedIntentionId,
-        base64Img: imageField.value,
-        setBase64Img: imageField.onChange,
+        stage,
+        setStage,
+        intentionId: intentionId.value,
+        setIntentionId: intentionId.onChange,
+        base64Img: image.value,
+        setBase64Img: image.onChange,
         registerDescription: register('description', {
           validate: (value, formState) => !!(value || formState.image),
         }),
-        getOnSubmit: (intentionId) => handleSubmit(onSubmit(intentionId)),
+        onSubmit: handleSubmit(onSubmit),
         formErrors: errors,
         isSubmitting,
       }}

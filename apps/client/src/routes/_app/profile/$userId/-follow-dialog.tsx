@@ -1,6 +1,3 @@
-import React, { useState } from 'react';
-import { Link } from 'wouter';
-
 import { performMutation } from '@/actions';
 import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
@@ -13,8 +10,11 @@ import {
   useInvalidateFollowedUsers,
   useInvalidateFollowers,
 } from '@/hooks/follows';
-import { useRemoveFollow } from '@/intentions-api';
+import { useRemoveFollow } from '@/intentions-api.gen';
+import { Route as profileRoute } from '@/routes/_app/profile/$userId';
 import { useSignedInAuthState } from '@/state/auth';
+import { Link } from '@tanstack/react-router';
+import React, { useState } from 'react';
 
 interface FollowDialogProps {
   open: boolean;
@@ -67,7 +67,8 @@ const FollowDialog: React.FC<FollowDialogProps> = ({
               <div className="flex items-center gap-4">
                 <Link
                   className="grow"
-                  href={`~/profile/${user.id}`}
+                  to={profileRoute.to}
+                  params={{ userId: user.id }}
                   onClick={onClose}
                 >
                   {user.data.username}

@@ -1,7 +1,6 @@
+import { collections } from '@/data/db';
 import { useQueryClient } from '@tanstack/react-query';
 import { orderBy, query } from 'firebase/firestore';
-
-import { collections } from '@/data/db';
 import { useInfiniteDocQuery } from './infinite-doc-query';
 
 export const useNotifications = (userId: string) => {

@@ -1,3 +1,4 @@
+import { db } from '@/firebase';
 import { collection, doc, QueryDocumentSnapshot } from 'firebase/firestore';
 import {
   Comment,
@@ -18,8 +19,6 @@ import {
   userCollectionPath,
   userDocPath,
 } from 'lib';
-
-import { db } from '@/firebase';
 
 export type CollectionSort<T extends string> = {
   by: T;
