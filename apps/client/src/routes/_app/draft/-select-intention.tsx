@@ -5,13 +5,11 @@ import { useIntentions } from '@/hooks/intentions';
 import { useSignedInAuthState } from '@/state/auth';
 import { useDraftPostContext } from '@/state/draft';
 import { useState } from 'react';
-import { useLocation } from 'wouter';
 
 export const SelectIntention: React.FC = () => {
   const { authUser } = useSignedInAuthState();
   const { intentions } = useIntentions(authUser.uid);
-  const [, navigate] = useLocation();
-  const { setIntentionId } = useDraftPostContext();
+  const { setIntentionId, setStage } = useDraftPostContext();
   const [searchVal, setSearchVal] = useState('');
 
   const filteredIntentions = intentions?.filter((intention) =>
@@ -37,7 +35,7 @@ export const SelectIntention: React.FC = () => {
         <div className="flex flex-col gap-2 overflow-y-scroll">
           <button
             onClick={() => {
-              navigate('~/draft/intention/create', { replace: true });
+              setStage('intention-create');
             }}
             className="cursor-pointer rounded-2xl border bg-[#2C3B4E] p-1 text-white"
           >
@@ -48,9 +46,7 @@ export const SelectIntention: React.FC = () => {
               key={intention.id}
               onClick={() => {
                 setIntentionId(intention.id);
-                requestAnimationFrame(() =>
-                  navigate('~/draft/image', { replace: true }),
-                );
+                setStage('image');
               }}
               className="cursor-pointer rounded-full border p-1"
             >

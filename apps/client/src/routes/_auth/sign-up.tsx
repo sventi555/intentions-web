@@ -1,21 +1,21 @@
-import { AuthError, signInWithEmailAndPassword } from 'firebase/auth';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { Link, Redirect } from 'wouter';
-
+import { performMutation } from '@/actions';
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
 import { auth } from '@/firebase';
-import { useAuthState } from '@/state/auth';
+import { useCreateUser } from '@/intentions-api.gen';
+import { Route as signInRoute } from '@/routes/_auth/sign-in';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 type Inputs = {
+  username: string;
   email: string;
   password: string;
 };
 
-export const SignIn: React.FC = () => {
-  const { authUser } = useAuthState();
+const SignUp: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -24,27 +24,20 @@ export const SignIn: React.FC = () => {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setIsSubmitting(true);
-    return signInWithEmailAndPassword(auth, data.email, data.password)
-      .catch((e: AuthError) => {
-        const invalidCredsErrors = [
-          'auth/invalid-credential',
-          'auth/invalid-email',
-          'auth/wrong-password',
-        ];
-        toast.error(
-          invalidCredsErrors.includes(e.code)
-            ? 'Invalid credentials - check email and password.'
-            : 'Something went wrong - please try again.',
-        );
-      })
-      .finally(() => setIsSubmitting(false));
-  };
+  const { mutateAsync: createUser } = useCreateUser();
 
-  if (authUser) {
-    return <Redirect to="~/" />;
-  }
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    performMutation({
+      mutate: () => createUser({ data }),
+      setLoading: setIsSubmitting,
+      errorMessages: {
+        400: 'Invalid email or password.',
+        409: 'Email or username is already taken.',
+      },
+      onSuccess: () =>
+        signInWithEmailAndPassword(auth, data.email, data.password),
+    });
+  };
 
   return (
     <div className="flex grow flex-col items-center justify-center gap-8">
@@ -56,6 +49,11 @@ export const SignIn: React.FC = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex min-w-64 flex-col gap-1"
       >
+        <Input
+          placeholder="username"
+          formRegister={register('username', { required: true })}
+          errorMessage={errors.username && 'username is required'}
+        />
         <Input
           type="email"
           placeholder="email"
@@ -69,19 +67,18 @@ export const SignIn: React.FC = () => {
           formRegister={register('password', { required: true })}
           errorMessage={errors.password && 'password is required'}
         />
-        <Button type="submit" loading={isSubmitting}>
-          Sign in
+        <Button loading={isSubmitting} type="submit">
+          Sign up
         </Button>
-        <Link href="~/forgot-password" className="underline">
-          Forgot password
-        </Link>
       </form>
       <div>
-        New user?{' '}
-        <Link href="~/sign-up" className="underline">
-          Sign up
+        Already a user?{' '}
+        <Link to={signInRoute.to} className="underline">
+          Sign in
         </Link>
       </div>
     </div>
   );
 };
+
+export const Route = createFileRoute('/_auth/sign-up')({ component: SignUp });

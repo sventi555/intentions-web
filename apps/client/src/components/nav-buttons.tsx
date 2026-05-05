@@ -1,8 +1,3 @@
-import clsx from 'clsx';
-import { AnimatePresence, motion } from 'motion/react';
-import { useState } from 'react';
-import { useLocation } from 'wouter';
-
 import {
   Bell,
   Close,
@@ -14,45 +9,59 @@ import {
 } from '@/components/icons';
 import { Icon } from '@/components/icons/icon';
 import { useUser } from '@/hooks/users';
-import { useAuthState } from '@/state/auth';
+import { Route as feedRoute } from '@/routes/_app/_feed';
+import { Route as draftRoute } from '@/routes/_app/draft';
+import { Route as notificationsRoute } from '@/routes/_app/notifications';
+import { Route as profileRoute } from '@/routes/_app/profile/$userId';
+import { Route as searchRoute } from '@/routes/_app/search';
+import { useSignedInAuthState } from '@/state/auth';
+import { useNavigate } from '@tanstack/react-router';
+import clsx from 'clsx';
+import { AnimatePresence, motion } from 'motion/react';
+import { useState } from 'react';
 
 export const NavButtons: React.FC = () => {
-  const { authUser } = useAuthState();
-  const [, navigate] = useLocation();
+  const { authUser } = useSignedInAuthState();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useUser(authUser?.uid);
+  const { user } = useUser(authUser.uid);
 
   return (
-    <nav className="fixed right-[24px] bottom-[24px] flex flex-col gap-[24px]">
+    <nav className="fixed right-[28px] bottom-[28px] flex flex-col gap-[24px]">
       <AnimatePresence>
         {isOpen ? (
           <div className="flex flex-col gap-[8px]">
             <TabButton
               onClick={() =>
-                navigate(
-                  authUser != null ? `~/profile/${authUser?.uid}` : '~/sign-in',
-                )
+                navigate({
+                  to: profileRoute.to,
+                  params: { userId: authUser.uid },
+                })
               }
               Icon={Profile}
               animate
             />
             <TabButton
               badge={user?.unreadNotifs}
-              onClick={() => navigate('~/notifications')}
+              onClick={() => navigate({ to: notificationsRoute.to })}
               Icon={Bell}
               animate
             />
             <TabButton
-              onClick={() => navigate('~/search')}
+              onClick={() => navigate({ to: searchRoute.to })}
               Icon={Search}
               animate
             />
             <TabButton
-              onClick={() => navigate('~/draft')}
+              onClick={() => navigate({ to: draftRoute.to })}
               Icon={Pencil}
               animate
             />
-            <TabButton onClick={() => navigate('~/')} Icon={Home} animate />
+            <TabButton
+              onClick={() => navigate({ to: feedRoute.to })}
+              Icon={Home}
+              animate
+            />
           </div>
         ) : null}
       </AnimatePresence>

@@ -2,7 +2,7 @@ import { clsx } from 'clsx';
 import { PropsWithChildren } from 'react';
 
 interface ButtonProps {
-  type: 'primary' | 'secondary' | 'submit';
+  type: 'primary' | 'secondary' | 'submit' | 'danger';
   onClick?: () => void;
   loading?: boolean;
 }
@@ -24,6 +24,7 @@ export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
           !loading &&
           'bg-[#2C3B4E] text-white',
         type === 'secondary' && !loading && 'bg-neutral-200',
+        type === 'danger' && !loading && 'bg-red-600 text-white',
         !loading && 'cursor-pointer',
         loading && 'animate-pulse bg-neutral-100 text-neutral-500',
       )}

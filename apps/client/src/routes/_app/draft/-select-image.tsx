@@ -4,17 +4,11 @@ import { Close, Swap } from '@/components/icons';
 import { PageHeader } from '@/components/page-header';
 import { useDraftPostContext } from '@/state/draft';
 import { useRef } from 'react';
-import { Redirect, useLocation } from 'wouter';
 
 export const SelectImage: React.FC = () => {
-  const { intentionId, base64Img, setBase64Img } = useDraftPostContext();
-  const [, navigate] = useLocation();
+  const { base64Img, setBase64Img, setStage } = useDraftPostContext();
 
   const filePickerRef = useRef<HTMLInputElement | null>(null);
-
-  if (intentionId == null) {
-    return <Redirect to="~/draft" replace={true} />;
-  }
 
   return (
     <div>
@@ -25,16 +19,13 @@ export const SelectImage: React.FC = () => {
           <div className="flex grow flex-col">
             <Button
               type="secondary"
-              onClick={() => navigate('~/draft/intention', { replace: true })}
+              onClick={() => setStage('intention-select')}
             >
               Prev
             </Button>
           </div>
           <div className="flex grow flex-col">
-            <Button
-              type="primary"
-              onClick={() => navigate('~/draft/review', { replace: true })}
-            >
+            <Button type="primary" onClick={() => setStage('review')}>
               Next
             </Button>
           </div>
@@ -60,14 +51,14 @@ export const SelectImage: React.FC = () => {
                 onClick={() => filePickerRef.current?.click()}
                 className="cursor-pointer rounded-full border-[1.5px] border-white bg-black p-1 text-white opacity-70"
               >
-                <Swap />
+                <Swap className="stroke-[1.5px]" />
               </button>
               <button
                 type="button"
                 onClick={() => setBase64Img('')}
                 className="cursor-pointer rounded-full border-[1.5px] border-black bg-red-600 p-1 text-white opacity-70"
               >
-                <Close />
+                <Close className="stroke-[1.5px]" />
               </button>
             </div>
           </div>

@@ -1,8 +1,7 @@
-import { Post as _Post } from 'lib';
-import { Fragment } from 'react';
-
 import { Post } from '@/components/post';
 import { useInfiniteScroll } from '@/hooks/infinite-scroll';
+import { Post as _Post } from 'lib';
+import { Fragment } from 'react';
 
 interface PostsListProps {
   posts: { id: string; data: _Post }[];

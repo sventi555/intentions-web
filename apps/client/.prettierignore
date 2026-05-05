@@ -1,2 +1,3 @@
 dist/
-src/intentions-api.ts
+src/intentions-api.gen.ts
+src/routeTree.gen.ts

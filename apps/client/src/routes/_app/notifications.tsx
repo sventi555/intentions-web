@@ -1,7 +1,3 @@
-import clsx from 'clsx';
-import { PropsWithChildren, useEffect, useState } from 'react';
-import { Link } from 'wouter';
-
 import { performMutation } from '@/actions';
 import { authErrorMessage } from '@/actions/errors';
 import { DisplayPic } from '@/components/display-pic';
@@ -13,10 +9,14 @@ import {
   useNotifications,
 } from '@/hooks/notifications';
 import { useInvalidateUser, useUser } from '@/hooks/users';
-import { useClearNotifAlert, useRespondToFollow } from '@/intentions-api';
+import { useClearNotifAlert, useRespondToFollow } from '@/intentions-api.gen';
+import { Route as profileRoute } from '@/routes/_app/profile/$userId';
 import { useSignedInAuthState } from '@/state/auth';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import clsx from 'clsx';
+import { PropsWithChildren, useEffect, useState } from 'react';
 
-export const Notifications: React.FC = () => {
+const Notifications: React.FC = () => {
   const { authUser } = useSignedInAuthState();
   const { user } = useUser(authUser.uid);
   const invalidateUser = useInvalidateUser();
@@ -108,7 +108,7 @@ const FollowNotificationWrapper: React.FC<
 > = (props) => {
   return (
     <div className="flex items-center gap-2 p-2">
-      <Link href={`~/profile/${props.user.id}`}>
+      <Link to={profileRoute.to} params={{ userId: props.user.id }}>
         <DisplayPic imageUri={props.user.dpUri} size={40} />
       </Link>
       {props.children}
@@ -136,7 +136,7 @@ const FollowRequestNotification: React.FC<FollowRequestNotificationProps> = (
     <FollowNotificationWrapper user={props.sender}>
       <div className="flex grow items-center justify-between">
         <div>
-          <Link href={`~/profile/${props.sender.id}`}>
+          <Link to={profileRoute.to} params={{ userId: props.sender.id }}>
             {props.sender.username}{' '}
             {props.isPending ? 'requested to follow you' : 'followed you'}
           </Link>
@@ -226,7 +226,7 @@ const FollowApprovedNotification: React.FC<FollowApprovalNotificationProps> = (
   return (
     <FollowNotificationWrapper user={props.recipient}>
       <div>
-        <Link href={`~/profile/${props.recipient.id}`}>
+        <Link to={profileRoute.to} params={{ userId: props.recipient.id }}>
           {props.recipient.username}
         </Link>{' '}
         approved your follow request
@@ -234,3 +234,7 @@ const FollowApprovedNotification: React.FC<FollowApprovalNotificationProps> = (
     </FollowNotificationWrapper>
   );
 };
+
+export const Route = createFileRoute('/_app/notifications')({
+  component: Notifications,
+});

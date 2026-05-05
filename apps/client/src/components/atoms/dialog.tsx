@@ -1,16 +1,19 @@
 import { DialogPanel, Dialog as HeadlessDialog } from '@headlessui/react';
+import clsx from 'clsx';
 import { AnimatePresence, motion } from 'motion/react';
 import { PropsWithChildren } from 'react';
 
 interface DialogProps {
   open: boolean;
   onClose: () => void;
+  size: 'default' | 'fit';
 }
 
 export const Dialog: React.FC<PropsWithChildren<DialogProps>> = ({
   onClose,
   open,
   children,
+  size = 'default',
 }) => {
   return (
     <AnimatePresence>
@@ -33,7 +36,10 @@ export const Dialog: React.FC<PropsWithChildren<DialogProps>> = ({
               initial={{ opacity: 0, translateY: 5 }}
               animate={{ opacity: 1, translateY: 0 }}
               exit={{ opacity: 0, translateY: 5 }}
-              className="flex h-1/2 w-full max-w-[540px] flex-col overflow-hidden rounded-lg bg-white"
+              className={clsx(
+                'flex max-w-[540px] flex-col overflow-hidden rounded-lg bg-white',
+                size === 'default' && 'h-1/2 w-full',
+              )}
             >
               {children}
             </DialogPanel>

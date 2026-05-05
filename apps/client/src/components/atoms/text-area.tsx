@@ -1,6 +1,5 @@
-import { UseFormRegisterReturn } from 'react-hook-form';
-
 import { InputError } from '@/components/atoms/input-error';
+import { UseFormRegisterReturn } from 'react-hook-form';
 
 interface TextAreaProps {
   placeholder?: string;

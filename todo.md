@@ -1,5 +1,4 @@
 Fixes:
-- prog disc leave page warning
 
 Features:
 - edit post UI

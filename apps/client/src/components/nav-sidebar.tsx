@@ -1,32 +1,43 @@
-import { useLocation } from 'wouter';
-
 import { Bell, Home, Pencil, Profile, Search } from '@/components/icons';
 import { Icon } from '@/components/icons/icon';
 import { useUser } from '@/hooks/users';
-import { useAuthState } from '@/state/auth';
+import { Route as feedRoute } from '@/routes/_app/_feed';
+import { Route as draftRoute } from '@/routes/_app/draft';
+import { Route as notificationsRoute } from '@/routes/_app/notifications';
+import { Route as profileRoute } from '@/routes/_app/profile/$userId';
+import { Route as searchRoute } from '@/routes/_app/search';
+import { useSignedInAuthState } from '@/state/auth';
+import { useNavigate } from '@tanstack/react-router';
 
 export const NavSidebar: React.FC = () => {
-  const { authUser } = useAuthState();
-  const [, navigate] = useLocation();
+  const { authUser } = useSignedInAuthState();
+  const navigate = useNavigate();
 
-  const { user } = useUser(authUser?.uid);
+  const { user } = useUser(authUser.uid);
 
   return (
     <nav className="flex grow flex-col gap-[40px] border-r border-neutral-300 p-[16px]">
-      <SidebarButton Icon={Home} onClick={() => navigate('~/')} />
-      <SidebarButton Icon={Pencil} onClick={() => navigate('~/draft')} />
-      <SidebarButton Icon={Search} onClick={() => navigate('~/search')} />
+      <SidebarButton
+        Icon={Home}
+        onClick={() => navigate({ to: feedRoute.to })}
+      />
+      <SidebarButton
+        Icon={Pencil}
+        onClick={() => navigate({ to: draftRoute.to })}
+      />
+      <SidebarButton
+        Icon={Search}
+        onClick={() => navigate({ to: searchRoute.to })}
+      />
       <SidebarButton
         badge={user?.unreadNotifs}
         Icon={Bell}
-        onClick={() => navigate('~/notifications')}
+        onClick={() => navigate({ to: notificationsRoute.to })}
       />
       <SidebarButton
         Icon={Profile}
         onClick={() =>
-          navigate(
-            authUser != null ? `~/profile/${authUser?.uid}` : '~/sign-in',
-          )
+          navigate({ to: profileRoute.to, params: { userId: authUser.uid } })
         }
       />
     </nav>

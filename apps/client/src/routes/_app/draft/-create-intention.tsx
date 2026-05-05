@@ -1,16 +1,14 @@
-import { clsx } from 'clsx';
-import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useLocation } from 'wouter';
-
 import { performMutation } from '@/actions';
 import { authErrorMessage } from '@/actions/errors';
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
 import { useInvalidateIntentions } from '@/hooks/intentions';
-import { useCreateIntention } from '@/intentions-api';
+import { useCreateIntention } from '@/intentions-api.gen';
 import { useSignedInAuthState } from '@/state/auth';
 import { useDraftPostContext } from '@/state/draft';
+import { clsx } from 'clsx';
+import { useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 const suggestions = [
   'be more adventurous',
@@ -26,14 +24,12 @@ type Inputs = {
 };
 
 export const CreateIntention: React.FC = () => {
-  const [, navigate] = useLocation();
-
   const { authUser } = useSignedInAuthState();
   const { mutateAsync: createIntention } = useCreateIntention();
   const invalidateIntentions = useInvalidateIntentions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { setIntentionId } = useDraftPostContext();
+  const { setIntentionId, setStage } = useDraftPostContext();
 
   const {
     register,
@@ -58,9 +54,7 @@ export const CreateIntention: React.FC = () => {
       onSuccess: (res) =>
         invalidateIntentions(authUser.uid).then(() => {
           setIntentionId(res.data.id);
-          requestAnimationFrame(() =>
-            navigate('~/draft/image', { replace: true }),
-          );
+          setStage('image');
         }),
     });
   };
@@ -112,7 +106,7 @@ export const CreateIntention: React.FC = () => {
           <div className="flex grow flex-col">
             <Button
               type="secondary"
-              onClick={() => navigate('~/draft/intention', { replace: true })}
+              onClick={() => setStage('intention-select')}
             >
               Cancel
             </Button>

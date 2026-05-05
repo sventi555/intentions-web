@@ -1,11 +1,3 @@
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
-import { clsx } from 'clsx';
-import { intlFormatDistance } from 'date-fns';
-import { Post as _Post } from 'lib';
-import { motion } from 'motion/react';
-import { useState } from 'react';
-import { Link } from 'wouter';
-
 import { performMutation } from '@/actions';
 import { authErrorMessage } from '@/actions/errors';
 import { Dialog } from '@/components/atoms/dialog';
@@ -24,9 +16,18 @@ import {
   useCreateComment,
   useDeleteComment,
   useDeletePost,
-} from '@/intentions-api';
+} from '@/intentions-api.gen';
+import { Route as profileRoute } from '@/routes/_app/profile/$userId';
+import { Route as intentionRoute } from '@/routes/_app/profile/$userId/intention/$intentionId';
 import { useSignedInAuthState } from '@/state/auth';
 import { defaultTransition } from '@/style';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { Link } from '@tanstack/react-router';
+import { clsx } from 'clsx';
+import { intlFormatDistance } from 'date-fns';
+import { Post as _Post } from 'lib';
+import { motion } from 'motion/react';
+import { useState } from 'react';
 
 interface PostProps {
   id: string;
@@ -59,7 +60,8 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
             )}
           >
             <Link
-              href={`~/profile/${data.userId}`}
+              to={profileRoute.to}
+              params={{ userId: data.userId }}
               className="flex items-center gap-2"
             >
               <DisplayPic size={36} imageUri={data.user.image} />
@@ -67,7 +69,8 @@ export const Post: React.FC<PostProps> = ({ id, data }) => {
             </Link>
 
             <Link
-              href={`~/profile/${data.userId}/intention/${data.intentionId}`}
+              to={intentionRoute.to}
+              params={{ userId: data.userId, intentionId: data.intentionId }}
               className="self-center rounded-4xl border border-neutral-300 p-1 px-2 whitespace-nowrap"
             >
               {data.intention.name}
@@ -242,13 +245,14 @@ const CommentsDialog: React.FC<CommentsDialogProps> = ({
         {comments?.map((c) => (
           <div key={c.id} className="relative flex justify-between p-1">
             <div className="flex grow gap-2">
-              <Link href={`~/profile/${c.data.userId}`}>
+              <Link to={profileRoute.to} params={{ userId: c.data.userId }}>
                 <DisplayPic imageUri={c.data.user.image} size={32} />
               </Link>
               <div className="text-sm">
                 <div>
                   <Link
-                    href={`~/profile/${c.data.userId}`}
+                    to={profileRoute.to}
+                    params={{ userId: c.data.userId }}
                     className="font-semibold"
                   >
                     {c.data.user.username}

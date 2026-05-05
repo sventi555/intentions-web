@@ -5,7 +5,7 @@ export default defineConfig({
     input: 'http://localhost:3001/schema',
     output: {
       headers: true,
-      target: './src/intentions-api.ts',
+      target: './src/intentions-api.gen.ts',
       client: 'react-query',
       httpClient: 'fetch',
       override: {

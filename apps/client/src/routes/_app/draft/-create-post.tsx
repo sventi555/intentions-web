@@ -1,5 +1,3 @@
-import { Redirect, useLocation } from 'wouter';
-
 import { Button } from '@/components/atoms/button';
 import { TextArea } from '@/components/atoms/text-area';
 import { PageHeader } from '@/components/page-header';
@@ -14,15 +12,10 @@ export const CreatePost: React.FC = () => {
     registerDescription,
     onSubmit,
     isSubmitting,
+    setStage,
   } = useDraftPostContext();
 
-  const [, navigate] = useLocation();
-
   const { intention } = useIntention(intentionId ?? undefined);
-
-  if (intentionId == null) {
-    return <Redirect to="~/draft" replace={true} />;
-  }
 
   return (
     <div>
@@ -31,7 +24,7 @@ export const CreatePost: React.FC = () => {
       <form onSubmit={onSubmit} className="flex flex-col gap-4 p-4 pb-[80px]">
         <div className="mx-4 flex flex-col gap-2 rounded-2xl border-[1.5px] border-neutral-400 p-4 shadow">
           <div className="min-w-[60px] self-start rounded-4xl border border-neutral-300 p-1 px-2 text-center">
-            {intention?.name}
+            {intention?.name ?? '...'}
           </div>
 
           {base64Img && <img src={base64Img} className="rounded-2xl" />}
@@ -47,10 +40,7 @@ export const CreatePost: React.FC = () => {
 
         <div className="flex gap-2">
           <div className="flex grow flex-col">
-            <Button
-              type="secondary"
-              onClick={() => navigate('~/draft/image', { replace: true })}
-            >
+            <Button type="secondary" onClick={() => setStage('image')}>
               Prev
             </Button>
           </div>

@@ -1,20 +1,18 @@
+import { Button } from '@/components/atoms/button';
+import { Input } from '@/components/atoms/input';
+import { auth } from '@/firebase';
+import { Route as signInRoute } from '@/routes/_auth/sign-in';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { Link, Redirect } from 'wouter';
-
-import { Button } from '@/components/atoms/button';
-import { Input } from '@/components/atoms/input';
-import { auth } from '@/firebase';
-import { useAuthState } from '@/state/auth';
 
 type Inputs = {
   email: string;
 };
 
-export const ForgotPassword: React.FC = () => {
-  const { authUser } = useAuthState();
+const ForgotPassword: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -32,10 +30,6 @@ export const ForgotPassword: React.FC = () => {
       .catch(() => toast.error('Failed to send - please try again.'))
       .finally(() => setIsSubmitting(false));
   };
-
-  if (authUser) {
-    return <Redirect to="~/" />;
-  }
 
   return (
     <div className="flex grow flex-col items-center justify-center gap-4">
@@ -57,9 +51,13 @@ export const ForgotPassword: React.FC = () => {
           <div className="text-sm">Sent! Check email for reset link</div>
         )}
       </form>
-      <Link href="~/sign-in" className="underline">
+      <Link to={signInRoute.to} className="underline">
         Sign in
       </Link>
     </div>
   );
 };
+
+export const Route = createFileRoute('/_auth/forgot-password')({
+  component: ForgotPassword,
+});
